@@ -10,6 +10,17 @@ from datetime import datetime
 # Use imported credentials from config.py
 user = {'name': user_email, 'pw': user_password}
 
+
+# get user input to determine when to stop pulling invoices
+print("How far to go back? Please enter a start date for invoice gathering. (ex: 4/16/24)")
+start_date = input("Start date: ")
+try:
+    start_date_obj = datetime.strptime(start_date, '%m/%d/%y')
+except ValueError:
+    print("Error: Invalid date format. Please enter the date in the format 'mm/dd/yy'. Program will now stop.")
+    sys.exit()
+
+
 browser = webdriver.Chrome()
 browser.get('https://www.bidrl.com/login')
 browser.set_window_position(0, 0)
@@ -45,7 +56,6 @@ actions.perform()
 
 # gather list of invoice links
 
-# NEED TO FIX. CURRENTLY ADDING ALL LINKS TWICE
 # gather list of all elements with tag name "tr"
 tr_elements = browser.find_elements(By.TAG_NAME, 'tr')
 invoice_links = []
@@ -53,10 +63,13 @@ for tr in tr_elements[2:]: # each tr element is an invoice row
     td_elements = tr.find_elements(By.TAG_NAME, 'td') # each td element is an cell in the row basically
     if len(td_elements) > 0:
         for td in td_elements:
-            # one of these td "cells" will have an element "a", which contains the link to the invoice.
+            # one of these td "cells" is the description and will have an element "a", which contains the link to the invoice.
             # we want to try each cell in the row and, if it contains a link, append it to invoice_links
-            try: 
-                invoice_links.append(td.find_element(By.TAG_NAME, 'a').get_property('href'))
+            # the last cell in the row is the view button, which also contains the "a" element with the href link
+            # we skip this one to avoid double adding each link
+            try:
+                if td.text != 'view':
+                    invoice_links.append(td.find_element(By.TAG_NAME, 'a').get_property('href'))
             except: continue
 
 
@@ -132,7 +145,15 @@ for link in invoice_links:
         if len(invoice_item) == 5 and invoice_item[0] != 'Lot':
             invoice_items.append(invoice_item)
 
-    #print(invoice_date)
+    print('invoice date: ' + invoice_date)
+    try:
+        invoice_date_obj = datetime.strptime(invoice_date, '%m/%d/%Y')
+        if invoice_date_obj < start_date_obj:
+            print('encountered earlier date. breaking')
+            break
+    except:
+        print('exception. failed to parse read invoice date as date object')
+        continue
 
     # create an entry in invoices
     invoices_entry = []
@@ -147,7 +168,6 @@ for link in invoice_links:
 
 # iterate through invoices list and append additional information
 # invoices[x][4] = total cost of invoice
-# invoices[x][5] = google form link for expense input
 for invoice in invoices:
     # append total cost of the invoice
     invoice_total_cost = 0
@@ -160,26 +180,59 @@ for invoice in invoices:
     invoice.append(invoice_total_cost)
 
 
-    # append pre-filled google form link to submit expense input for invoice
+# now that we have all information about our invoices, show the user each item and have them make decisions for each
+# we append these decisions to the end of each item info list contained within each invoice
+# currently, we just have the user input whether the item should be paid for by [N]ick, [B]ry, or [T]ogether
+for invoice in invoices:
+    print("\nnew invoice: " + invoice[0])
+    for item in invoice[3]:
+        print('')
+        print(item[1] + ' - $' + str(round(float(item[3]), 2)) + ' - ' + invoice[1] ) # print bid amount and item description
+        print('Link: ' + item[4])
+        cost_split_response = input("Who bought this item? [n]ick, [b]ry, or [t]ogether: ")
+        item.append(cost_split_response)
+
+
+# iterate through invoices list and append additional information
+# invoices[x][5] = pre-filled google form link to submit expense input for invoice
+for invoice in invoices:
+    # add up nick cost, bry cost, and together costs
+    invoice_cost_nick = 0
+    invoice_cost_bry = 0
+    invoice_cost_together = 0
+    for item in invoice[3]:
+        #print("new item" + item[1])
+        if item[6] == 'n': invoice_cost_nick += item[5]
+        if item[6] == 'b': invoice_cost_bry += item[5]
+        if item[6] == 't': invoice_cost_together += item[5]
+    '''print(invoice_cost_nick)
+    print(invoice_cost_bry)
+    print(invoice_cost_together)'''
+
 
     # parse original date string and format to yyyy-mm-dd to work with google form link
     date_obj = datetime.strptime(invoice[1], '%m/%d/%Y')
     formatted_date = date_obj.strftime('%Y-%m-%d')
 
+    form_total = str(round(invoice[4], 2))
+    form_contrib_deduct = str(round(invoice_cost_nick, 2)) if invoice_cost_nick != 0 else ''
+    form_other_deduct = str(round(invoice_cost_bry, 2)) if invoice_cost_bry != 0 else ''
+
     form_link = google_form_link_base
     form_link = form_link + '&entry.80720402=' + 'Nick' # Contributor
     form_link = form_link + '&entry.602460887=' + 'BIDRL' # Category
     form_link = form_link + '&entry.2039686003=' + 'Income' # Split
-    form_link = form_link + '&entry.1813815173=' + str(invoice[4]) # Total
-    form_link = form_link + '&entry.660494524=' + '' # Contributor Deduction
-    form_link = form_link + '&entry.1146814579=' + '' # Other Deduction
+    form_link = form_link + '&entry.1813815173=' + form_total # Total
+    form_link = form_link + '&entry.660494524=' + form_contrib_deduct # Contributor Deduction
+    form_link = form_link + '&entry.1146814579=' + form_other_deduct # Other Deduction
     form_link = form_link + '&entry.673325533=' + formatted_date # Date
     form_link = form_link + '&entry.573687359=' + 'Invoice+' + invoice[0] # Notes
 
     invoice.append(form_link)
 
 
-print('\nInvoices: ')
+# print out all pre-formed google links for entering expenses along with information about each invoice
+print('\n\n\n\nInvoices: ')
 for invoice in invoices:
     print('\nInvoice #' + invoice[0])
     print('Date: ' + invoice[1])
@@ -187,9 +240,18 @@ for invoice in invoices:
     print('Expense Input Form Link: ' + invoice[5])
     print('Items:')
     for item in invoice[3]:
-        print('$' + str(item[5]) + ' - ' + item[1])
+        purchaser = ''
+        if item[6] == 'n': purchaser = 'Nick'
+        elif item[6] == 'b': purchaser = 'Bry'
+        elif item[6] == 't': purchaser = 'Together'
+        print('$' + str(round(item[5], 2)) + ' - ' + item[1] + ' - ' + purchaser)
 
-    
+
+# print out all pre-formed google links together so I can input them into todoist as a block
+print('\n\n\n\nInvoice form links for Todoist copy/paste (same links as above): ')
+for invoice in invoices:
+    print(invoice[5])
+
 
 
 
