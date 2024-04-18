@@ -6,8 +6,10 @@ from selenium.webdriver.common.by import By
 import time
 from config import user_email, user_password, google_form_link_base
 from datetime import datetime
+import bidrl_functions as bf
 
-# Use imported credentials from config.py
+
+# use imported credentials from config.py
 user = {'name': user_email, 'pw': user_password}
 
 
@@ -21,34 +23,11 @@ except ValueError:
     sys.exit()
 
 
-browser = webdriver.Chrome()
-browser.set_window_position(0, 0)
-browser.maximize_window()
+# open chrome window and set size and position
+browser = bf.init_browser()
 
 # attempt to load and log in to bidrl. if that fails, reload the site and try again until this function succeeds
-def login_try_loop(browser, user):
-    browser.get('https://www.bidrl.com/login')
-    time.sleep(0.5)
-    try:
-        userName = browser.find_element(By.NAME, 'username')
-        password = browser.find_element(By.NAME, 'password')
-
-        #put all elements with tag name "button" into a list
-        button_elements = browser.find_elements(By.TAG_NAME, 'button')
-        #find the first element in the button_elements list with text 'LOGIN'
-        login_button = next(obj for obj in button_elements if obj.text == 'LOGIN')
-
-        actions = ActionChains(browser)
-        actions.move_to_element(userName).send_keys(user['name'])
-        actions.send_keys(Keys.TAB).send_keys(user['pw'])
-        actions.move_to_element(login_button).click()
-        actions.perform()
-    except:
-        login_try_loop(browser, user)
-    return
-
-
-login_try_loop(browser, user)
+bf.login_try_loop(browser, user)
 
 
 
