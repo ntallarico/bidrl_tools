@@ -9,11 +9,26 @@ from datetime import datetime
 import bidrl_functions as bf
 
 
-# to do: init window and log in to bidrl
+
+
+# init window and log in to bidrl
+
+# use imported credentials from config.py
+user = {'name': user_email, 'pw': user_password}
+
+# open chrome window and set size and position
+browser = bf.init_browser()
+
+# load and log in to bidrl
+bf.login_try_loop(browser, user)
+
 
 
 
 # to do: go to favorite items list, set to max items/page, loop through each page and, and scrape item info
+
+# load favorites page and set max items/page to 60
+bf.load_page_favorites(browser, 60)
 
 
 
@@ -22,3 +37,10 @@ import bidrl_functions as bf
 
 
 # to do: check "agree to terms" box
+
+
+
+
+
+# pause program until user input. just for debugging right now
+input()

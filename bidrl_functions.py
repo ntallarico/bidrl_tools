@@ -37,3 +37,31 @@ def login_try_loop(browser, user):
     except:
         login_try_loop(browser, user)
     return
+
+
+# go to invoices page, set records per page to 36
+def load_page_invoices(browser, records_per_page):
+    time.sleep(1)
+    browser.get('https://www.bidrl.com/myaccount/invoices')
+    perpage = browser.find_element(By.ID, 'perpage-top')
+    actions = ActionChains(browser)
+    actions.move_to_element(perpage).click()
+    actions.send_keys(str(records_per_page))
+    actions.send_keys(Keys.ENTER)
+    actions.perform()
+    return
+
+
+# go to favorites page, set records per page to 36
+def load_page_favorites(browser, records_per_page):
+    time.sleep(1)
+    browser.get('https://www.bidrl.com/myaccount/myitems')
+    perpage = browser.find_element(By.ID, 'perpage-top')
+    actions = ActionChains(browser)
+    actions.move_to_element(perpage).click()
+    actions.send_keys(str(records_per_page))
+    actions.send_keys(Keys.ENTER)
+    actions.perform()
+    return
+
+    

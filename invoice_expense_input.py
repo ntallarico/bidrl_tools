@@ -26,20 +26,72 @@ except ValueError:
 # open chrome window and set size and position
 browser = bf.init_browser()
 
-# attempt to load and log in to bidrl. if that fails, reload the site and try again until this function succeeds
+
+# load and log in to bidrl
 bf.login_try_loop(browser, user)
 
 
+# go to invoices page, set records per page to 36
+bf.load_page_invoices(browser, 36)
 
-#go to invoices page, set records per page to 36
-time.sleep(1)
-browser.get('https://www.bidrl.com/myaccount/invoices')
-perpage = browser.find_element(By.ID, 'perpage-top')
-actions = ActionChains(browser)
-actions.move_to_element(perpage).click()
-actions.send_keys("3")
-actions.send_keys(Keys.ENTER)
-actions.perform()
+
+
+
+
+
+
+
+
+
+
+# to do. convert this file to using classes first. maybe put classes in a different file? idk
+# then make a function that just does invoice scraping and returns the invoice dict. maybe put this in bf.py?
+# then have this script use that function for the purpose of generating invoice expense input info
+
+
+
+
+
+# define Item and Invoice classes to hold all of our information about items and invoices
+# Invoice class will contain a list of Item classes
+# We will gather a list of invoice classes in our scraping
+
+class Item:
+    def __init__(self, id='', description='', tax_rate='', amount='', link='', total_cost='', cost_split=''):
+        self.id = id
+        self.description = description
+        self.tax_rate = tax_rate
+        self.amount = amount
+        self.link = link
+        self.total_cost = total_cost
+        self.cost_split = cost_split
+
+    def display(self):
+        print(f"ID: {self.id}, Description: {self.description}, Tax Rate: {self.tax_rate}, Amount: {self.amount}, Link: {self.link}, Total Cost: {self.total_cost}, Cost Split: {self.cost_split}")
+
+class Invoice:
+    def __init__(self, id='', date='', link='', items=None, total_cost='', expense_input_form_link=''):
+        self.id = id
+        self.date = date
+        self.link = link
+        self.items = items if items is not None else []
+        self.total_cost = total_cost
+        self.expense_input_form_link = expense_input_form_link
+
+    def add_item(self, item):
+        self.items.append(item)
+
+    def display(self):
+        print(f"Invoice ID: {self.id}, Date: {self.date}, Link: {self.link}, Total Cost: {self.total_cost}, Expense Input Form Link: {self.expense_input_form_link}")
+        print("Items:")
+        for item in self.items:
+            item.display()
+
+
+
+
+
+
 
 
 # gather list of invoice links
@@ -61,13 +113,10 @@ for tr in tr_elements[2:]: # each tr element is an invoice row
             except: continue
 
 
-'''# for dev. delete this and replace with commented out section above
-invoice_links = ['https://www.bidrl.com/myaccount/invoice/invid/3273850', 'https://www.bidrl.com/myaccount/invoice/invid/3275732']''' 
 
-#print(invoice_links)
 
-# now that we have our array of links, go into each one and extract the necessary information we need
-invoices = [] # list including all information about our scraped invoices. invoice num, date, link, and lists of info about the items
+invoices = []  # list to hold instances of the Invoice class
+
 for link in invoice_links:
     print("going to: " + link)
     browser.get(link) # go to invoice link
@@ -76,8 +125,8 @@ for link in invoice_links:
     # information we want to extract for current invoice
     invoice_date = ''
     invoice_num = ''
-    invoice_items = [] # list of lists, each containing 5 cells: Lot, Description, Tax Rate, Amount, and item link
-    
+    invoice_items = []  # This will hold instances of the Item class
+
     # gather list of all elements with tag name "tr"
     # sometimes no tr elements are found. I don't know why. but if that's the case, keep reloading the page and trying again
     # time out after 5 tries
@@ -89,49 +138,40 @@ for link in invoice_links:
         time.sleep(0.5)
         tr_elements = browser.find_elements(By.TAG_NAME, 'tr')
         timeout += 1
-    
+
     # iterate through gathered tr elements to extract information
     for tr in tr_elements: # each tr element is an item row
-        #print(tr.text)
 
-        # split up text, search through it to find "Date: " and extract invoice date if found
-        for line in tr.text.split('\n'): # Split the text by lines and iterate through each line
-            if "Date: " in line:
-                invoice_date = line.split("Date: ")[1] # Split the line by "Date: " and take the second element
-
-        #print('invoice date: ' + invoice_date)
-
-        # split up text, search through it to find "Invoice: " and extract invoice number if found
+        # split up text, search through it to find "Date: " and "Invoice: " and extract date and invoice num if found
         for line in tr.text.split('\n'):
+            if "Date: " in line:
+                invoice_date = line.split("Date: ")[1]
             if "Invoice: " in line:
                 invoice_num = line.split("Invoice: ")[1]
 
-        invoice_item = [] # list that will be appended to invoice_items. contains 5 cells: Lot, Description, Tax Rate, Amount, and item link
+        # Initialize an empty dictionary to temporarily hold item details
+        temp_item_dict = {'id': '', 'description': '', 'tax_rate': '', 'amount': '', 'link': ''}
 
-        item_link = ''
-
-         # get all td elements in row, then iterate through. these are the Lot and Description columns, and where we'll find the item link
+        # get all td elements in row, then iterate through. these are the Lot and Description columns, and where we'll find the item link
         td_elements = tr.find_elements(By.TAG_NAME, 'td')
         if len(td_elements) == 2:
-            for td in td_elements:
-                invoice_item.append(td.text)
-            # both of these td elements with have an element "a", which contains a link to the item
-            # both links are the same, so the fact that we're setting the variable on both doesn't matter
-            try: # try each cell in the row and, if it contains a link, set item_link to the text
-                item_link = td.find_element(By.TAG_NAME, 'a').get_property('href')
-            except: continue
+            temp_item_dict['id'] = td_elements[0].text
+            temp_item_dict['description'] = td_elements[1].text
+            try:
+                temp_item_dict['link'] = td_elements[1].find_element(By.TAG_NAME, 'a').get_property('href')
+            except:
+                continue
 
         # get all th elements in row, then iterate through. these are the Tax Rate and Amount columns
         th_elements = tr.find_elements(By.TAG_NAME, 'th')
         if len(th_elements) == 2:
-            for th in th_elements:
-                invoice_item.append(th.text)
+            temp_item_dict['tax_rate'] = th_elements[0].text
+            temp_item_dict['amount'] = th_elements[1].text
 
-        invoice_item.append(item_link)
-
-        # if the invoice_item list is an actual invoice item list and not text from some of the other elements on the page, add it to invoice_items
-        if len(invoice_item) == 5 and invoice_item[0] != 'Lot':
-            invoice_items.append(invoice_item)
+        # add scraped item if description is populated and the first value scraped isn't 'Print View'. this trashes the first garbage "item" scraped
+        if temp_item_dict['description'] and temp_item_dict['id'] != 'Print View':
+            #print(temp_item_dict)
+            invoice_items.append(Item(**temp_item_dict))
 
     print('invoice date: ' + invoice_date)
     try:
@@ -143,99 +183,95 @@ for link in invoice_links:
         print('exception. failed to parse read invoice date as date object')
         continue
 
-    # create an entry in invoices
-    invoices_entry = []
-    invoices_entry.append(invoice_num)
-    invoices_entry.append(invoice_date)
-    invoices_entry.append(link)
-    invoices_entry.append(invoice_items)
-    invoices.append(invoices_entry)
-    #print(invoices_entry)
+    # Create an Invoice instance and add it to the invoices list
+    new_invoice = Invoice(id=invoice_num, date=invoice_date, link=link, items=invoice_items)
+    invoices.append(new_invoice)
 
 
 
-# iterate through invoices list and append additional information
-# invoices[x][4] = total cost of invoice
+# now that we have all information about our invoices, do the following:
+    # calculate total cost of each invoice
+    # show the user each item and have them make decisions for each
+        # currently, we just have the user input whether the item should be paid for by [N]ick, [B]ry, or [T]ogether
 for invoice in invoices:
-    # append total cost of the invoice
     invoice_total_cost = 0
-    for item in invoice[3]:
-        taxed_amount = item[2][-4:] # last 4 characters of Tax Rate column
-        total_cost_of_item = float(taxed_amount) + (float(item[3]) * 1.13)
+    for item in invoice.items:
+        taxed_amount = float(item.tax_rate[-4:]) # last 4 characters of string in Tax Rate field, converted to float
+        total_cost_of_item = taxed_amount + float(item.amount)
         invoice_total_cost += total_cost_of_item
-        item.append(total_cost_of_item) # add total cost of item to the item list
+        item.total_cost = total_cost_of_item
 
-    invoice.append(invoice_total_cost)
+    # Assuming Invoice class has a method or attribute for storing total cost
+    invoice.total_cost = invoice_total_cost
 
-
-# now that we have all information about our invoices, show the user each item and have them make decisions for each
-# we append these decisions to the end of each item info list contained within each invoice
-# currently, we just have the user input whether the item should be paid for by [N]ick, [B]ry, or [T]ogether
-for invoice in invoices:
-    print("\nnew invoice: " + invoice[0])
-    for item in invoice[3]:
-        print('')
-        print(item[1] + ' - $' + str(round(float(item[3]), 2)) + ' - ' + invoice[1] ) # print bid amount and item description
-        print('Link: ' + item[4])
+    # prompt user input for cost splitting
+    print(f"\nnew invoice: {invoice.id}")
+    for item in invoice.items:
+        print(f'\n{item.description} - ${round(float(item.amount), 2)} - {invoice.date}') # print: bid amount - item description - date
+        print(f'Link: {item.link}')
         cost_split_response = input("Who bought this item? [n]ick, [b]ry, or [t]ogether: ")
-        item.append(cost_split_response)
+        item.cost_split = cost_split_response
 
 
-# iterate through invoices list and append additional information
-# invoices[x][5] = pre-filled google form link to submit expense input for invoice
+
+# generate google form expense input link for each invoice. populates invoice.expense_input_form_link
 for invoice in invoices:
     # add up nick cost, bry cost, and together costs
     invoice_cost_nick = 0
     invoice_cost_bry = 0
     invoice_cost_together = 0
-    for item in invoice[3]:
-        #print("new item" + item[1])
-        if item[6] == 'n': invoice_cost_nick += item[5]
-        if item[6] == 'b': invoice_cost_bry += item[5]
-        if item[6] == 't': invoice_cost_together += item[5]
-
+    for item in invoice.items:
+        if hasattr(item, 'cost_split'): # unsure if this is necessary. AI put this here
+            if item.cost_split == 'n':
+                invoice_cost_nick += item.total_cost
+            elif item.cost_split == 'b':
+                invoice_cost_bry += item.total_cost
+            elif item.cost_split == 't':
+                invoice_cost_together += item.total_cost
 
     # parse original date string and format to yyyy-mm-dd to work with google form link
-    date_obj = datetime.strptime(invoice[1], '%m/%d/%Y')
+    date_obj = datetime.strptime(invoice.date, '%m/%d/%Y')
     formatted_date = date_obj.strftime('%Y-%m-%d')
 
-    form_total = str(round(invoice[4], 2))
+    form_total = str(round(invoice.total_cost, 2))
     form_contrib_deduct = str(round(invoice_cost_nick, 2)) if invoice_cost_nick != 0 else ''
     form_other_deduct = str(round(invoice_cost_bry, 2)) if invoice_cost_bry != 0 else ''
 
-    form_link = google_form_link_base
-    form_link = form_link + '&entry.80720402=' + 'Nick' # Contributor
-    form_link = form_link + '&entry.602460887=' + 'BIDRL' # Category
-    form_link = form_link + '&entry.2039686003=' + 'Income' # Split
-    form_link = form_link + '&entry.1813815173=' + form_total # Total
-    form_link = form_link + '&entry.660494524=' + form_contrib_deduct # Contributor Deduction
-    form_link = form_link + '&entry.1146814579=' + form_other_deduct # Other Deduction
-    form_link = form_link + '&entry.673325533=' + formatted_date # Date
-    form_link = form_link + '&entry.573687359=' + 'Invoice+' + invoice[0] # Notes
+    form_link = google_form_link_base + \
+                '&entry.80720402=Nick' + \
+                '&entry.602460887=BIDRL' + \
+                '&entry.2039686003=Income' + \
+                '&entry.1813815173=' + form_total + \
+                '&entry.660494524=' + form_contrib_deduct + \
+                '&entry.1146814579=' + form_other_deduct + \
+                '&entry.673325533=' + formatted_date + \
+                '&entry.573687359=Invoice+' + invoice.id
 
-    invoice.append(form_link)
+    invoice.expense_input_form_link = form_link
+
+
 
 
 # print out all pre-formed google links for entering expenses along with information about each invoice
 print('\n\n\n\nInvoices: ')
 for invoice in invoices:
-    print('\nInvoice #' + invoice[0])
-    print('Date: ' + invoice[1])
-    print('Link: ' + invoice[2])
-    print('Expense Input Form Link: ' + invoice[5])
+    print('\nInvoice #' + invoice.id)
+    print('Date: ' + invoice.date)
+    print('Link: ' + invoice.link)
+    print('Expense Input Form Link: ' + invoice.expense_input_form_link)
     print('Items:')
-    for item in invoice[3]:
-        purchaser = ''
-        if item[6] == 'n': purchaser = 'Nick'
-        elif item[6] == 'b': purchaser = 'Bry'
-        elif item[6] == 't': purchaser = 'Together'
-        print('$' + str(round(item[5], 2)) + ' - ' + item[1] + ' - ' + purchaser)
+    for item in invoice.items:
+        purchaser = 'purchaser not entered as n, b, or t'
+        if item.cost_split == 'n': purchaser = 'Nick'
+        elif item.cost_split == 'b': purchaser = 'Bry'
+        elif item.cost_split == 't': purchaser = 'Together'
+        print('$' + str(round(item.total_cost, 2)) + ' - ' + item.description + ' - ' + purchaser)
 
 
 # print out all pre-formed google links together so I can input them into todoist as a block
 print('\n\n\n\nInvoice form links for Todoist copy/paste (same links as above): ')
 for invoice in invoices:
-    print(invoice[5])
+    print(invoice.expense_input_form_link)
 
 
 
