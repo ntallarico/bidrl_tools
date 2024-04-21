@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 import time
 from config import user_email, user_password, google_form_link_base
 from datetime import datetime
+from bidrl_classes import Item, Invoice
 
 
 # open chrome window and set size and position. return web driver object

@@ -7,6 +7,7 @@ import time
 from config import user_email, user_password, google_form_link_base
 from datetime import datetime
 import bidrl_functions as bf
+from bidrl_classes import Item, Invoice
 
 
 # use imported credentials from config.py
@@ -24,7 +25,7 @@ except ValueError:
 
 
 # open chrome window and set size and position
-browser = bf.init_browser()
+browser = init_browser()
 
 
 # load and log in to bidrl
@@ -39,53 +40,17 @@ bf.load_page_invoices(browser, 36)
 
 
 
-
-
-
-
-
-# to do. convert this file to using classes first. maybe put classes in a different file? idk
-# then make a function that just does invoice scraping and returns the invoice dict. maybe put this in bf.py?
+# to do
+# then make a function that just does invoice scraping and returns the invoice class. maybe put this in bf.py?
 # then have this script use that function for the purpose of generating invoice expense input info
 
 
 
 
 
-# define Item and Invoice classes to hold all of our information about items and invoices
-# Invoice class will contain a list of Item classes
-# We will gather a list of invoice classes in our scraping
 
-class Item:
-    def __init__(self, id='', description='', tax_rate='', amount='', link='', total_cost='', cost_split=''):
-        self.id = id
-        self.description = description
-        self.tax_rate = tax_rate
-        self.amount = amount
-        self.link = link
-        self.total_cost = total_cost
-        self.cost_split = cost_split
 
-    def display(self):
-        print(f"ID: {self.id}, Description: {self.description}, Tax Rate: {self.tax_rate}, Amount: {self.amount}, Link: {self.link}, Total Cost: {self.total_cost}, Cost Split: {self.cost_split}")
 
-class Invoice:
-    def __init__(self, id='', date='', link='', items=None, total_cost='', expense_input_form_link=''):
-        self.id = id
-        self.date = date
-        self.link = link
-        self.items = items if items is not None else []
-        self.total_cost = total_cost
-        self.expense_input_form_link = expense_input_form_link
-
-    def add_item(self, item):
-        self.items.append(item)
-
-    def display(self):
-        print(f"Invoice ID: {self.id}, Date: {self.date}, Link: {self.link}, Total Cost: {self.total_cost}, Expense Input Form Link: {self.expense_input_form_link}")
-        print("Items:")
-        for item in self.items:
-            item.display()
 
 
 
