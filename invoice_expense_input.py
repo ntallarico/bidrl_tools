@@ -25,7 +25,7 @@ except ValueError:
 
 
 # open chrome window and set size and position
-browser = init_browser()
+browser = bf.init_browser()
 
 
 # load and log in to bidrl
@@ -34,27 +34,6 @@ bf.login_try_loop(browser, user)
 
 # go to invoices page, set records per page to 36
 bf.load_page_invoices(browser, 36)
-
-
-
-
-
-
-# to do
-# then make a function that just does invoice scraping and returns the invoice class. maybe put this in bf.py?
-# then have this script use that function for the purpose of generating invoice expense input info
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -79,78 +58,9 @@ for tr in tr_elements[2:]: # each tr element is an invoice row
 
 
 
-
-invoices = []  # list to hold instances of the Invoice class
-
-for link in invoice_links:
-    print("going to: " + link)
-    browser.get(link) # go to invoice link
-    time.sleep(0.5)
-
-    # information we want to extract for current invoice
-    invoice_date = ''
-    invoice_num = ''
-    invoice_items = []  # This will hold instances of the Item class
-
-    # gather list of all elements with tag name "tr"
-    # sometimes no tr elements are found. I don't know why. but if that's the case, keep reloading the page and trying again
-    # time out after 5 tries
-    tr_elements = browser.find_elements(By.TAG_NAME, 'tr')
-    timeout = 0
-    while len(tr_elements) == 0 and timeout <= 5:
-        print('no tr elements found. reloading')
-        browser.get(link)
-        time.sleep(0.5)
-        tr_elements = browser.find_elements(By.TAG_NAME, 'tr')
-        timeout += 1
-
-    # iterate through gathered tr elements to extract information
-    for tr in tr_elements: # each tr element is an item row
-
-        # split up text, search through it to find "Date: " and "Invoice: " and extract date and invoice num if found
-        for line in tr.text.split('\n'):
-            if "Date: " in line:
-                invoice_date = line.split("Date: ")[1]
-            if "Invoice: " in line:
-                invoice_num = line.split("Invoice: ")[1]
-
-        # Initialize an empty dictionary to temporarily hold item details
-        temp_item_dict = {'id': '', 'description': '', 'tax_rate': '', 'amount': '', 'link': ''}
-
-        # get all td elements in row, then iterate through. these are the Lot and Description columns, and where we'll find the item link
-        td_elements = tr.find_elements(By.TAG_NAME, 'td')
-        if len(td_elements) == 2:
-            temp_item_dict['id'] = td_elements[0].text
-            temp_item_dict['description'] = td_elements[1].text
-            try:
-                temp_item_dict['link'] = td_elements[1].find_element(By.TAG_NAME, 'a').get_property('href')
-            except:
-                continue
-
-        # get all th elements in row, then iterate through. these are the Tax Rate and Amount columns
-        th_elements = tr.find_elements(By.TAG_NAME, 'th')
-        if len(th_elements) == 2:
-            temp_item_dict['tax_rate'] = th_elements[0].text
-            temp_item_dict['amount'] = th_elements[1].text
-
-        # add scraped item if description is populated and the first value scraped isn't 'Print View'. this trashes the first garbage "item" scraped
-        if temp_item_dict['description'] and temp_item_dict['id'] != 'Print View':
-            #print(temp_item_dict)
-            invoice_items.append(Item(**temp_item_dict))
-
-    print('invoice date: ' + invoice_date)
-    try:
-        invoice_date_obj = datetime.strptime(invoice_date, '%m/%d/%Y')
-        if invoice_date_obj < start_date_obj:
-            print('encountered earlier date. breaking')
-            break
-    except:
-        print('exception. failed to parse read invoice date as date object')
-        continue
-
-    # Create an Invoice instance and add it to the invoices list
-    new_invoice = Invoice(id=invoice_num, date=invoice_date, link=link, items=invoice_items)
-    invoices.append(new_invoice)
+# go through list of invoice links and generate a list of Invoice objects, each containing all the information from each invoice linked
+# goes back only as far as the date contained in start_date_obj
+invoices = bf.scrape_invoices(browser, invoice_links, start_date_obj)
 
 
 
