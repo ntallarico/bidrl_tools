@@ -44,6 +44,7 @@ def login_try_loop(browser, user):
 def load_page_invoices(browser, records_per_page):
     time.sleep(1) # seems to be needed. tried to fix in various ways and this is one that worked consistently
     browser.get('https://www.bidrl.com/myaccount/invoices')
+    time.sleep(1)
     perpage = browser.find_element(By.ID, 'perpage-top')
     actions = ActionChains(browser)
     actions.move_to_element(perpage).click()
@@ -53,16 +54,22 @@ def load_page_invoices(browser, records_per_page):
     return
 
 
-# go to favorites page, set records per page to 36
-def load_page_favorites(browser, records_per_page):
+# go to favorites page, set records per page to records_per_page. can specify to hide or show closed items
+def load_page_favorites(browser, records_per_page, hide_or_show = 'hide'):
     time.sleep(1) # seems to be needed. tried to fix in various ways and this is one that worked consistently
-    browser.get('https://www.bidrl.com/myaccount/myitems')
-    perpage = browser.find_element(By.ID, 'perpage-top')
-    actions = ActionChains(browser)
-    actions.move_to_element(perpage).click()
-    actions.send_keys(str(records_per_page))
-    actions.send_keys(Keys.ENTER)
-    actions.perform()
+    browser.get('https://www.bidrl.com/myaccount/myitems/' + hide_or_show + '_closed/')
+    # we want to attempt to set "Records per page" drop down to 60, but sometimes there is only one page and the button doesn't exist
+    # attempt to find the button and move on if we cannot
+    time.sleep(1)
+    try:
+        perpage = browser.find_element(By.ID, 'perpage-top')
+        actions = ActionChains(browser)
+        actions.move_to_element(perpage).click()
+        actions.send_keys(str(records_per_page))
+        actions.send_keys(Keys.ENTER)
+        actions.perform()
+    except:
+        print("load_page_favorites: no records per page button found. continuing")
     return
 
     

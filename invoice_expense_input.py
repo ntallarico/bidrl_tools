@@ -10,6 +10,31 @@ import bidrl_functions as bf
 from bidrl_classes import Item, Invoice
 
 
+# gathers list of invoice links
+# requires: web driver object that has pulled up and successfully logged in to bidrl.com
+# returns: list of invoice links from logged in account
+def scrape_invoice_links(browser):
+    # go to invoices page, set records per page to 36
+    bf.load_page_invoices(browser, 36)
+
+    tr_elements = browser.find_elements(By.TAG_NAME, 'tr') # gather list of all elements with tag name "tr"
+    invoice_links = [] # list of invoice links to be returned at the end
+    for tr in tr_elements[2:]: # each tr element is an invoice row
+        td_elements = tr.find_elements(By.TAG_NAME, 'td') # each td element is an cell in the row basically
+        if len(td_elements) > 0:
+            for td in td_elements:
+                # one of these td "cells" is the description and will have an element "a", which contains the link to the invoice.
+                # we want to try each cell in the row and, if it contains a link, append it to invoice_links
+                # the last cell in the row is the view button, which also contains the "a" element with the href link
+                # we skip this one to avoid double adding each link
+                try:
+                    if td.text != 'view':
+                        invoice_links.append(td.find_element(By.TAG_NAME, 'a').get_property('href'))
+                except: continue
+    
+    return invoice_links
+
+
 # show the user each item and answer: should item be paid for by [N]ick, [B]ry, or [T]ogether
 def user_decide_item_cost_split(invoices):
     for invoice in invoices:
@@ -56,31 +81,6 @@ def generate_expense_input_form_links(invoices):
                     '&entry.573687359=Invoice+' + invoice.id
 
         invoice.expense_input_form_link = form_link
-
-
-# gathers list of invoice links
-# requires: web driver object that has pulled up and successfully logged in to bidrl.com
-# returns: list of invoice links from logged in account
-def scrape_invoice_links(browser):
-    # go to invoices page, set records per page to 36
-    bf.load_page_invoices(browser, 36)
-
-    tr_elements = browser.find_elements(By.TAG_NAME, 'tr') # gather list of all elements with tag name "tr"
-    invoice_links = [] # list of invoice links to be returned at the end
-    for tr in tr_elements[2:]: # each tr element is an invoice row
-        td_elements = tr.find_elements(By.TAG_NAME, 'td') # each td element is an cell in the row basically
-        if len(td_elements) > 0:
-            for td in td_elements:
-                # one of these td "cells" is the description and will have an element "a", which contains the link to the invoice.
-                # we want to try each cell in the row and, if it contains a link, append it to invoice_links
-                # the last cell in the row is the view button, which also contains the "a" element with the href link
-                # we skip this one to avoid double adding each link
-                try:
-                    if td.text != 'view':
-                        invoice_links.append(td.find_element(By.TAG_NAME, 'a').get_property('href'))
-                except: continue
-    
-    return invoice_links
 
 
 # main driver function for this script
