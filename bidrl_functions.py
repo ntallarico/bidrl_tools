@@ -143,3 +143,20 @@ def scrape_invoices(browser, invoice_link_list, start_date):
         invoices.append(new_invoice)
     
     return invoices
+
+
+# calculates total cost of each invoice
+# requires: list of Invoice objects with Amount and Tax_Rate attributes populated
+# returns: nothing. alters the Invoice objects in the list and the Item objects in the lists of those Invoices
+def caculate_total_cost_of_invoices(invoices):
+    for invoice in invoices:
+        invoice_total_cost = 0
+        for item in invoice.items:
+            taxed_amount = float(item.tax_rate[-4:]) # last 4 characters of string in Tax Rate field, converted to float
+            total_cost_of_item = taxed_amount + float(item.amount)
+            invoice_total_cost += total_cost_of_item
+            item.total_cost = total_cost_of_item
+
+        invoice.total_cost = invoice_total_cost
+
+    return
