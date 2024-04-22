@@ -4,17 +4,51 @@
 
 # define Item class to hold all of our information about a given item
 class Item:
-    def __init__(self, id='', description='', tax_rate='', amount='', link='', total_cost='', cost_split=''):
+    def __init__(self
+                 , id=''
+                 , description=''
+                 , tax_rate=''
+                 , buyer_premium=''
+                 , current_bid=''
+                 , url=''
+                 , highbidder_username=''
+                 , lot_number=''
+                 , bidding_status=''
+                 , end_time_unix=''
+                 , is_favorite=''
+                 , bid_count=''
+                 , total_cost=''
+                 , cost_split=''):
         self.id = id
         self.description = description
-        self.tax_rate = tax_rate
-        self.amount = amount
-        self.link = link
-        self.total_cost = total_cost
+        self.tax_rate = tax_rate # ex: '0.06' for 6% ### need to actually implement this. currently holding a string like '6.000% - 0.22'
+        self.buyer_premium = buyer_premium
+        self.current_bid = current_bid
+        self.url = url
+        self.highbidder_username = highbidder_username
+        self.lot_number = lot_number
+        self.bidding_status = bidding_status
+        self.end_time_unix = end_time_unix
+        self.is_favorite = is_favorite
+        self.bid_count = bid_count
+        self.total_cost = total_cost # calculated total cost based on current_bid, tax rate, and buyer_premium
         self.cost_split = cost_split
 
     def display(self):
-        print(f"ID: {self.id}, Description: {self.description}, Tax Rate: {self.tax_rate}, Amount: {self.amount}, Link: {self.link}, Total Cost: {self.total_cost}, Cost Split: {self.cost_split}")
+        print(f"ID: {self.id}")
+        print(f"Description: {self.description}")
+        print(f"Tax Rate: {self.tax_rate}")
+        print(f"Buyer Premium: {self.buyer_premium}")
+        print(f"Current Bid: {self.current_bid}")
+        print(f"URL: {self.url}")
+        print(f"High Bidder Username: {self.highbidder_username}")
+        print(f"Lot Number: {self.lot_number}")
+        print(f"Bidding Status: {self.bidding_status}")
+        print(f"End Time Unix: {self.end_time_unix}")
+        print(f"Is Favorite: {self.is_favorite}")
+        print(f"Bid Count: {self.bid_count}")
+        print(f"Total Cost: {self.total_cost}")
+        print(f"Cost Split: {self.cost_split}")
 
 
 # define Invoice class to hold all of our information about a given invoice

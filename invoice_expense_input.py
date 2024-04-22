@@ -40,8 +40,8 @@ def user_decide_item_cost_split(invoices):
     for invoice in invoices:
         print(f"\nnew invoice: {invoice.id}")
         for item in invoice.items:
-            print(f'\n{item.description} - ${round(float(item.amount), 2)} - {invoice.date}') # print: bid amount - item description - date
-            print(f'Link: {item.link}')
+            print(f'\n{item.description} - ${round(float(item.current_bid), 2)} - {invoice.date}') # print: bid amount - item description - date
+            print(f'Link: {item.url}')
             cost_split_response = input("Who bought this item? [n]ick, [b]ry, or [t]ogether: ")
             item.cost_split = cost_split_response
 

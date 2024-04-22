@@ -114,7 +114,7 @@ def scrape_invoices(browser, invoice_link_list, start_date):
                     invoice_num = line.split("Invoice: ")[1]
 
             # Initialize an empty dictionary to temporarily hold item details
-            temp_item_dict = {'id': '', 'description': '', 'tax_rate': '', 'amount': '', 'link': ''}
+            temp_item_dict = {'id': '', 'description': '', 'tax_rate': '', 'current_bid': '', 'url': ''}
 
             # get all td elements in row, then iterate through. these are the Lot and Description columns, and where we'll find the item link
             td_elements = tr.find_elements(By.TAG_NAME, 'td')
@@ -122,7 +122,7 @@ def scrape_invoices(browser, invoice_link_list, start_date):
                 temp_item_dict['id'] = td_elements[0].text
                 temp_item_dict['description'] = td_elements[1].text
                 try:
-                    temp_item_dict['link'] = td_elements[1].find_element(By.TAG_NAME, 'a').get_property('href')
+                    temp_item_dict['url'] = td_elements[1].find_element(By.TAG_NAME, 'a').get_property('href')
                 except:
                     continue
 
@@ -130,7 +130,7 @@ def scrape_invoices(browser, invoice_link_list, start_date):
             th_elements = tr.find_elements(By.TAG_NAME, 'th')
             if len(th_elements) == 2:
                 temp_item_dict['tax_rate'] = th_elements[0].text
-                temp_item_dict['amount'] = th_elements[1].text
+                temp_item_dict['current_bid'] = th_elements[1].text
 
             # add scraped item if description is populated and the first value scraped isn't 'Print View'. this trashes the first garbage "item" scraped
             if temp_item_dict['description'] and temp_item_dict['id'] != 'Print View':
@@ -162,7 +162,7 @@ def caculate_total_cost_of_invoices(invoices):
         invoice_total_cost = 0
         for item in invoice.items:
             taxed_amount = float(item.tax_rate[-4:]) # last 4 characters of string in Tax Rate field, converted to float
-            total_cost_of_item = taxed_amount + float(item.amount)
+            total_cost_of_item = taxed_amount + float(item.current_bid)
             invoice_total_cost += total_cost_of_item
             item.total_cost = total_cost_of_item
 
@@ -252,7 +252,16 @@ def get_items(item_urls):
         # extract data from json into temp dictionary to create item with later
         temp_item_dict = {'id': item_json['id']
                                 , 'description': item_json['title']
-                                , 'link': item_url}
+                                , 'tax_rate': str(round(float(item_json['tax_rate']) * 0.01, 4))
+                                , 'buyer_premium': item_json['buyer_premium']
+                                , 'current_bid': item_json['current_bid']
+                                , 'highbidder_username': item_json['highbidder_username']
+                                , 'url': item_url
+                                , 'lot_number': item_json['lot_number']
+                                , 'bidding_status': item_json['bidding_status']
+                                , 'end_time_unix': item_json['end_time_unix']
+                                #, 'is_favorite': item_json['is_favorite'] # can only see this key if logged in
+                                , 'bid_count': item_json['bid_count']}
 
         # instantiate Item object with info from temp_auction_dict and add to list
         items.append(Item(**temp_item_dict))
