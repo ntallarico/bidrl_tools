@@ -26,11 +26,22 @@ def test_get_item_data():
 
 
 
+def test_get_auctions_item_urls():
+    item_urls = bf.get_auctions_item_urls('https://www.bidrl.com/auction/outdoor-sports-auction-161-johns-rd-unit-a-south-carolina-april-25-152770/bidgallery/')
+    for url in item_urls:
+        print(url)
+
 
 
 #test_get_item_data()
 
-test_get_open_auctions()
+#test_get_open_auctions()
+
+test_get_auctions_item_urls()
+
+
+
+
 
 
 

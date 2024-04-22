@@ -173,7 +173,7 @@ def caculate_total_cost_of_invoices(invoices):
 
 # extract item_id and auction_id from the URL string
 # returns a dictionary {'item_id': item_id, 'auction_id': auction_id}
-def extract_ids_from_url(url):
+def extract_ids_from_item_url(url):
     parts = url.split('/') # Split the URL by '/'
 
     item_id_segment = parts[-2] if url.endswith('/') else parts[-1]
@@ -185,6 +185,20 @@ def extract_ids_from_url(url):
     #print(f"Item ID: {item_id}, Auction ID: {auction_id}")
 
     return {'item_id': item_id, 'auction_id': auction_id}
+
+
+# extract auction_id from the URL string
+# returns a dictionary {'auction_id': auction_id}
+# requires URL in this format:
+# https://www.bidrl.com/auction/outdoor-sports-auction-161-johns-rd-unit-a-south-carolina-april-25-152770/bidgallery/
+def extract_id_from_auction_url(url):
+    parts = url.split('/') # Split the URL by '/'
+
+    auction_id_segment = parts[-3] if url.endswith('/') else parts[-3]
+    auction_id = auction_id_segment.split('-')[-1]
+
+    return {'auction_id': auction_id}
+
 
 
 # get auctions list
@@ -210,7 +224,7 @@ def get_open_auctions(affiliate_company_name = 'south-carolina'):
         for auction_num in auctions_num_list:
             auction_json = response_json['auctions'][auction_num]
 
-            auction_url = "https://www.bidrl.com/auction/" + auction_json['auction_id_slug'] + "/bidgallery/perpage_NjA"
+            auction_url = "https://www.bidrl.com/auction/" + auction_json['auction_id_slug'] + "/bidgallery/"
 
             # dictionary to temporarily hold auction details before creating object
             temp_auction_dict = {'id': auction_json['id']
@@ -235,7 +249,7 @@ def get_open_auctions(affiliate_company_name = 'south-carolina'):
 # https://stackoverflow.com/questions/77120283/selenium-web-scraping-c-sharp-return-views?newreg=2db9cef1711d49e3be9c50d099154a51
 def get_item_data(url):
     # extract auction id and item id from url
-    extracted_ids = extract_ids_from_url(url)
+    extracted_ids = extract_ids_from_item_url(url)
     item_id = extracted_ids['item_id']
     auction_id = extracted_ids['auction_id']
 
@@ -257,3 +271,31 @@ def get_item_data(url):
     #print(response.text)
 
     return response.json()
+
+
+'''
+- get list of items from an auction
+- requires URL in this format:
+https://www.bidrl.com/auction/outdoor-sports-auction-161-johns-rd-unit-a-south-carolina-april-25-152770/bidgallery/
+- returns: list of Item objects scraped from auction URL
+'''
+def get_auctions_item_urls(auction_url):
+    # extract auction id from url
+    auction_id = extract_id_from_auction_url(auction_url)['auction_id']
+
+    session = requests.Session() # create a session object to persist cookies
+    response = session.get(auction_url) # make a GET request to get the cookies
+
+    # make POST request
+    post_url = "https://www.bidrl.com/api/getitems"
+    post_data = {"auction_id": auction_id}
+
+    response = session.post(post_url, data=post_data) # send the POST request with the session that contains the cookies
+
+    response.raise_for_status() # ensure the request was successful
+
+    item_urls = []
+    for item in response.json()['items']:
+        item_urls.append(item['item_url'])
+
+    return item_urls
