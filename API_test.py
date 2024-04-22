@@ -37,13 +37,27 @@ def test_get_auctions_item_urls():
 
 #test_get_open_auctions()
 
-test_get_auctions_item_urls()
+#test_get_auctions_item_urls()
 
 
 
+'''item_urls = bf.get_auction_item_urls('https://www.bidrl.com/auction/outdoor-sports-auction-161-johns-rd-unit-a-south-carolina-april-25-152770/bidgallery/')
+#print(len(item_urls))
+for item_url in item_urls:
+    print(item_url)
+
+# now we need to go through each url and extract item info into an item object
+for item_url in item_urls:
+    print(bf.get_item_data(item_url))'''
 
 
 
+item_urls = ['https://www.bidrl.com/auction/152770/item/2-in-1-white-cleaning-scrub-brush-factory-sealed-19776731/', 'https://www.bidrl.com/auction/outdoor-sports-auction-161-johns-rd-unit-a-south-carolina-april-25-152770/item/coleman-8-person-montana-tent-19776733/']
+
+items_list = bf.get_items(item_urls)
+for item in items_list:
+    print('')
+    item.display()
 
 '''
 other api reference i've seen to explore:
