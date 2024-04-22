@@ -59,6 +59,8 @@ for item in items_list:
     print('')
     item.display()
 
+# next step: go into get_open_auctions function and implement filling in item lists
+
 '''
 other api reference i've seen to explore:
 - https://www.bidrl.com/api/types/auctions

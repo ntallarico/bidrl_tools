@@ -253,7 +253,7 @@ def get_items(item_urls):
         temp_item_dict = {'id': item_json['id']
                                 , 'description': item_json['title']
                                 , 'tax_rate': str(round(float(item_json['tax_rate']) * 0.01, 4))
-                                , 'buyer_premium': item_json['buyer_premium']
+                                , 'buyer_premium': str(round(float(item_json['buyer_premium']) * 0.01, 4))
                                 , 'current_bid': item_json['current_bid']
                                 , 'highbidder_username': item_json['highbidder_username']
                                 , 'url': item_url

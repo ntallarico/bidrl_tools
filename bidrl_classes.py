@@ -22,7 +22,7 @@ class Item:
         self.id = id
         self.description = description
         self.tax_rate = tax_rate # ex: '0.06' for 6% ### need to actually implement this. currently holding a string like '6.000% - 0.22'
-        self.buyer_premium = buyer_premium
+        self.buyer_premium = buyer_premium # ex: '0.13' for 13%
         self.current_bid = current_bid
         self.url = url
         self.highbidder_username = highbidder_username
