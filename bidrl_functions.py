@@ -6,7 +6,9 @@ from selenium.webdriver.common.by import By
 import time
 from config import user_email, user_password, google_form_link_base
 from datetime import datetime
-from bidrl_classes import Item, Invoice
+import requests
+import json
+from bidrl_classes import Item, Invoice, Auction
 
 
 # open chrome window and set size and position. return web driver object
@@ -167,3 +169,91 @@ def caculate_total_cost_of_invoices(invoices):
         invoice.total_cost = invoice_total_cost
 
     return
+
+
+# extract item_id and auction_id from the URL string
+# returns a dictionary {'item_id': item_id, 'auction_id': auction_id}
+def extract_ids_from_url(url):
+    parts = url.split('/') # Split the URL by '/'
+
+    item_id_segment = parts[-2] if url.endswith('/') else parts[-1]
+    item_id = item_id_segment.split('-')[-1]
+
+    auction_id_segment = parts[-4] if url.endswith('/') else parts[-3]
+    auction_id = auction_id_segment.split('-')[-1]
+
+    #print(f"Item ID: {item_id}, Auction ID: {auction_id}")
+
+    return {'item_id': item_id, 'auction_id': auction_id}
+
+
+# get auctions list
+# requires: name of affiliate "company". ex: 'south-carolina'. defaults to sc
+# returns: list of Auction objects
+def get_open_auctions(affiliate_company_name = 'south-carolina'):
+    get_url = "https://www.bidrl.com/api/landingPage/" + affiliate_company_name
+
+    response = requests.get(get_url) # make the GET request
+
+    if response.status_code == 200: # check if the request was successful
+
+        response_json = response.json()
+        #print(f"JSON recieved. total auctions: {response_json['total']}")
+
+        # get list of number ids for each auction listed in the JSON
+        auctions_num_list = []
+        for auction in response_json['auctions']:
+            auctions_num_list.append(auction)
+
+        # loop through each auction by number in the json and extract information to an Auction object
+        auctions = []
+        for auction_num in auctions_num_list:
+            auction_json = response_json['auctions'][auction_num]
+
+            auction_url = "https://www.bidrl.com/auction/" + auction_json['auction_id_slug'] + "/bidgallery/perpage_NjA"
+
+            # dictionary to temporarily hold auction details before creating object
+            temp_auction_dict = {'id': auction_json['id']
+                                 , 'url': auction_url
+                                 , 'items': []
+                                 , 'title': auction_json['title']
+                                 , 'item_count': auction_json['item_count']
+                                 , 'start_datetime': auction_json['starts']
+                                 , 'status': auction_json['status']}
+
+            # instantiate Autcion item with info from temp_auction_dict and add to list
+            auctions.append(Auction(**temp_auction_dict))
+
+        return auctions
+    else:
+        print(f"Failed to retrieve data: {response.status_code}")
+        return 0
+    
+
+# get item data from api/ItemData
+# adapted from first response here:
+# https://stackoverflow.com/questions/77120283/selenium-web-scraping-c-sharp-return-views?newreg=2db9cef1711d49e3be9c50d099154a51
+def get_item_data(url):
+    # extract auction id and item id from url
+    extracted_ids = extract_ids_from_url(url)
+    item_id = extracted_ids['item_id']
+    auction_id = extracted_ids['auction_id']
+
+    session = requests.Session() # Create a session object to persist cookies
+    response = session.get(url) # Make a GET request to get the cookies
+
+    # Make a POST request to login or submit data
+    post_url = "https://www.bidrl.com/api/ItemData"
+    post_data = {
+        "item_id": item_id,
+        "auction_id": auction_id
+    }
+
+    response = session.post(post_url, data=post_data) # Sending the POST request with the session that contains the cookies
+
+    response.raise_for_status() # Ensure the request was successful
+
+    #print(item_data_json)
+    #print(response.text)
+
+    return response.json()

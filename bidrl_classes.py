@@ -24,7 +24,7 @@ class Invoice:
         self.id = id
         self.date = date
         self.link = link
-        self.items = items if items is not None else [] # AI wrote this line. unsure if needed to be like this
+        self.items = items if items is not None else [] # "this solves a poblem in python with mutable arguments and avoids potential bugs" - AI
         self.total_cost = total_cost
         self.expense_input_form_link = expense_input_form_link
 
@@ -36,3 +36,31 @@ class Invoice:
         print("Items:")
         for item in self.items:
             item.display()
+
+
+# define Auction class to hold all of our information about a given auction
+# Auction class will contain a list of Item classes
+class Auction:
+    def __init__(self, id='', url='', items=None, title = '', item_count = '', start_datetime = '', status = ''):
+        self.id = id
+        self.url = url
+        self.items = items if items is not None else []
+        self.title = title
+        self.item_count = item_count
+        self.start_datetime = start_datetime
+        self.status = status
+
+    def add_item(self, item):
+        self.items.append(item)
+
+    def display(self):
+        print(f"Auction ID: {self.id}")
+        print(f"Title: {self.title}")
+        print(f"URL: {self.url}")
+        print(f"Item Count: {self.item_count}")
+        print(f"Start Date: {self.start_datetime}")
+        print(f"Status: {self.status}")
+        print("Items:")
+        for item in self.items:
+            item.display()
+
