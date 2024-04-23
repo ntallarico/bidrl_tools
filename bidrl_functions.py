@@ -265,6 +265,8 @@ def get_items(item_urls):
 
         # instantiate Item object with info from temp_auction_dict and add to list
         items.append(Item(**temp_item_dict))
+
+        print("scraped: " + items[len(items)-1].description)
     return items
 
 
@@ -293,17 +295,22 @@ def get_open_auctions(affiliate_company_name = 'south-carolina'):
 
             auction_url = "https://www.bidrl.com/auction/" + auction_json['auction_id_slug'] + "/bidgallery/"
 
+            print("scaping item urls from: " + auction_url)
+            item_urls = get_auction_item_urls(auction_url)
+            print(str(len(item_urls)) + " items found")
+
+            print("scraping item info")
+            items = get_items(item_urls)
+
             # dictionary to temporarily hold auction details before creating object
             temp_auction_dict = {'id': auction_json['id']
                                  , 'url': auction_url
-                                 , 'items': []
+                                 , 'items': items
                                  , 'title': auction_json['title']
                                  , 'item_count': auction_json['item_count']
                                  , 'start_datetime': auction_json['starts']
                                  , 'status': auction_json['status']}
             
-            #item_urls = get_auction_item_urls(auction_url)
-
             # instantiate Autcion object with info from temp_auction_dict and add to list
             auctions.append(Auction(**temp_auction_dict))
 
