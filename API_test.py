@@ -41,17 +41,18 @@ test_get_open_auctions()
 
 
 
-'''
-item_urls = ['https://www.bidrl.com/auction/152770/item/2-in-1-white-cleaning-scrub-brush-factory-sealed-19776731/', 'https://www.bidrl.com/auction/outdoor-sports-auction-161-johns-rd-unit-a-south-carolina-april-25-152770/item/coleman-8-person-montana-tent-19776733/']
 
-items_list = bf.get_items(item_urls)
-for item in items_list:
-    print('')
-    item.display()'''
+# next step: scrape favorites
+# in order to do this, I will do one of 3 things:
+# 1. traditional selenium scrape, navigating through the favorites pages
+# 2. use requests library and api to scrape all items from all open auctions and check if any of them have is_favorite = 1
+# 3. use requests library to scrape html response on favorites page and parse out the items
+# the first seems inideal and I'd like to try moving away from this method if possible
+# the latter two would require getting a logged in session or something somehow
+# the last seems like it could be potentially inideal as the html could change slightly
+# I would rank these options in order of preference: 2, 3, 1
+# I will try them in this order
 
-
-
-# next step: go into get_open_auctions function and implement filling in item lists
 
 '''
 other api reference i've seen to explore:
