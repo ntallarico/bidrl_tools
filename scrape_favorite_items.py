@@ -21,7 +21,7 @@ def extract_last_number_from_page_n_of_x(s):
 user = {'name': user_email, 'pw': user_password}
 
 # open chrome window and set size and position
-browser = bf.init_browser()
+browser = bf.init_webdriver()
 
 # load and log in to bidrl
 bf.login_try_loop(browser, user)

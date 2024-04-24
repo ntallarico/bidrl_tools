@@ -1,8 +1,15 @@
 import requests
+from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from seleniumrequests import Chrome
 import json
+import time
+from config import user_email, user_password, google_form_link_base
 from bidrl_classes import Auction, Item
 import bidrl_functions as bf
-
 
 
 def test_get_open_auctions():
@@ -35,14 +42,144 @@ def test_get_auctions_item_urls():
 
 #test_get_item_data()
 
-test_get_open_auctions()
+#test_get_open_auctions()
 
 #test_get_auctions_item_urls()
 
 
 
 
-# next step: scrape favorites
+
+
+'''def get_logged_in_session(user):
+    session = requests.Session() # Create a session object to persist cookies
+
+    response = session.get('https://www.bidrl.com/login') # make GET request to get the cookies
+    #response = session.get('https://www.bidrl.com/api/ajaxlogin') # make GET request to get the cookies
+
+    login_url = 'https://www.bidrl.com/api/ajaxlogin'
+    payload = {
+        'user_name': user['name'] #'ndt' #
+        , 'password': user['pw'] #'nopass' #
+        , 'autologin': 'false'
+    }
+
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+
+    response = session.post(login_url, data=payload, headers=headers)
+
+    print(response.text)
+
+    # Check if login was successful
+    if response.ok:
+        #print("Login successful")
+        # Now you can make authenticated requests with the session object
+        # Example: Get a page that requires login
+        page_url = 'https://www.bidrl.com/myaccount/myitems'
+        response = session.get(page_url)
+        print(response.text[0:60])  # or process the response in other ways
+        # if we get the response "<!doctype html> <html class="no-js" lang="en" ng-app="rwd">" then we've failed
+        # if we get the response "<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">" then we've succeeded
+    else:
+        print("Login failed")
+
+
+user = {'name': user_email, 'pw': user_password}
+get_logged_in_session(user)'''
+
+
+
+'''def post_with_angular(path, params):
+    driver.execute_script("""
+    // Find the form by AngularJS model or any specific identifier
+    var form = document.querySelector('form[ng-submit="doLogin()"]');
+    
+    // Set the input values directly
+    form.querySelector('input[name="username"]').value = arguments[0].username;
+    form.querySelector('input[name="password"]').value = arguments[0].password;
+    
+    // Manually trigger the AngularJS submit function
+    angular.element(form).scope().$apply(function() {
+        angular.element(form).scope().doLogin();
+    });
+    """, params)
+
+
+def post(path, params):
+    driver.execute_script("""
+    function post(path, params, method='post') {
+        const form = document.createElement('form');
+        form.method = method;
+        form.action = path;
+        
+    
+        for (const key in params) {
+            if (params.hasOwnProperty(key)) {
+            const hiddenField = document.createElement('input');
+            hiddenField.type = 'hidden';
+            hiddenField.name = key;
+            hiddenField.value = params[key];
+    
+            form.appendChild(hiddenField);
+        }
+        }
+    
+        document.body.appendChild(form);
+        form.submit();
+    }
+    
+    post(arguments[1], arguments[0]);
+    """, params, path)
+
+driver = bf.init_browser()
+driver.get('https://www.bidrl.com/login')
+time.sleep(5)
+try: post_with_angular(path='/login', params={'username': user_email, 'password': user_password})
+except: print('failed')
+time.sleep(10)
+input()
+driver.get('https://www.bidrl.com/myaccount/myitems')
+#input()
+
+# form.ng-submit = "doLogin()";'''
+
+
+
+'''
+user = {'name': user_email, 'pw': user_password}
+browser = bf.init_browser()
+bf.login_try_loop(browser, user)
+time.sleep(1)
+
+session = requests.Session() # Create a session object to persist cookies
+response = session.get('https://www.bidrl.com/myaccount/myitems')
+print(response.text[0:60])  # or process the response in other ways
+
+if response.ok:
+    print(response.text[0:60])
+    # if we get the response "<!doctype html> <html class="no-js" lang="en" ng-app="rwd">" then we've failed
+    # if we get the response "<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">" then we've succeeded
+else:
+    print("GET failed")'''
+
+
+
+
+user = {'name': user_email, 'pw': user_password}
+
+
+browser = bf.init_webdriver('headless')
+bf.login_try_loop(browser, user)
+
+
+response = browser.request('GET', 'https://www.bidrl.com/myaccount/myitems')
+#print(response.text[0:60])
+print(response.text)
+
+
+# to do: scrape favorites
 # in order to do this, I will do one of 3 things:
 # 1. traditional selenium scrape, navigating through the favorites pages
 # 2. use requests library and api to scrape all items from all open auctions and check if any of them have is_favorite = 1
@@ -52,6 +189,10 @@ test_get_open_auctions()
 # the last seems like it could be potentially inideal as the html could change slightly
 # I would rank these options in order of preference: 2, 3, 1
 # I will try them in this order
+# 4.24.24: I tried #2 pretty thoroughly and failed. Need to send login POST request to https://www.bidrl.com/api/ajaxlogin
+# but I can't get the arguments right. 'autologin' is one, and I truly cannot figure out what it is supposed to be. also 'nopass' seems like its getting
+# passed in to the password argument and that confuses me. going to try to attempt to use selenium to physically pull up the browser and log in
+# in hopes that I can yoink the session or whatever, close the browser, and continue via API
 
 
 '''
@@ -60,7 +201,11 @@ other api reference i've seen to explore:
 - https://www.bidrl.com/api/auctions
     - used by https://www.bidrl.com/pastauctions/
     - seems to gather all past auctions (possibly up to a certain point), which is incredible
-
+- https://www.bidrl.com/api/auctionfields
+- https://www.bidrl.com/api/initdata
+- https://www.bidrl.com/api/affiliatesforhomepage
+- https://www.bidrl.com/api/getsession
+- 
 '''
 
 

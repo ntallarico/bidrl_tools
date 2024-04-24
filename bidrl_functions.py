@@ -3,19 +3,27 @@ from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from seleniumrequests import Chrome
+import requests
 import time
 from config import user_email, user_password, google_form_link_base
 from datetime import datetime
-import requests
 import json
 from bidrl_classes import Item, Invoice, Auction
 
 
-# open chrome window and set size and position. return web driver object
-def init_browser():
-    browser = webdriver.Chrome()
-    browser.set_window_position(0, 0)
-    browser.maximize_window()
+# initialize webdriver object with Chrome. if not headless, set size and position
+def init_webdriver(headless = ''):
+    if headless == 'headless':
+        chrome_options = Options()
+        chrome_options.add_argument("--headless=new")
+        browser = Chrome(options=chrome_options) # initialize chrome browser webdriver using seleniumrequests library using headless chrome options
+        print('Chrome webdriver initialized in headless mode')
+    else:
+        browser = Chrome() # initialize chrome browser webdriver using seleniumrequests library
+        browser.set_window_position(0, 0)
+        browser.maximize_window()
     return browser
 
 
@@ -36,9 +44,12 @@ def login_try_loop(browser, user):
         actions.move_to_element(userName).send_keys(user['name'])
         actions.send_keys(Keys.TAB).send_keys(user['pw'])
         actions.move_to_element(login_button).click()
+
+        print("Attempting to log in using: " + user['name'])
         actions.perform()
     except:
         login_try_loop(browser, user)
+    print("login success")
     return
 
 
@@ -318,3 +329,5 @@ def get_open_auctions(affiliate_company_name = 'south-carolina'):
     else:
         print(f"Failed to retrieve data: {response.status_code}")
         return 0
+    
+

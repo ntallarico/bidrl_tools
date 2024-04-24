@@ -98,7 +98,7 @@ def main():
         sys.exit()
 
     # open chrome window and set size and position
-    browser = bf.init_browser()
+    browser = bf.init_webdriver('headless')
 
     # load and log in to bidrl
     bf.login_try_loop(browser, user)
@@ -113,7 +113,7 @@ def main():
     # calculate total cost of each invoice and item
     bf.caculate_total_cost_of_invoices(invoices)
 
-    browser.close() # closes the browser active window.
+    #browser.close() # closes the browser active window.
     #browser.quit() # closes all browser windows and ends driver's session/process.
 
     # now that we have all of our invoices scraped and post-processed information, have the user decide cost split for each item

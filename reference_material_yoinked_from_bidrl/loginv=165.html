@@ -1,0 +1,82 @@
+<div class="row login">
+    <div class="logo">
+       <a href="/"><img class="login-company-logo" src="/images/bidrl-logo.png" alt="BIDRL.COM Online Auction Marketplace"></a>
+    </div>
+    <div class="column small-12 main-form">
+      <fieldset class="fieldset login-panel">
+          <label class="heading login-label">{{lang.login}}</label>
+          <form autocomplete="off" method="post" ng-submit="doLogin()">
+              <div class="row">
+                  <div class="column login-field">
+                       <input type="text" name="username" ng-model="username" placeholder="{{username_ph}}" autofocus>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="column login-field">
+                      <input type="password" name="password" ng-model="password" placeholder="{{lang.password}}">
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="column login-field">
+                      <a href="/reset/" ng-bind-html="lang.forgot_password_link" class="link-color"></a>
+                  </div>
+              </div>
+              <div class="row borderless">
+                  <div class="column">
+                      <button class="button expanded" type="submit">{{lang.login}}</button>
+                  </div>
+              </div>
+          </form>
+      </fieldset>
+    </div>
+    <div class="column small-12 register-bid">  
+        <fieldset class="fieldset login-panel">
+            <label>
+                <span class="login-label">
+                  {{lang.no_account_yet}}
+                </span>
+              <a href="" ng-click="registerToBid()" class="link-color">{{lang.register_to_bid}}</a>
+            </label>
+        </fieldset>
+    </div>
+  </div>
+  <script>
+    config.use_customer_number = '';
+    config.enable_email_login = '1';
+    config.site_logo = '/images/bidrl-logo.png';
+    config.company_name = "BIDRL.COM Online Auction Marketplace";
+    
+    lang.enter_email_address = 'Enter your email address';
+    lang.login = 'Login';
+    lang.username = 'Username';
+    lang.forgot_your_password = 'Forgot your password?  We can reset it for you.';
+    lang.no_account_yet = "Don't have an account yet?  Registering to bid is quick and easy";
+    lang.register_to_bid = 'Register to bid';
+    lang.request_reset = 'Request password reset';
+    lang.enter_um_and_p = 'Enter your email or username and your password';
+    lang.enter_u_and_p = 'Enter your username and password';
+    lang.enter_ui_and_p = 'Enter your email or ID and your password';
+    lang.enter_i_and_p = 'Enter your ID and password';
+    lang.password = 'Password';
+    lang.FAL_user_email_label = 'Email / Username';
+    lang.FAL_user_id_email_label = 'ID / Email';
+    lang.FAL_user_id_label = 'User ID';
+    lang.forgot_password_link = 'Forgot your password?';
+    lang.forgot_passowrd_text = "<b>Forgotten Password</b><br/><p>Enter your email address and click 'request password reset'.</p><p>You will then receive an email containing a link. If you click that link in the email we send you, your password will be changed by our system.</p><p>You will then get a second email telling you what your new password is.</p><p>Once you have received your new password you can log in and change the system-generated password to something more memorable.</p>";
+  </script>
+  <script type="text/ng-template" id="alert.html">
+    <div class="large-12 large-centered text-center columns">
+     <label ng-bind-html="msg"></label>
+     </div>
+     <div class="row">
+        &nbsp;
+     </div>
+      <div class="row">
+      <div class="column"></div>
+      <div class="large-4">
+        <button class="button expanded" ng-click="ok()">OK</button>
+      </div>
+      <div class="column"></div>
+    </div>
+  </script>
+  

@@ -11,3 +11,5 @@ Setup:
     google_form_link_base = 'google form link for expense input'
 
 2. Set up a folder local_files in repo.
+
+3. pip install -r requirements.txt
