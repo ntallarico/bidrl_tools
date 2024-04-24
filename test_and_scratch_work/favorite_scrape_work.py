@@ -1,4 +1,4 @@
-'''import sys
+import sys
 import os
 # tell this file that the root directory is one folder level up so that it can read our files like config, bidrl_classes, etc
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -18,6 +18,21 @@ import bidrl_functions as bf
 
 
 
+# to do: scrape favorites
+# in order to do this, I will do one of 3 things:
+# 1. traditional selenium scrape, navigating through the favorites pages
+# 2. use requests library and api to scrape all items from all open auctions and check if any of them have is_favorite = 1
+# 3. use requests library to scrape html response on favorites page and parse out the items
+# the first seems inideal and I'd like to try moving away from this method if possible
+# the latter two would require getting a logged in session or something somehow
+# the last seems like it could be potentially inideal as the html could change slightly
+# I would rank these options in order of preference: 2, 3, 1
+# I will try them in this order
+
+
+
+
+'''
 def extract_last_number_from_page_n_of_x(s):
     match = re.search(r'\d+\s*$', s)
     if match:

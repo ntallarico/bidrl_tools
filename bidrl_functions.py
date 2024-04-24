@@ -293,25 +293,23 @@ def get_auction_item_urls(auction_url):
 
 
 # get item data from a list of item URLS
-# adapted from first response here: # https://stackoverflow.com/questions/77120283/selenium-web-scraping-c-sharp-return-views?newreg=2db9cef1711d49e3be9c50d099154a51
-# requires: list of item URLs
+# requires: list of item URLs, webdriver object
 # returns: list of Item objects
-def get_items(item_urls):
+def get_items(item_urls, browser):
     items = [] # list to fill with item objects and return at end
 
-    session = requests.Session() # Create a session object to persist cookies
     post_url = "https://www.bidrl.com/api/ItemData"
 
     for item_url in item_urls:
         extracted_ids = extract_ids_from_item_url(item_url) # extract auction id and item id from url
         
         # submit requests to API and get JSON response
-        response = session.get(item_url) # make GET request to get the cookies
+        response = browser.request('GET', item_url) # make GET request to get the cookies
         post_data = { # make POST request to login or submit data
             "item_id": extracted_ids['item_id'],
             "auction_id": extracted_ids['auction_id']
         }
-        response = session.post(post_url, data=post_data) # send the POST request with the session that contains the cookies
+        response = browser.request('POST', post_url, data=post_data) # send the POST request with the session that contains the cookies
         response.raise_for_status() # ensure the request was successful
         item_json = response.json()
 
@@ -326,8 +324,11 @@ def get_items(item_urls):
                                 , 'lot_number': item_json['lot_number']
                                 , 'bidding_status': item_json['bidding_status']
                                 , 'end_time_unix': item_json['end_time_unix']
-                                #, 'is_favorite': item_json['is_favorite'] # can only see this key if logged in
                                 , 'bid_count': item_json['bid_count']}
+        
+        # can only see is_favorite key if logged in. check if it exists before attempting to add to dict
+        if 'is_favorite' in item_json:
+            temp_item_dict['is_favorite'] = item_json['is_favorite']
 
         # instantiate Item object with info from temp_auction_dict and add to list
         items.append(Item(**temp_item_dict))
@@ -337,12 +338,14 @@ def get_items(item_urls):
 
 
 # get auctions list
-# requires: name of affiliate "company". ex: 'south-carolina'. defaults to sc
+# requires:
+    # name of affiliate "company". ex: 'south-carolina'. defaults to sc
+    # webdriver object. if webdriver object has been logged in as a user, then the attribute is_favorite will be filled in for items
 # returns: list of Auction objects
-def get_open_auctions(affiliate_company_name = 'south-carolina'):
+def get_open_auctions(browser, affiliate_company_name = 'south-carolina'):
     get_url = "https://www.bidrl.com/api/landingPage/" + affiliate_company_name
 
-    response = requests.get(get_url) # make the GET request
+    response = browser.request('GET', get_url) # make the GET request
 
     if response.status_code == 200: # check if the request was successful
 
@@ -353,6 +356,8 @@ def get_open_auctions(affiliate_company_name = 'south-carolina'):
         auctions_num_list = []
         for auction in response_json['auctions']:
             auctions_num_list.append(auction)
+
+        auctions_num_list = auctions_num_list[0] # for debugging. delete this!
 
         # loop through each auction by number in the json and extract information to an Auction object
         auctions = []
@@ -366,7 +371,7 @@ def get_open_auctions(affiliate_company_name = 'south-carolina'):
             print(str(len(item_urls)) + " items found")
 
             print("scraping item info")
-            items = get_items(item_urls)
+            items = get_items(item_urls, browser)
 
             # dictionary to temporarily hold auction details before creating object
             temp_auction_dict = {'id': auction_json['id']

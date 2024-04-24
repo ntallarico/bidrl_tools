@@ -19,11 +19,14 @@ import bidrl_functions as bf
 
 
 def test_get_open_auctions():
-    open_auctions = bf.get_open_auctions()
+    # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
+    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+    open_auctions = bf.get_open_auctions(browser)
 
     for auction in open_auctions:
         print('')
         auction.display()
+
 
 
 
@@ -51,27 +54,6 @@ def test_get_auctions_item_urls():
 
 
 
-
-# to do: scrape favorites
-# in order to do this, I will do one of 3 things:
-# 1. traditional selenium scrape, navigating through the favorites pages
-# 2. use requests library and api to scrape all items from all open auctions and check if any of them have is_favorite = 1
-# 3. use requests library to scrape html response on favorites page and parse out the items
-# the first seems inideal and I'd like to try moving away from this method if possible
-# the latter two would require getting a logged in session or something somehow
-# the last seems like it could be potentially inideal as the html could change slightly
-# I would rank these options in order of preference: 2, 3, 1
-# I will try them in this order
-
-
-
-
-
-
-# thoughts:
-# it may be faster / easier / more consistent / better to scrape every item on the website
-# by scraping all open auctions by id and then scraping all items from all auctions
-# and then checking each one for the favorite = 1 property
 
 
 
