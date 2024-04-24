@@ -33,6 +33,19 @@ def get_favorites_items():
 get_favorites_items()
 
 
+'''
+game plan:
+1. have this script scrape all open auctions / items to a csv. change name from favorites
+    - later we can do this with sql or whatever maybe
+2. have another script make a copy of that csv and add another column "max price to bid" or whatever
+    - this script will also check if that file already exists
+3. at this point - user goes into file created from last script and adds in max desired prices. user will use excel to filter based on is_favorite column
+4. auto bid script. this reads in the file from script 2 that is now filled out by the user and wait to bid on items at appropriate time
+
+'''
+
+
+
 # to do: export item info to favorite_items.csv
 
 

@@ -52,6 +52,41 @@ def test_get_auctions_item_urls():
 
 
 
+'''
+bidding notes
+
+https://www.bidrl.com/auction/personal-care-health-beauty-auction-161-johns-rd-unit-a-south-carolina-april-24-152767/item/one-two-lash-magnetic-lashes-factory-sealed-19776588/
+
+
+when submitting a bid on the above url with a bid of $1.5, and accepting the terms at the same time, I got the following in Network inspect element:
+
+bid
+    https://www.bidrl.com/api/auctions/152767/items/19776588/bid
+    POST
+
+    payload:
+        bid: 1.5
+        accept_terms: 1
+        buyer_number: 
+        shipping_method: pickup
+
+auctionterms
+    https://www.bidrl.com/api/auctionterms
+    POST
+
+    payload:
+        id: 152767
+
+
+I then submitted a bid after already having accepted the terms on an earlier item, and I got the same exact result
+
+I tried to submit a bid without accepting the terms and got blocked on client side. no network activity present
+
+I'm wondering if I can just submit the bid straight up with "accept_terms: 1" in the payload, or if I need to POST auctionterms first
+
+'''
+
+
 
 
 
