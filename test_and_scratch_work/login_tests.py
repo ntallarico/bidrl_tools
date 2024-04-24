@@ -163,12 +163,11 @@ else:
 
 
 
-browser = bf.init_logged_in_webdriver(user_email, user_password, 'headless')
+browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
 
 
 response = browser.request('GET', 'https://www.bidrl.com/myaccount/myitems')
 print(response.text[0:15])
-#print(response.text)
 
 
 

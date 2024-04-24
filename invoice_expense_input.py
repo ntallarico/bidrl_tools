@@ -95,7 +95,7 @@ def main():
         sys.exit()
 
     # open chrome window and set size and position
-    browser = bf.init_logged_in_webdriver(user_email, user_password, 'headless') # use imported credentials from config.py
+    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless') # use imported credentials from config.py
 
     # gather list of invoice links
     invoice_links = scrape_invoice_links(browser)

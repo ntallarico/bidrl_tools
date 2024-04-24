@@ -62,7 +62,7 @@ def check_if_login_success(browser):
 
 
 # this function initializes and returns a webdriver object that has been logged in to bidrl.com with credentials supplied in config.py
-def init_logged_in_webdriver(login_name, login_password, headless = ''):
+def get_logged_in_webdriver(login_name, login_password, headless = ''):
     browser = init_webdriver(headless)
 
     attempts = 5 # number of times to attempt to login before giving up

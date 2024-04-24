@@ -1,3 +1,8 @@
+import sys
+import os
+# tell this file that the root directory is one folder level up so that it can read our files like config, bidrl_classes, etc
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import requests
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
