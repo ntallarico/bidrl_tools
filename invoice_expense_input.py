@@ -85,9 +85,6 @@ def generate_expense_input_form_links(invoices):
 
 # main driver function for this script
 def main():
-    # use imported credentials from config.py
-    user = {'name': user_email, 'pw': user_password}
-
     # get user input to determine when to stop pulling invoices
     print("How far to go back? Please enter a start date for invoice gathering. (ex: 4/16/24)")
     start_date = input("Start date: ")
@@ -98,10 +95,7 @@ def main():
         sys.exit()
 
     # open chrome window and set size and position
-    browser = bf.init_webdriver('headless')
-
-    # load and log in to bidrl
-    bf.login_try_loop(browser, user)
+    browser = bf.init_logged_in_webdriver(user_email, user_password, 'headless') # use imported credentials from config.py
 
     # gather list of invoice links
     invoice_links = scrape_invoice_links(browser)

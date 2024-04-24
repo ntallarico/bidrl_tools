@@ -22,12 +22,67 @@ def init_webdriver(headless = ''):
         print('Chrome webdriver initialized in headless mode')
     else:
         browser = Chrome() # initialize chrome browser webdriver using seleniumrequests library
+        print('Chrome webdriver initialized')
         browser.set_window_position(0, 0)
         browser.maximize_window()
     return browser
 
 
-# attempt to load and log in to bidrl. if that fails, reload the site and try again until this function succeeds
+# attempt to load and log in to bidrl
+def try_login(browser, login_name, login_password):
+    browser.get('https://www.bidrl.com/login')
+    time.sleep(0.5)
+    try:
+        userName = browser.find_element(By.NAME, 'username')
+        password = browser.find_element(By.NAME, 'password')
+
+        #put all elements with tag name "button" into a list
+        button_elements = browser.find_elements(By.TAG_NAME, 'button')
+        #find the first element in the button_elements list with text 'LOGIN'
+        login_button = next(obj for obj in button_elements if obj.text == 'LOGIN')
+
+        actions = ActionChains(browser)
+        actions.move_to_element(userName).send_keys(login_name)
+        actions.send_keys(Keys.TAB).send_keys(login_password)
+        actions.move_to_element(login_button).click()
+        actions.perform()
+        return 0
+    except:
+        return 1
+
+
+# returns 0 if login success and 1 if failure
+# we may need a better way of determining login success at some point, but for now, this works
+# as of now, if login fails the page returned starts with "<!doctype html>" instead of "<!DOCTYPE html>"
+def check_if_login_success(browser):
+    response = browser.request('GET', 'https://www.bidrl.com/myaccount/myitems')
+    if response.text[0:15] == '<!DOCTYPE html>':
+        return 0
+    else: return 1
+
+
+# this function initializes and returns a webdriver object that has been logged in to bidrl.com with credentials supplied in config.py
+def init_logged_in_webdriver(login_name, login_password, headless = ''):
+    browser = init_webdriver(headless)
+
+    attempts = 5 # number of times to attempt to login before giving up
+    for n in range (1, attempts + 1):
+        print(f"Attempt {n} to log in to account: {login_name}")
+        try_login_result = try_login(browser, login_name, login_password) # run try_login function, set try_login_result to 0 or 1 depending on success
+        if try_login_result == 1:
+            print('Login failed: error in attempting to find elements of login form or execute login steps')
+        elif check_if_login_success(browser) == 1:
+            print('Login failed: username or password incorrect. Exiting login attempt loop.')
+            return 1
+        else:
+            print('Login succeeded!')
+            return browser
+    print(f'Gave up attempt to log in after {attempts} attempts')
+    return 1
+
+
+
+'''# attempt to load and log in to bidrl. if that fails, reload the site and try again until this function succeeds
 def login_try_loop(browser, user):
     browser.get('https://www.bidrl.com/login')
     time.sleep(0.5)
@@ -50,7 +105,7 @@ def login_try_loop(browser, user):
     except:
         login_try_loop(browser, user)
     print("login success")
-    return
+    return'''
 
 
 # go to invoices page, set records per page to 36
