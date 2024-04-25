@@ -315,6 +315,7 @@ def get_items(item_urls, browser):
 
         # extract data from json into temp dictionary to create item with later
         temp_item_dict = {'id': item_json['id']
+                                , 'auction_id': item_json['auction_id']
                                 , 'description': item_json['title']
                                 , 'tax_rate': str(round(float(item_json['tax_rate']) * 0.01, 4))
                                 , 'buyer_premium': str(round(float(item_json['buyer_premium']) * 0.01, 4))
@@ -391,3 +392,54 @@ def get_open_auctions(browser, affiliate_company_name = 'south-carolina'):
         return 0
     
 
+# parses the json response returned by bid_on_item() and performs next steps
+# just prints result for right now but could do something else in the future maybe, like send a notification, post something to a database, etc.
+# bid placement failure error codes I've seen:
+    # BID_INSUFFICIENT - "Bidding Error:<br\/>Your bid must be a number equal to or greater than the minimum bid for this item ($1.75)."
+    # SAME_BID - "The bid you placed, $1.75, was the same as your current bid so nothing has changed."
+    # LOW_BID - "Bidding Error:<br />You cannot bid lower than the current bid."
+def handle_bid_attempt_response(bid_attempt_response_json):
+    try:
+        if bid_attempt_response_json["result"] == "success":
+            print("Bid placement success!")
+        elif bid_attempt_response_json["result"] == "error":
+            print(f"Bid placement failed. {bid_attempt_response_json['code']} - {bid_attempt_response_json['message']}")
+        return 0
+    except:
+        print("parse_bid_attempt_response() failed.")
+        return 1
+
+
+# bids x amount of USD on an item via POST request
+# requires
+    # Auction ID of item's auciton (string)
+    # Item ID of item (string)
+    # amount of USD to bid (decimal or int)
+    # a webdriver that has logged in to bidrl
+# returns json response from bidrl
+# to do: need to add protective layer to ensure that not too much money is being bid or that x isn't bid in y amount of time or something
+    # ideas:
+        # Maximum Bid Limit
+            # this is probably a good idea. except the amount I imagine setting as the max is probably an amount that would never
+            # get reached by other bidders anyway. like I could imagine a scenario I WOULD want to bid $100 on an item.
+        # Daily or Session Bid Total Limit
+            # 
+        # Confirmation for High Bids
+            # no, because I want this to be automatic
+        # Rate Limiting
+            # possibly! could help with runaway loops during development while I'm testing functions and watching the console
+            # I could set cooldown to like 10 secs and I'd see a spam of "cannot bid must wait 10 secs" really fast and could kill it
+def bid_on_item(auction_id, item_id, amount_to_bid, browser):
+
+    post_url = 'https://www.bidrl.com/api/auctions/' + auction_id + '/items/' + item_id + '/bid'
+
+    post_data = {
+        "bid": amount_to_bid
+        , "accept_terms": 1
+    }
+
+    response = browser.request('POST', post_url, data=post_data) # send the POST request with the session that contains the cookies
+    response.raise_for_status() # ensure the request was successful
+    handle_bid_attempt_response(response.json())
+    return response.json()
+    

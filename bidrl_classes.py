@@ -6,6 +6,7 @@
 class Item:
     def __init__(self
                  , id=''
+                 , auction_id=''
                  , description=''
                  , tax_rate=''
                  , buyer_premium=''
@@ -20,6 +21,7 @@ class Item:
                  , total_cost=''
                  , cost_split=''):
         self.id = id
+        self.auction_id = auction_id
         self.description = description
         self.tax_rate = tax_rate # ex: '0.06' for 6% ### need to actually implement this. currently holding a string like '6.000% - 0.22'
         self.buyer_premium = buyer_premium # ex: '0.13' for 13%
@@ -36,6 +38,7 @@ class Item:
 
     def display(self):
         print(f"ID: {self.id}")
+        print(f"Auction ID: {self.auction_id}")
         print(f"Description: {self.description}")
         print(f"Tax Rate: {self.tax_rate}")
         print(f"Buyer Premium: {self.buyer_premium}")
