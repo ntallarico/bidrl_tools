@@ -49,6 +49,66 @@ def test_get_auctions_item_urls():
 
 
 
+# parses the json response returned by bid_on_item()
+# just prints result for right now but could do something else in the future maybe, like send a notification, post something to a database, etc.
+# bid placement failure error codes I've seen:
+    # BID_INSUFFICIENT - "Bidding Error:<br\/>Your bid must be a number equal to or greater than the minimum bid for this item ($1.75)."
+    # SAME_BID - "The bid you placed, $1.75, was the same as your current bid so nothing has changed."
+    # LOW_BID - "Bidding Error:<br />You cannot bid lower than the current bid."
+def handle_bid_attempt_response(bid_attempt_response_json):
+    try:
+        if bid_attempt_response_json["result"] == "success":
+            print("Bid placement success!")
+        elif bid_attempt_response_json["result"] == "error":
+            print(f"Bid placement failed. {bid_attempt_response_json['code']} - {bid_attempt_response_json['message']}")
+        return 0
+    except:
+        print("parse_bid_attempt_response() failed.")
+        return 1
+
+
+# bids x amount of USD on an item via POST request
+# requires
+    # Auction ID of item's auciton (string)
+    # Item ID of item (string)
+    # amount of USD to bid (decimal or int)
+    # a webdriver that has logged in to bidrl
+# returns json response from bidrl
+def bid_on_item(auction_id, item_id, amount_to_bid, browser):
+
+    post_url = 'https://www.bidrl.com/api/auctions/' + auction_id + '/items/' + item_id + '/bid'
+
+    post_data = {
+        "bid": amount_to_bid
+        , "accept_terms": 1
+    }
+
+    response = browser.request('POST', post_url, data=post_data) # send the POST request with the session that contains the cookies
+    response.raise_for_status() # ensure the request was successful
+    return response.json()
+    # to do: need to add protective layer to ensure that not too much money is being bid or that x isn't bid in y amount of time or something
+
+   
+
+
+
+# get an initialized web driver that has logged in to bidrl with credentials stored in config.py
+browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+
+
+item_url = 'https://www.bidrl.com/auction/kitchen-goods-auction-161-johns-rd-unit-a-south-carolina-april-25-152706/item/bath-loofah-shower-sponges-6-pack-factory-sealed-19755497/'
+auction_id = bf.extract_ids_from_item_url(item_url)['auction_id']
+item_id = bf.extract_ids_from_item_url(item_url)['item_id']
+
+amount_to_bid = 1.75
+
+
+bid_attempt_response_json = bid_on_item(auction_id, item_id, amount_to_bid, browser)
+
+handle_bid_attempt_response(bid_attempt_response_json)
+
+
+
 
 
 
@@ -58,7 +118,7 @@ bidding notes
 https://www.bidrl.com/auction/personal-care-health-beauty-auction-161-johns-rd-unit-a-south-carolina-april-24-152767/item/one-two-lash-magnetic-lashes-factory-sealed-19776588/
 
 
-when submitting a bid on the above url with a bid of $1.5, and accepting the terms at the same time, I got the following in Network inspect element:
+when submitting a bid on the above url with a bid of $1.50, and accepting the terms at the same time, I got the following in Network inspect element:
 
 bid
     https://www.bidrl.com/api/auctions/152767/items/19776588/bid
@@ -84,6 +144,9 @@ I tried to submit a bid without accepting the terms and got blocked on client si
 
 I'm wondering if I can just submit the bid straight up with "accept_terms: 1" in the payload, or if I need to POST auctionterms first
 
+update 4.25.24:
+this turned out to be true! no auctionterms POST needed. only need to POST bid with "bid" and "accept_terms" pieces in payload
+
 '''
 
 
@@ -108,10 +171,26 @@ other api reference i've seen to explore:
 
 
 
+'''
+questions I'd like to answer in reporting once I have full database:
+- what bidding strategy / timing works best? bidding one single time at 2mins out? 10 seconds out? is there a difference on average at all?
+    - need to analyze full population's bid history
+
+'''
 
 
 
 
+
+'''
+surveillance project
+
+- I'll need a list of all auction ids
+    - brute force?? need to be careful not to DDOS lol
+- then from each auction id I'll need a list of all item ids in those auctions
+    - possibly an API call for this? like a GetItems or something
+- then I'll just need to loop through all auctions, then all items under each auction, then I'll have all the data! easy as that
+'''
 
 
 
@@ -308,13 +387,3 @@ other api reference i've seen to explore:
 '''
 
 
-
-'''
-surveillance project
-
-- I'll need a list of all auction ids
-    - brute force?? need to be careful not to DDOS lol
-- then from each auction id I'll need a list of all item ids in those auctions
-    - possibly an API call for this? like a GetItems or something
-- then I'll just need to loop through all auctions, then all items under each auction, then I'll have all the data! easy as that
-'''

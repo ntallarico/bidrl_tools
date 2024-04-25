@@ -104,3 +104,30 @@ else:
 
 # to do: loop through the pages and get items from them too
 # response = browser.request('GET', 'https://www.bidrl.com/myaccount/myitems/page/2')'''
+
+
+
+
+'''
+in this approach, we scrape all items from all open auctions as a logged in user and then filter down to just items where is_favorite == 1
+
+'''
+
+'''
+def get_favorites_items():
+    # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
+    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+
+    open_auctions = bf.get_open_auctions(browser)
+
+    for auction in open_auctions:
+        print(f"\n\nAuction: {auction.title}")
+        for item in auction.items:
+            if item.is_favorite == '1':
+                print('')
+                item.display()
+
+
+get_favorites_items()
+
+'''
