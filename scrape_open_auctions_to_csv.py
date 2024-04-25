@@ -10,10 +10,7 @@ import re
 import json
 import bidrl_functions as bf
 from bidrl_classes import Item, Invoice, Auction
-
-
-
-    
+import csv
 
 
 def get_open_auction_items():
@@ -31,9 +28,26 @@ def get_open_auction_items():
                 print(f"Item: {item.description}")
     
     browser.quit()
+    return open_auctions
 
 
-get_open_auction_items()
+def write_items_to_csv(auctions, filename='local_files/items.csv'):
+       with open(filename, mode='w', newline='', encoding='utf-8') as file:
+           writer = csv.writer(file)
+
+           writer.writerow(['Auction Title', 'Item ID', 'Description', 'Is Favorite', 'URL']) # write the header
+
+           # write item data
+           for auction in auctions:
+               for item in auction.items:
+                   writer.writerow([auction.title, item.id, item.description, item.is_favorite, item.url])
+
+
+
+open_auctions = get_open_auction_items()
+
+write_items_to_csv(open_auctions)
+
 
 
 '''
