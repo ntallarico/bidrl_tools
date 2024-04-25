@@ -16,7 +16,7 @@ from bidrl_classes import Item, Invoice, Auction
     
 
 
-def get_favorites_items():
+def get_open_auction_items():
     # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
     browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
 
@@ -26,18 +26,19 @@ def get_favorites_items():
         print(f"\n\nAuction: {auction.title}")
         for item in auction.items:
             if item.is_favorite == '1':
-                print('')
-                item.display()
+                print(f"Item (Favorite): {item.description}")
+            else:
+                print(f"Item: {item.description}")
     
     browser.quit()
 
 
-get_favorites_items()
+get_open_auction_items()
 
 
 '''
 game plan:
-1. have this script scrape all open auctions / items to a csv. change name from favorites
+1. have this script scrape all open auctions / items to a csv
     - later we can do this with sql or whatever maybe
 2. have another script make a copy of that csv and add another column "max price to bid" or whatever
     - this script will also check if that file already exists
@@ -45,23 +46,6 @@ game plan:
 4. auto bid script. this reads in the file from script 2 that is now filled out by the user and wait to bid on items at appropriate time
 
 '''
-
-
-
-# to do: export item info to favorite_items.csv
-
-
-
-# to do: check "agree to terms" box
-
-
-
-
-
-# pause program until user input. just for debugging right now
-#input()
-
-
 
 
 
