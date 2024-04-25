@@ -135,6 +135,8 @@ def main():
     print('\n\n\n\nInvoice form links for Todoist copy/paste (same links as above): ')
     for invoice in invoices:
         print(invoice.expense_input_form_link)
+        
+    browser.quit()
 
 
 main()

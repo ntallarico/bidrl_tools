@@ -28,6 +28,8 @@ def get_favorites_items():
             if item.is_favorite == '1':
                 print('')
                 item.display()
+    
+    browser.quit()
 
 
 get_favorites_items()
