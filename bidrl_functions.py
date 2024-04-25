@@ -3,8 +3,8 @@ from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from seleniumrequests import Chrome
+from selenium.webdriver.firefox.options import Options
+from seleniumrequests import Firefox
 import requests
 import time
 from config import user_email, user_password, google_form_link_base
@@ -13,16 +13,15 @@ import json
 from bidrl_classes import Item, Invoice, Auction
 
 
-# initialize webdriver object with Chrome. if not headless, set size and position
 def init_webdriver(headless = ''):
     if headless == 'headless':
-        chrome_options = Options()
-        chrome_options.add_argument("--headless=new")
-        browser = Chrome(options=chrome_options) # initialize chrome browser webdriver using seleniumrequests library using headless chrome options
-        print('Chrome webdriver initialized in headless mode')
+        firefox_options = Options()
+        firefox_options.add_argument("--headless")
+        browser = Firefox(options=firefox_options) # initialize Firefox browser webdriver using seleniumrequests library using headless Firefox options
+        print('Firefox webdriver initialized in headless mode')
     else:
-        browser = Chrome() # initialize chrome browser webdriver using seleniumrequests library
-        print('Chrome webdriver initialized')
+        browser = Firefox() # initialize Firefox browser webdriver using seleniumrequests library
+        print('Firefox webdriver initialized')
         browser.set_window_position(0, 0)
         browser.maximize_window()
     return browser
@@ -372,6 +371,7 @@ def get_open_auctions(browser, affiliate_company_name = 'south-carolina'):
     # BID_INSUFFICIENT - "Bidding Error:<br\/>Your bid must be a number equal to or greater than the minimum bid for this item ($1.75)."
     # SAME_BID - "The bid you placed, $1.75, was the same as your current bid so nothing has changed."
     # LOW_BID - "Bidding Error:<br />You cannot bid lower than the current bid."
+    # ITEM_CLOSED - "Sorry.  This item is closed."
 def handle_bid_attempt_response(bid_attempt_response_json):
     try:
         if bid_attempt_response_json["result"] == "success":

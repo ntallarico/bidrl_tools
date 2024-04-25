@@ -4,7 +4,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-from seleniumrequests import Chrome
+from selenium.webdriver.firefox.options import Options
+from seleniumrequests import Chrome, Firefox
 import requests
 import time
 from config import user_email, user_password, google_form_link_base
@@ -37,3 +38,19 @@ def login_try_loop(browser, user):
         login_try_loop(browser, user)
     print("login success")
     return
+
+
+# initialize webdriver object with Chrome. if not headless, set size and position
+def init_webdriver_chrome(headless = ''):
+    if headless == 'headless':
+        chrome_options = Options()
+        chrome_options.add_argument("--headless=new")
+        #chrome_options.add_argument("--log-level=3")
+        browser = Chrome(options=chrome_options) # initialize chrome browser webdriver using seleniumrequests library using headless chrome options
+        print('Chrome webdriver initialized in headless mode')
+    else:
+        browser = Chrome() # initialize chrome browser webdriver using seleniumrequests library
+        print('Chrome webdriver initialized')
+        browser.set_window_position(0, 0)
+        browser.maximize_window()
+    return browser

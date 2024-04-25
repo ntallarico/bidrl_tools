@@ -9,7 +9,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-from seleniumrequests import Chrome
+from seleniumrequests import Chrome, Firefox
 import json
 import time
 from config import user_email, user_password, google_form_link_base
@@ -48,56 +48,23 @@ def test_get_auctions_item_urls():
         print(url)
 
 
-import socket
-
-def safe_browser_quit(browser):
-    print("before browser.quit()")
-
-    sys.stdout = open(os.devnull, 'w')
-    print("attempt to print something ##################################################################################################")
-
-    try:
-        for window_handle in browser.window_handles:
-            browser.switch_to.window(window_handle)
-            browser.close()
-        browser.quit()
-    except ConnectionResetError:
-        print("Connection was reset by the remote host during browser quit.")
-    except socket.timeout:
-        print("Request timed out during browser quit.")
-    except Exception as e:
-        print(f"An unexpected error occurred during browser quit: {e}")
-
-    print("attempt to print something ##################################################################################################")
-    sys.stdout = sys.__stdout__
-    
-    print("after browser.quit()")
-
-
 
 def test_bid_on_item():
+    item_urls = ['https://www.bidrl.com/auction/kitchen-goods-auction-161-johns-rd-unit-a-south-carolina-april-25-152706/item/bath-loofah-shower-sponges-6-pack-factory-sealed-19755497/']
+    amount_to_bid = 1.75
+
     # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
     browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
-
-    item_urls = ['https://www.bidrl.com/auction/kitchen-goods-auction-161-johns-rd-unit-a-south-carolina-april-25-152706/item/bath-loofah-shower-sponges-6-pack-factory-sealed-19755497/']
-
     item_obj_list = bf.get_items(item_urls, browser)
-
-    amount_to_bid = 1.75
-    
     bf.bid_on_item(item_obj_list[0], amount_to_bid, browser)
 
-    safe_browser_quit(browser)
+    browser.quit()
 
-    #print("after bid_on_item(). this is before the error occurs")
-    
-    
+
+
 
 
 test_bid_on_item()
-
-#print('after test_bid_on_item(). this is after the error occurs')
-
 
 
 
