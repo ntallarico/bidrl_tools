@@ -430,7 +430,6 @@ def handle_bid_attempt_response(bid_attempt_response_json):
             # possibly! could help with runaway loops during development while I'm testing functions and watching the console
             # I could set cooldown to like 10 secs and I'd see a spam of "cannot bid must wait 10 secs" really fast and could kill it
 def bid_on_item(auction_id, item_id, amount_to_bid, browser):
-
     post_url = 'https://www.bidrl.com/api/auctions/' + auction_id + '/items/' + item_id + '/bid'
 
     post_data = {
