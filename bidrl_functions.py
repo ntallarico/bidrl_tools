@@ -82,32 +82,6 @@ def get_logged_in_webdriver(login_name, login_password, headless = ''):
 
 
 
-'''# attempt to load and log in to bidrl. if that fails, reload the site and try again until this function succeeds
-def login_try_loop(browser, user):
-    browser.get('https://www.bidrl.com/login')
-    time.sleep(0.5)
-    try:
-        userName = browser.find_element(By.NAME, 'username')
-        password = browser.find_element(By.NAME, 'password')
-
-        #put all elements with tag name "button" into a list
-        button_elements = browser.find_elements(By.TAG_NAME, 'button')
-        #find the first element in the button_elements list with text 'LOGIN'
-        login_button = next(obj for obj in button_elements if obj.text == 'LOGIN')
-
-        actions = ActionChains(browser)
-        actions.move_to_element(userName).send_keys(user['name'])
-        actions.send_keys(Keys.TAB).send_keys(user['pw'])
-        actions.move_to_element(login_button).click()
-
-        print("Attempting to log in using: " + user['name'])
-        actions.perform()
-    except:
-        login_try_loop(browser, user)
-    print("login success")
-    return'''
-
-
 # go to invoices page, set records per page to 36
 def load_page_invoices(browser, records_per_page):
     time.sleep(1) # seems to be needed. tried to fix in various ways and this is one that worked consistently
@@ -334,7 +308,7 @@ def get_items(item_urls, browser):
         # instantiate Item object with info from temp_auction_dict and add to list
         items.append(Item(**temp_item_dict))
 
-        print("scraped: " + items[len(items)-1].description)
+        print("get_items() scraped: " + items[len(items)-1].description)
     return items
 
 
@@ -412,8 +386,7 @@ def handle_bid_attempt_response(bid_attempt_response_json):
 
 # bids x amount of USD on an item via POST request
 # requires
-    # Auction ID of item's auciton (string)
-    # Item ID of item (string)
+    # Item object with id and auction_id populated
     # amount of USD to bid (decimal or int)
     # a webdriver that has logged in to bidrl
 # returns json response from bidrl
@@ -429,16 +402,21 @@ def handle_bid_attempt_response(bid_attempt_response_json):
         # Rate Limiting
             # possibly! could help with runaway loops during development while I'm testing functions and watching the console
             # I could set cooldown to like 10 secs and I'd see a spam of "cannot bid must wait 10 secs" really fast and could kill it
-def bid_on_item(auction_id, item_id, amount_to_bid, browser):
-    post_url = 'https://www.bidrl.com/api/auctions/' + auction_id + '/items/' + item_id + '/bid'
+def bid_on_item(item, amount_to_bid, browser):
+    post_url = 'https://www.bidrl.com/api/auctions/' + item.auction_id + '/items/' + item.id + '/bid'
 
     post_data = {
         "bid": amount_to_bid
         , "accept_terms": 1
     }
 
+    print(f"Attempting to bid ${amount_to_bid} on \"{item.description}\"")
+
     response = browser.request('POST', post_url, data=post_data) # send the POST request with the session that contains the cookies
+
+
     response.raise_for_status() # ensure the request was successful
     handle_bid_attempt_response(response.json())
+    
     return response.json()
     
