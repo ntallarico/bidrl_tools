@@ -422,6 +422,8 @@ def bid_on_item(item, amount_to_bid, browser):
     return response.json()
     
 
+# requires: file path to csv, list of fieldnames to expect in first row
+# returns: list of rows read in from csv. each row in list is a dict based on field names
 def read_items_from_csv(filename, fieldnames):
     rows = [] # initialize a list to store the rows
 
