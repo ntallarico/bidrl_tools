@@ -121,16 +121,25 @@ print(f"Items with 0 max_desired_bid: {item_count_zero_desired_bid}")
 items_to_bid_on.sort(key=lambda x: x.end_time_unix)
 
 
-# how many seconds before closing to bid?
-seconds_before_closing = 60 * 2 # two minutes
-print(f"\nWe intend to bid on {item_count_with_desired_bid} items, {seconds_before_closing} seconds before they close.\n")
-
-
-
 # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
 browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
 
+
+
+# how often to check times (in seconds)?
 refresh_rate = 10
+
+# how soon before closing to bid (in seconds)?
+# I add 5 seconds to give api time to post bid so that I don't risk extending bidding time (even by a second or two)
+# I add refresh_rate seconds to account for worst case scenario - example:
+    # refresh_rate is 10 secs. loop refreshes at 2m 1s out, bid wouldn't be placed until 1m 51s, therefore extending the bid time by 9 seconds
+    # we want the absolute minimum amount of seconds before close after we place our bid
+seconds_before_closing = 60 * 2 + refresh_rate + 5 # 2 mins 5 secs
+
+
+
+print(f"\nWe intend to bid on {item_count_with_desired_bid} items, {seconds_before_closing} seconds before they close, checking every {refresh_rate} seconds.\n")
+
 
 # every refresh_rate seconds, check each item to see if it is time to bid
 # if it is, bid on it and remove it from the bid list
