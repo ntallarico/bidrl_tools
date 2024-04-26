@@ -42,8 +42,16 @@ from datetime import datetime
 import bidrl_functions as bf
 
 
+# read in csv with max_desired_bid field input from user
 
-# to do: read in csv
+filename_to_read = 'local_files/favorite_items_to_input_max_bid.csv'
+
+fieldnames = ['Auction_Title', 'Item_ID', 'Description', 'Is_Favorite', 'URL', 'Max_Desired_Bid']
+
+read_rows = bf.read_items_from_csv(filename_to_read, fieldnames)
+
+for row in read_rows:
+    print(row)
 
 
 

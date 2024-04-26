@@ -27,10 +27,23 @@ def get_open_auction_items():
     return open_auctions
 
 
+# requires: list of auction objects, file path to desired output file, list of desired names in first row in CSV to write
+# returns: nothing. creates csv at file path specified
+def write_items_to_csv(auctions, filename, fieldnames):
+    with open(filename, mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+
+        writer.writerow(fieldnames) # write the header
+
+        # write item data
+        for auction in auctions:
+            for item in auction.items:
+                writer.writerow([auction.title, auction.id, item.id, item.description, item.is_favorite, item.url, item.end_time_unix])
+
 
 open_auctions = get_open_auction_items()
 filename='local_files/items.csv'
-fieldnames = ['Auction_Title', 'Item_ID', 'Description', 'Is_Favorite', 'URL']
+fieldnames = ['Auction_Title', 'Auction_ID', 'Item_ID', 'Description', 'Is_Favorite', 'URL', 'end_time_unix']
 
 bf.write_items_to_csv(open_auctions, filename, fieldnames)
 
