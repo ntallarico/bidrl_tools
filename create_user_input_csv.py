@@ -13,9 +13,8 @@ from bidrl_classes import Item, Invoice, Auction
 fieldnames_to_read = ['Auction_Title', 'Item_ID', 'Description', 'Is_Favorite', 'URL']
 filename_to_read = 'local_files/items.csv'
 
+
 read_rows = bf.read_items_from_csv(filename_to_read, fieldnames_to_read)
-
-
 
 # rows list for user interface file. list of dicts
 rows_to_write = []
