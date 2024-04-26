@@ -27,6 +27,18 @@ for row in read_rows:
 
 filename_to_write = 'local_files/favorite_items_to_input_max_bid.csv'
 
+
+# check if the file already exists and ask for user input to confirm overwriting it if it does
+if os.path.exists(filename_to_write):
+    user_input = input(f"The file '{filename_to_write}' already exists, possibly with your max bids in it. Do you want to overwrite it? (y/n): ")
+    
+    if user_input.lower() != 'y':
+        print("File will not be overwritten. Exiting.")
+        quit()
+else:
+    print(f"Creating '{filename_to_write}'.")
+
+
 with open(filename_to_write, mode='w', newline='', encoding='utf-8') as file:
     writer = csv.writer(file)
 
