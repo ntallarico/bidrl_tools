@@ -73,12 +73,12 @@ def get_logged_in_webdriver(login_name, login_password, headless = ''):
             print('Login failed: error in attempting to find elements of login form or execute login steps')
         elif check_if_login_success(browser) == 1:
             print('Login failed: username or password incorrect. Exiting program.')
-            sys.exit()
+            quit() # exit current python script
         else:
             print('Login succeeded!')
             return browser
     print(f'Gave up attempt to log in after {attempts} attempts. Exiting program.')
-    sys.exit()
+    quit() # exit current python script
 
 
 
