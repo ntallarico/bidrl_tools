@@ -42,6 +42,7 @@ def try_login(browser, login_name, login_password):
         actions.send_keys(Keys.TAB).send_keys(login_password)
         actions.move_to_element(login_button).click()
         actions.perform()
+        time.sleep(1)
         return 0
     except:
         return 1
@@ -52,6 +53,7 @@ def try_login(browser, login_name, login_password):
 # as of now, if login fails the page returned starts with "<!doctype html>" instead of "<!DOCTYPE html>"
 def check_if_login_success(browser):
     response = browser.request('GET', 'https://www.bidrl.com/myaccount/myitems')
+    #print(response.text[0:15])
     if response.text[0:15] == '<!DOCTYPE html>':
         return 0
     else: return 1
