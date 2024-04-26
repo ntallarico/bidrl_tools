@@ -53,7 +53,7 @@ def test_bid_on_item():
     amount_to_bid = 1.75
 
     # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
-    browser = bf.get_logged_in_webdriver(user_email+'1', user_password, 'headless')
+    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
     item_obj_list = bf.get_items(item_urls, browser)
     bf.bid_on_item(item_obj_list[0], amount_to_bid, browser)
 

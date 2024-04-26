@@ -43,6 +43,26 @@ import bidrl_functions as bf
 from bidrl_classes import Item, Invoice, Auction
 
 
+def convert_seconds_to_time_string(seconds):
+    days, seconds = divmod(seconds, 86400)  # 60 seconds * 60 minutes * 24 hours
+    hours, seconds = divmod(seconds, 3600)  # 60 seconds * 60 minutes
+    minutes, seconds = divmod(seconds, 60)
+    time_string = ''
+
+    if days > 0:
+        time_string += f"{days}D, "
+
+    if hours > 0:
+        time_string += f"{hours}H, "
+
+    if minutes > 0:
+        time_string += f"{minutes}M, "
+
+    if seconds > 0:
+        time_string += f"{seconds}S"
+    return time_string
+
+
 # read in csv with max_desired_bid field input from user
 
 filename_to_read = 'local_files/favorite_items_to_input_max_bid.csv'
@@ -63,7 +83,8 @@ def create_item_objects_from_rows(item_rows_list):
                                 , 'description': item_row['description']
                                 , 'url': item_row['url']
                                 , 'end_time_unix': item_row['end_time_unix']
-                                , 'max_desired_bid': item_row['max_desired_bid']}
+                                , 'max_desired_bid': item_row['max_desired_bid']
+                                , 'time_offset': '3600'}
         
         item_list.append(Item(**temp_item_dict))
     return item_list
@@ -71,7 +92,7 @@ def create_item_objects_from_rows(item_rows_list):
 
 item_list = create_item_objects_from_rows(read_rows)
 
-
+items_to_bid_on = []
 item_count_with_desired_bid = 0
 item_count_zero_desired_bid = 0
 item_count_no_desired_bid = 0
@@ -80,6 +101,7 @@ for item in item_list:
         item_count_zero_desired_bid += 1
     elif item.max_desired_bid != '':
         item_count_with_desired_bid += 1
+        items_to_bid_on.append(item)
         print('')
         print(f"item_id: {item.id}")
         print(f"auction_id: {item.auction_id}")
@@ -96,23 +118,48 @@ print(f"Items without max_desired_bid: {item_count_no_desired_bid}")
 print(f"Items with 0 max_desired_bid: {item_count_zero_desired_bid}")
 
 
+# sort list of items in ascending order based on their end time
+items_to_bid_on.sort(key=lambda x: x.end_time_unix)
+
+
 # how many seconds before closing to bid?
 seconds_before_closing = 60 * 2 # two minutes
-print(f"\nWe intend to bid on {item_count_with_desired_bid} items, {seconds_before_closing} seconds before each closes.")
+print(f"\nWe intend to bid on {item_count_with_desired_bid} items, {seconds_before_closing} seconds before they close.\n")
 
 
-# to do: wait on a loop for the auction end times on each item
-'''while True:
-    print('penis')
-    time.sleep(10)'''
 
-    # to do: init window, log in to bidrl, and go to item's page
+# get an initialized web driver that has logged in to bidrl with credentials stored in config.py
+browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
 
-    # to do: check if "agree to terms" box is present, and if so: check box and hit ok button
+refresh_rate = 10
 
-    # to do: place bid. ensure that many double checks are in place here for safety!
+# every refresh_rate seconds, check each item to see if it is time to bid
+# if it is, bid on it and remove it from the bid list
+# once the list is empty, end the loop
+while len(items_to_bid_on) > 0:
+    current_unix_time = int(time.time()) # get unix time
+
+    for item in items_to_bid_on:
+        remaining_seconds = int(item.end_time_unix) - int(item.time_offset) - current_unix_time
+        remaining_time_string = convert_seconds_to_time_string(remaining_seconds)
+        print(f"{remaining_time_string} remaining on item: {item.description}")
+        
+        # bid on the item if time remaining on item is <= our set seconds_before_closing time
+        if remaining_seconds <= seconds_before_closing:
+            bf.bid_on_item(item, item.max_desired_bid, browser)
+            print('')
+            items_to_bid_on.remove(item)
+
+    
 
     # to do: end program when all items that we have entered a max bid for have completed
+    print('')
+    time.sleep(10)
 
+print("No remaining items in bid list with max_desired_bid set. Exiting program.")
+browser.quit()
+
+# item needs to scrape attribute time_offset. this means that the end_time_unix is time_offset amount of seconds ahead
+# so we need to do end_time_unix - time_offset to get actual end time
 
 
