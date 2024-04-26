@@ -13,22 +13,16 @@ from bidrl_classes import Item, Invoice, Auction
 import csv
 
 
-file_path = 'local_files/items.csv'
 
-# Initialize a list to store the rows
-rows = []
 
-# Read the CSV file
-with open(file_path, mode='r', newline='', encoding='utf-8') as file:
-    reader = csv.DictReader(file)
-    
-    # Check if the header matches the expected header
-    if reader.fieldnames == ['Auction Title', 'Item ID', 'Description', 'Is Favorite', 'URL']:
-        for row in reader:
-            rows.append(row)
-    else:
-        print("Header row does not match the expected format.")
 
-# Display the read rows
+
+
+fieldnames = ['Auction Title', 'Item ID', 'Description', 'Is Favorite', 'URL']
+filename = 'local_files/items.csv'
+
+rows = bf.read_items_from_csv(filename, fieldnames)
+
+# display the read rows
 for row in rows:
     print(row)

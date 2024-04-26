@@ -421,3 +421,19 @@ def bid_on_item(item, amount_to_bid, browser):
     
     return response.json()
     
+
+def read_items_from_csv(filename, fieldnames):
+    rows = [] # initialize a list to store the rows
+
+    # Read the CSV file
+    with open(filename, mode='r', newline='', encoding='utf-8') as file:
+        reader = csv.DictReader(file)
+        
+        # Check if the header matches the expected header
+        if reader.fieldnames == fieldnames:
+            for row in reader:
+                rows.append(row)
+        else:
+            print("Header row does not match the expected field names.")
+
+    return rows
