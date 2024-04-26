@@ -82,7 +82,7 @@ def create_item_objects_from_rows(item_rows_list):
                                 , 'auction_id': item_row['auction_id']
                                 , 'description': item_row['description']
                                 , 'url': item_row['url']
-                                , 'end_time_unix': item_row['end_time_unix']
+                                , 'end_time_unix': int(item_row['end_time_unix'])
                                 , 'max_desired_bid': item_row['max_desired_bid']}
         
         item_list.append(Item(**temp_item_dict))
