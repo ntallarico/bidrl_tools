@@ -54,8 +54,9 @@ write_items_to_csv(open_auctions)
 game plan:
 1. have this script scrape all open auctions / items to a csv
     - later we can do this with sql or whatever maybe
-2. have another script make a copy of that csv and add another column "max price to bid" or whatever
-    - this script will also check if that file already exists
+2. have another script make a copy of that csv, filter it to favorites, and add another column "max price to bid" or whatever
+    - this script will also check if that file already exists, and if it does:
+        - load in rows from second file, compare it to first, remove rows that aren't present in first
 3. at this point - user goes into file created from last script and adds in max desired prices. user will use excel to filter based on is_favorite column
 4. auto bid script. this reads in the file from script 2 that is now filled out by the user and wait to bid on items at appropriate time
 
