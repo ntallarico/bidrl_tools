@@ -1,9 +1,8 @@
-import os, sys, getpass
+import os, sys, getpass, time
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-import time
 from config import user_email, user_password, google_form_link_base
 from datetime import datetime
 import bidrl_functions as bf
@@ -135,7 +134,7 @@ def main():
     print('\n\n\n\nInvoice form links for Todoist copy/paste (same links as above): ')
     for invoice in invoices:
         print(invoice.expense_input_form_link)
-        
+
     browser.quit()
 
 

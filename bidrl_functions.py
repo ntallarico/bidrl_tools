@@ -1,17 +1,13 @@
-import os, sys, getpass
+import os, sys, getpass, time, re, json, csv, requests
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from seleniumrequests import Firefox
-import requests
-import time
 from config import user_email, user_password, google_form_link_base
 from datetime import datetime
-import json
 from bidrl_classes import Item, Invoice, Auction
-import csv
 
 
 def init_webdriver(headless = ''):

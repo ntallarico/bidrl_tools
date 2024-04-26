@@ -1,16 +1,12 @@
-import os, sys, getpass
+import os, sys, getpass, time, re, json, csv
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-import time
 from config import user_email, user_password, google_form_link_base
 from datetime import datetime
-import re
-import json
 import bidrl_functions as bf
 from bidrl_classes import Item, Invoice, Auction
-import csv
 
 
 
@@ -29,7 +25,7 @@ for row in read_rows:
         temp_row_dict = {'Auction_Title': row['Auction_Title'], 'Item_ID': row['Item_ID'], 'Description': row['Description'], 'Is_Favorite': row['Is_Favorite'], 'URL': row['URL']}
         rows_to_write.append(temp_row_dict)
 
-filename_to_write = 'local_files/items_UI.csv'
+filename_to_write = 'local_files/favorite_items_to_input_max_bid.csv'
 
 with open(filename_to_write, mode='w', newline='', encoding='utf-8') as file:
     writer = csv.writer(file)

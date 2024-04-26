@@ -1,5 +1,4 @@
-import sys
-import os
+import os, sys, getpass, time, re, json, csv
 # tell this file that the root directory is one folder level up so that it can read our files like config, bidrl_classes, etc
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -10,8 +9,6 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from seleniumrequests import Chrome, Firefox
-import json
-import time
 from config import user_email, user_password, google_form_link_base
 from bidrl_classes import Auction, Item
 import bidrl_functions as bf
