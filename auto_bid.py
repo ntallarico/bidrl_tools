@@ -83,8 +83,7 @@ def create_item_objects_from_rows(item_rows_list):
                                 , 'description': item_row['description']
                                 , 'url': item_row['url']
                                 , 'end_time_unix': item_row['end_time_unix']
-                                , 'max_desired_bid': item_row['max_desired_bid']
-                                , 'time_offset': '3600'}
+                                , 'max_desired_bid': item_row['max_desired_bid']}
         
         item_list.append(Item(**temp_item_dict))
     return item_list
@@ -140,7 +139,7 @@ while len(items_to_bid_on) > 0:
     current_unix_time = int(time.time()) # get unix time
 
     for item in items_to_bid_on:
-        remaining_seconds = int(item.end_time_unix) - int(item.time_offset) - current_unix_time
+        remaining_seconds = int(item.end_time_unix) - current_unix_time
         remaining_time_string = convert_seconds_to_time_string(remaining_seconds)
         print(f"{remaining_time_string} remaining on item: {item.description}")
         
@@ -150,16 +149,9 @@ while len(items_to_bid_on) > 0:
             print('')
             items_to_bid_on.remove(item)
 
-    
-
-    # to do: end program when all items that we have entered a max bid for have completed
     print('')
     time.sleep(10)
 
 print("No remaining items in bid list with max_desired_bid set. Exiting program.")
 browser.quit()
-
-# item needs to scrape attribute time_offset. this means that the end_time_unix is time_offset amount of seconds ahead
-# so we need to do end_time_unix - time_offset to get actual end time
-
 

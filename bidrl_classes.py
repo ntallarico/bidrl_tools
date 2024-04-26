@@ -16,7 +16,6 @@ class Item:
                  , lot_number=''
                  , bidding_status=''
                  , end_time_unix=''
-                 , time_offset=''
                  , is_favorite=''
                  , bid_count=''
                  , total_cost=''
@@ -33,7 +32,6 @@ class Item:
         self.lot_number = lot_number
         self.bidding_status = bidding_status
         self.end_time_unix = end_time_unix
-        self.time_offset = time_offset
         self.is_favorite = is_favorite
         self.bid_count = bid_count
         self.total_cost = total_cost # calculated total cost based on current_bid, tax rate, and buyer_premium
@@ -52,7 +50,6 @@ class Item:
         print(f"Lot Number: {self.lot_number}")
         print(f"Bidding Status: {self.bidding_status}")
         print(f"End Time Unix: {self.end_time_unix}")
-        print(f"Time Offset: {self.time_offset}")
         print(f"Is Favorite: {self.is_favorite}")
         print(f"Bid Count: {self.bid_count}")
         print(f"Total Cost: {self.total_cost}")
