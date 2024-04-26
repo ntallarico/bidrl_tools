@@ -40,22 +40,71 @@ import time
 from config import user_email, user_password, google_form_link_base
 from datetime import datetime
 import bidrl_functions as bf
+from bidrl_classes import Item, Invoice, Auction
 
 
 # read in csv with max_desired_bid field input from user
 
 filename_to_read = 'local_files/favorite_items_to_input_max_bid.csv'
 
-fieldnames = ['Auction_Title', 'Item_ID', 'Description', 'Is_Favorite', 'URL', 'Max_Desired_Bid']
+fieldnames = ['end_time_unix', 'auction_id', 'item_id', 'description', 'max_desired_bid', 'url']
 
 read_rows = bf.read_items_from_csv(filename_to_read, fieldnames)
 
-for row in read_rows:
-    print(row)
 
+def create_item_objects_from_rows(item_rows_list):
+    item_list = [] # list for item objects to return at the end
+    for item_row in item_rows_list:
+        #print(item_row)
+
+        # extract data from json into temp dictionary to create item with later
+        temp_item_dict = {'id': item_row['item_id']
+                                , 'auction_id': item_row['auction_id']
+                                , 'description': item_row['description']
+                                , 'url': item_row['url']
+                                , 'end_time_unix': item_row['end_time_unix']
+                                , 'max_desired_bid': item_row['max_desired_bid']}
+        
+        item_list.append(Item(**temp_item_dict))
+    return item_list
+
+
+item_list = create_item_objects_from_rows(read_rows)
+
+
+item_count_with_desired_bid = 0
+item_count_zero_desired_bid = 0
+item_count_no_desired_bid = 0
+for item in item_list:
+    if item.max_desired_bid == '0':
+        item_count_zero_desired_bid += 1
+    elif item.max_desired_bid != '':
+        item_count_with_desired_bid += 1
+        print('')
+        print(f"item_id: {item.id}")
+        print(f"auction_id: {item.auction_id}")
+        print(f"description: {item.description}")
+        print(f"url: {item.url}")
+        print(f"end_time_unix: {item.end_time_unix}")
+        print(f"max_desired_bid: {item.max_desired_bid}")
+    else:
+        item_count_no_desired_bid += 1
+
+print('')
+print(f"Items with max_desired_bid: {item_count_with_desired_bid}")
+print(f"Items without max_desired_bid: {item_count_no_desired_bid}")
+print(f"Items with 0 max_desired_bid: {item_count_zero_desired_bid}")
+
+
+# how many seconds before closing to bid?
+seconds_before_closing = 60 * 2 # two minutes
+print(f"\nWe intend to bid on {item_count_with_desired_bid} items, {seconds_before_closing} seconds before each closes.")
 
 
 # to do: wait on a loop for the auction end times on each item
+'''while True:
+    print('penis')
+    time.sleep(10)'''
 
     # to do: init window, log in to bidrl, and go to item's page
 
@@ -67,18 +116,3 @@ for row in read_rows:
 
 
 
-
-
-
-
-'''
-game plan:
-1. have this script scrape all open auctions / items to a csv. scrape_open_auctions_to_csv.py
-    - later we can do this with sql or whatever maybe
-2. have another script make a copy of that csv, filter it to favorites, and add another column "max price to bid" or whatever
-    - this script will also check if that file already exists, and if it does:
-        - load in rows from second file, compare it to first, remove rows that aren't present in first
-3. at this point - user goes into file created from last script and adds in max desired prices. user will use excel to filter based on is_favorite column
-4. auto bid script. this reads in the file from script 2 that is now filled out by the user and wait to bid on items at appropriate time
-
-'''

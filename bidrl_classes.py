@@ -19,7 +19,8 @@ class Item:
                  , is_favorite=''
                  , bid_count=''
                  , total_cost=''
-                 , cost_split=''):
+                 , cost_split=''
+                 , max_desired_bid=''):
         self.id = id
         self.auction_id = auction_id
         self.description = description
@@ -35,6 +36,7 @@ class Item:
         self.bid_count = bid_count
         self.total_cost = total_cost # calculated total cost based on current_bid, tax rate, and buyer_premium
         self.cost_split = cost_split
+        self.max_desired_bid = max_desired_bid
 
     def display(self):
         print(f"ID: {self.id}")
@@ -52,6 +54,7 @@ class Item:
         print(f"Bid Count: {self.bid_count}")
         print(f"Total Cost: {self.total_cost}")
         print(f"Cost Split: {self.cost_split}")
+        print(f"Max Desired Bid: {self.max_desired_bid}")
 
 
 # define Invoice class to hold all of our information about a given invoice

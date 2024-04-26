@@ -10,7 +10,7 @@ from bidrl_classes import Item, Invoice, Auction
 
 
 
-fieldnames_to_read = ['Auction_Title', 'Item_ID', 'Description', 'Is_Favorite', 'URL', 'end_time_unix']
+fieldnames_to_read = ['auction_title', 'auction_id', 'item_id', 'description', 'is_favorite', 'url', 'end_time_unix']
 filename_to_read = 'local_files/items.csv'
 
 
@@ -20,8 +20,8 @@ read_rows = bf.read_items_from_csv(filename_to_read, fieldnames_to_read)
 rows_to_write = []
 
 for row in read_rows:
-    if row['Is_Favorite'] == '1':
-        temp_row_dict = {'Auction_Title': row['Auction_Title'], 'Item_ID': row['Item_ID'], 'Description': row['Description'], 'Is_Favorite': row['Is_Favorite'], 'URL': row['URL'], 'end_time_unix': row['end_time_unix']}
+    if row['is_favorite'] == '1':
+        temp_row_dict = {'auction_title': row['auction_title'], 'auction_id': row['auction_id'], 'item_id': row['item_id'], 'description': row['description'], 'is_favorite': row['is_favorite'], 'url': row['url'], 'end_time_unix': row['end_time_unix']}
         rows_to_write.append(temp_row_dict)
 
 filename_to_write = 'local_files/favorite_items_to_input_max_bid.csv'
@@ -34,6 +34,8 @@ if os.path.exists(filename_to_write):
     if user_input.lower() != 'y':
         print("File will not be overwritten. Exiting.")
         quit()
+    else:
+        print(f"Overwriting '{filename_to_write}'.")
 else:
     print(f"Creating '{filename_to_write}'.")
 
@@ -41,9 +43,9 @@ else:
 with open(filename_to_write, mode='w', newline='', encoding='utf-8') as file:
     writer = csv.writer(file)
 
-    writer.writerow(['end_time_unix', 'Auction_ID', 'Item_ID', 'Description', 'URL', 'Max_Desired_Bid']) # write the header, adding "Max Desired Bid"
+    writer.writerow(['end_time_unix', 'auction_id', 'item_id', 'description', 'max_desired_bid', 'url']) # write the header, adding "Max Desired Bid"
 
     # write item data
     for row in rows_to_write:
-        writer.writerow([row['end_time_unix'], row['Auction_ID'], row['Item_ID'], row['Description'], row['URL'], ''])
+        writer.writerow([row['end_time_unix'], row['auction_id'], row['item_id'], row['description'], '', row['url']])
 

@@ -328,7 +328,7 @@ def get_open_auctions(browser, affiliate_company_name = 'south-carolina'):
         for auction in response_json['auctions']:
             auctions_num_list.append(auction)
 
-        auctions_num_list = auctions_num_list[0] # for debugging. delete this!
+        #auctions_num_list = auctions_num_list[0] # FOR DEBUGGING. causes function to only scrape first auction
 
         # loop through each auction by number in the json and extract information to an Auction object
         auctions = []
@@ -432,6 +432,7 @@ def read_items_from_csv(filename, fieldnames):
             for row in reader:
                 rows.append(row)
         else:
-            print("Header row does not match the expected field names.")
+            print("read_items_from_csv(): Header row does not match the expected field names. Exiting program.")
+            quit()
 
     return rows
