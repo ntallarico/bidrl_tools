@@ -31,36 +31,14 @@ def get_open_auction_items():
     return open_auctions
 
 
-def write_items_to_csv(auctions, filename='local_files/items.csv'):
-       with open(filename, mode='w', newline='', encoding='utf-8') as file:
-           writer = csv.writer(file)
-
-           writer.writerow(['Auction Title', 'Item ID', 'Description', 'Is Favorite', 'URL']) # write the header
-
-           # write item data
-           for auction in auctions:
-               for item in auction.items:
-                   writer.writerow([auction.title, item.id, item.description, item.is_favorite, item.url])
-
-
 
 open_auctions = get_open_auction_items()
+filename='local_files/items.csv'
+fieldnames = ['Auction Title', 'Item ID', 'Description', 'Is Favorite', 'URL']
 
-write_items_to_csv(open_auctions)
+bf.write_items_to_csv(open_auctions, filename, fieldnames)
 
 
-
-'''
-game plan:
-1. have this script scrape all open auctions / items to a csv
-    - later we can do this with sql or whatever maybe
-2. have another script make a copy of that csv, filter it to favorites, and add another column "max price to bid" or whatever
-    - this script will also check if that file already exists, and if it does:
-        - load in rows from second file, compare it to first, remove rows that aren't present in first
-3. at this point - user goes into file created from last script and adds in max desired prices. user will use excel to filter based on is_favorite column
-4. auto bid script. this reads in the file from script 2 that is now filled out by the user and wait to bid on items at appropriate time
-
-'''
 
 
 

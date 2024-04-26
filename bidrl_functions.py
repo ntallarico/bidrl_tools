@@ -422,6 +422,20 @@ def bid_on_item(item, amount_to_bid, browser):
     return response.json()
     
 
+# requires: list of auction objects, file path to desired output file, list of desired names in first row in CSV to write
+# returns: nothing. creates csv at file path specified
+def write_items_to_csv(auctions, filename, fieldnames):
+    with open(filename, mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+
+        writer.writerow(['Auction Title', 'Item ID', 'Description', 'Is Favorite', 'URL']) # write the header
+
+        # write item data
+        for auction in auctions:
+            for item in auction.items:
+                writer.writerow([auction.title, item.id, item.description, item.is_favorite, item.url])
+
+
 # requires: file path to csv, list of fieldnames to expect in first row
 # returns: list of rows read in from csv. each row in list is a dict based on field names
 def read_items_from_csv(filename, fieldnames):
