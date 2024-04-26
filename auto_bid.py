@@ -148,7 +148,7 @@ while len(items_to_bid_on) > 0:
     current_unix_time = int(time.time()) # get unix time
 
     for item in items_to_bid_on:
-        remaining_seconds = int(item.end_time_unix) - current_unix_time
+        remaining_seconds = item.end_time_unix - current_unix_time
         remaining_time_string = convert_seconds_to_time_string(remaining_seconds)
         print(f"{remaining_time_string} remaining on item: {item.description}")
         

@@ -294,7 +294,7 @@ def get_items(item_urls, browser):
                                 , 'url': item_url
                                 , 'lot_number': item_json['lot_number']
                                 , 'bidding_status': item_json['bidding_status']
-                                , 'end_time_unix': item_json['end_time_unix'] - item_json['time_offset']
+                                , 'end_time_unix': int(item_json['end_time_unix']) - int(item_json['time_offset'])
                                 , 'bid_count': item_json['bid_count']}
         
         # can only see is_favorite key if logged in. check if it exists before attempting to add to dict
