@@ -26,7 +26,7 @@ def test_get_open_auctions():
     for auction in open_auctions:
         print('')
         auction.display()
-        
+
     browser.quit()
 
 

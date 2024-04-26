@@ -72,13 +72,13 @@ def get_logged_in_webdriver(login_name, login_password, headless = ''):
         if try_login_result == 1:
             print('Login failed: error in attempting to find elements of login form or execute login steps')
         elif check_if_login_success(browser) == 1:
-            print('Login failed: username or password incorrect. Exiting login attempt loop.')
-            return 1
+            print('Login failed: username or password incorrect. Exiting program.')
+            sys.exit()
         else:
             print('Login succeeded!')
             return browser
-    print(f'Gave up attempt to log in after {attempts} attempts')
-    return 1
+    print(f'Gave up attempt to log in after {attempts} attempts. Exiting program.')
+    sys.exit()
 
 
 
@@ -428,7 +428,7 @@ def write_items_to_csv(auctions, filename, fieldnames):
     with open(filename, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
 
-        writer.writerow(['Auction Title', 'Item ID', 'Description', 'Is Favorite', 'URL']) # write the header
+        writer.writerow(fieldnames) # write the header
 
         # write item data
         for auction in auctions:

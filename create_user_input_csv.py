@@ -14,20 +14,31 @@ import csv
 
 
 
+fieldnames_to_read = ['Auction_Title', 'Item_ID', 'Description', 'Is_Favorite', 'URL']
+filename_to_read = 'local_files/items.csv'
+
+read_rows = bf.read_items_from_csv(filename_to_read, fieldnames_to_read)
 
 
 
+# rows list for user interface file. list of dicts
+rows_to_write = []
 
-fieldnames = ['Auction Title', 'Item ID', 'Description', 'Is Favorite', 'URL']
-filename = 'local_files/items.csv'
+for row in read_rows:
+    if row['Is_Favorite'] == '1':
+        temp_row_dict = {'Auction_Title': row['Auction_Title'], 'Item_ID': row['Item_ID'], 'Description': row['Description'], 'Is_Favorite': row['Is_Favorite'], 'URL': row['URL']}
+        rows_to_write.append(temp_row_dict)
 
-rows = bf.read_items_from_csv(filename, fieldnames)
+filename_to_write = 'local_files/items_UI.csv'
 
-# display the read rows
-for row in rows:
-    if row['Is Favorite'] == '1':
-        print(row)
+with open(filename_to_write, mode='w', newline='', encoding='utf-8') as file:
+    writer = csv.writer(file)
 
+    writer.writerow(['Auction_Title', 'Item_ID', 'Description', 'Is_Favorite', 'URL', 'Max_Desired_Bid']) # write the header, adding "Max Desired Bid"
+
+    # write item data
+    for row in rows_to_write:
+        writer.writerow([row['Auction_Title'], row['Item_ID'], row['Description'], row['Is_Favorite'], row['URL'], ''])
 
 
 

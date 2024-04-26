@@ -34,7 +34,7 @@ def get_open_auction_items():
 
 open_auctions = get_open_auction_items()
 filename='local_files/items.csv'
-fieldnames = ['Auction Title', 'Item ID', 'Description', 'Is Favorite', 'URL']
+fieldnames = ['Auction_Title', 'Item_ID', 'Description', 'Is_Favorite', 'URL']
 
 bf.write_items_to_csv(open_auctions, filename, fieldnames)
 
