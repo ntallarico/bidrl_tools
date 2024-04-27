@@ -5,9 +5,12 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from seleniumrequests import Firefox
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from config import user_email, user_password, google_form_link_base
 from datetime import datetime
 from bidrl_classes import Item, Invoice, Auction
+
 
 
 def init_webdriver(headless = ''):
@@ -79,9 +82,18 @@ def get_logged_in_webdriver(login_name, login_password, headless = ''):
     quit() # exit current python script
 
 
+# wait for browser to completely load webpage before moving on
+# requires initialized webdriver and name of an element to wait to see
+def wait_for_element_by_ID(browser, element_name):
+    print(f"Waiting to see element: '{element_name}'")
+    wait = WebDriverWait(browser, 10)  # Timeout after 10 seconds
+    wait.until(EC.presence_of_element_located((By.ID, element_name)))
+    #print("found!")
+
 
 # go to invoices page, set records per page to 36
 def load_page_invoices(browser, records_per_page):
+    print("Loading https://www.bidrl.com/myaccount/invoices")
     time.sleep(1) # seems to be needed. tried to fix in various ways and this is one that worked consistently
     browser.get('https://www.bidrl.com/myaccount/invoices')
     time.sleep(1)
@@ -91,7 +103,7 @@ def load_page_invoices(browser, records_per_page):
     actions.send_keys(str(records_per_page))
     actions.send_keys(Keys.ENTER)
     actions.perform()
-    return 
+
 
 
 # requires: a web driver, a list of invoice links, a date object indicating the furthest back date of invoice we want to scrape
@@ -351,6 +363,7 @@ def get_open_auctions(browser, affiliate_company_name = 'south-carolina'):
     # SAME_BID - "The bid you placed, $1.75, was the same as your current bid so nothing has changed."
     # LOW_BID - "Bidding Error:<br />You cannot bid lower than the current bid."
     # ITEM_CLOSED - "Sorry.  This item is closed."
+    # NO_USER - "User must be authenticated before placing bid."
 def handle_bid_attempt_response(bid_attempt_response_json):
     try:
         if bid_attempt_response_json["result"] == "success":
