@@ -63,7 +63,200 @@ def test_bid_on_item():
 
 
 
-test_bid_on_item()
+#test_bid_on_item()
+
+
+
+# get invoices list
+# requires: logged in webdriver object
+# returns: list of Invoice objects
+def get_invoice_data():
+    '''
+    in GET request for invoices page, there is a string "var invoices = " followed by a list invoice dicts
+    we want to extract that list string, parse it to an object, then extract data from each invoice dict into an invoice object and item objects
+
+    the list looks like: [{'id': '3301997', ...}, {...}, {...}, ...]
+    each invoice dict in the list looks like the below:
+    {'id': '3301997', 'auction_group_id': '152705', 'bidder': '168516', 'number_emails_sent': '2', 'premium_rate': '13'
+    , 'auction_title': 'Oversize &#38; Furniture Auction - 161 Johns Rd. Unit A -South Carolina - April 26', 'relisting_fee': None
+    , 'amount_paid': '598.0000000', 'amount_paid_actual': '5.980', 'shipment_total': 0, 'sub_total': 5, 'adjustments': '0.00', 'fee_total': '0.00'
+    , 'fee_tax': '0.00', 'invoice_total': '5.98', 'effective_premium': '13', 'premium': '0.65', 'total_tax': '0.33'
+    , 'title': 'Auction Invoice for: Oversize &#38; Furniture Auction - 161 Johns Rd. Unit A -South Carolina - April 26', 'affiliate_id': '47'
+    , 'item_count': '3', 'picked_up': '0', 'relisting_fees': None, 'auction_buyer_premium': '13.000', 'cc_not_needed': '0', 'picked_up_count': '0'
+    , 'refund': '0.000000', 'effective_tax': 5.841, 'tax': 0.33, 'total': 5.98, 'balance': 0, 'init_balance': 0, 'discounted_total': 5.98, 'paid': True}
+    '''
+
+    # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
+    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+
+    post_data = {"perpage": 10000}
+    post_url = 'https://www.bidrl.com/myaccount/invoices'
+    response = browser.request('POST', post_url, data=post_data)
+    response.raise_for_status() # ensure the request was successful
+
+    # regular expression to extract the list of JSON-like objects after "var invoicesData = "
+    pattern = r'var invoicesData = (\[.*?\]);'
+    match = re.search(pattern, response.text) #, re.DOTALL)
+
+    if match:
+        # convert the matched string to a valid JSON object
+        invoices_json = match.group(1)
+        invoices_data = json.loads(invoices_json) # invoices_data is now a list of dicts, each for an invoice
+
+        for invoice in invoices_data:
+            temp_invoice_dict = {'id': invoice['id']
+                                 , 'date': invoice['id']
+                                 , 'link': 'https://www.bidrl.com/myaccount/invoice/invid/' + invoice['id']
+                                 , 'items': []
+                                 , 'total_cost': invoice['invoice_total']}
+                                # items below this are not currently in invoice object but maybe we should add them?
+                                #, 'title': invoice['title']
+                                #, 'item_count': invoice['item_count']
+                                #, 'premium_rate': invoice['premium_rate']
+                                #, 'premium': invoice['premium']
+                                #, 'total_tax': invoice['total_tax']
+                                #, 'affiliate_id': invoice['affiliate_id']}
+            print(temp_invoice_dict)
+            # next: do a request to each url and get invoice date and fill items list
+            # it isn't looking like each invoice page has a convenient list of data. may have to do it the selenium way
+
+    else:
+        print("No invoices data found")
+
+
+get_invoice_data()
+
+
+'''
+from bs4 import BeautifulSoup
+
+html_content = """
+<tr>
+  <td>
+    <a href="https://www.bidrl.com/auction/high-end-auction-161-johns-rd-unit-a-south-carolina-december-10-143518/item/courtyard-by-marriott-rfid-access-key-cards-200-pack-60-retail-factory-sealed-18460997/">SB9053</a>
+  </td>
+  <td>
+    <a href="https://www.bidrl.com/auction/high-end-auction-161-johns-rd-unit-a-south-carolina-december-10-143518/item/courtyard-by-marriott-rfid-access-key-cards-200-pack-60-retail-factory-sealed-18460997/">Courtyard by Marriott RFID Access Key Cards, 200 Pack $60 retail Factory Sealed </a>
+  </td>
+  <th><span>6.000% - 0.22</span></th>
+  <th><span>3.25</span></th>
+</tr>
+<!-- Additional rows omitted for brevity -->
+<tr>
+  <td colspan="3">
+    Payment by Credit Card # XXXX3930
+    <div>12/10/2023 07:11:01 PM PT</div>
+  </td>
+  <th><span>15.87</span></th>
+</tr>
+"""
+
+soup = BeautifulSoup(html_content, 'html.parser')
+
+# Extracting invoice date from the payment info
+payment_info = soup.find('td', colspan="3")
+invoice_date = payment_info.find('div').text.strip()
+
+# Extracting items
+items = []
+rows = soup.find_all('tr')
+for row in rows:
+    cells = row.find_all(['td', 'th'])
+    if len(cells) == 4:  # Ensure the row has the correct number of cells
+        item_url = cells[0].find('a')['href']
+        item_id = cells[0].get_text(strip=True)
+        description = cells[1].get_text(strip=True)
+        tax_rate = cells[2].get_text(strip=True).split('-')[0].strip()
+        amount = cells[3].get_text(strip=True)
+        
+        items.append({
+            'id': item_id,
+            'description': description,
+            'tax_rate': tax_rate,
+            'amount': amount,
+            'url': item_url
+        })
+
+print("Invoice Date:", invoice_date)
+print("Items:")
+for item in items:
+    print(item)
+'''
+
+
+'''</tr>
+    <tr class="h">
+  <td style="width:100px">
+        <b>Lot</b></td>
+  <td><b>Description</b></td>
+        <th style="width:14%;"><b>Tax Rate</b></th>
+  <th style="width:16%;"><b>Amount</b></th>
+</tr>
+<tr >
+  <td>
+        <a href="https://www.bidrl.com/auction/high-end-auction-161-johns-rd-unit-a-south-carolina-december-10-143518/item/courtyard-by-marriott-rfid-access-key-cards-200-pack-60-retail-factory-sealed-18460997/">SB9053</a>      </td>
+  <td >
+     <a href="https://www.bidrl.com/auction/high-end-auction-161-johns-rd-unit-a-south-carolina-december-10-143518/item/courtyard-by-marriott-rfid-access-key-cards-200-pack-60-retail-factory-sealed-18460997/">Courtyard by Marriott RFID Access Key Cards, 200 Pack $60 retail Factory Sealed </a>   </td>
+    <th><span>
+   6.000% - 0.22  </span></th>
+  <th><span>
+   3.25  </span></th>
+  </tr>
+<tr class="e">
+  <td>
+        <a href="https://www.bidrl.com/auction/high-end-auction-161-johns-rd-unit-a-south-carolina-december-10-143518/item/pack-of-440-3m-aura-particulate-respirator-9205-n95-450-retail-factory-sealed-18461009/">SB9066</a>      </td>
+  <td >
+     <a href="https://www.bidrl.com/auction/high-end-auction-161-johns-rd-unit-a-south-carolina-december-10-143518/item/pack-of-440-3m-aura-particulate-respirator-9205-n95-450-retail-factory-sealed-18461009/">Pack of 440 3M Aura Particulate Respirator 9205  N95 $450 Retail Factory Sealed </a>   </td>
+    <th><span>
+   6.000% - 0.61  </span></th>
+  <th><span>
+   9.00  </span></th>
+  </tr>
+<tr >
+  <td>
+        <a href="https://www.bidrl.com/auction/high-end-auction-161-johns-rd-unit-a-south-carolina-december-10-143518/item/static-shielding-bag-100pcs-18461032/">SB9092</a>      </td>
+  <td >
+     <a href="https://www.bidrl.com/auction/high-end-auction-161-johns-rd-unit-a-south-carolina-december-10-143518/item/static-shielding-bag-100pcs-18461032/">Static Shielding Bag, 100pcs </a>   </td>
+    <th><span>
+   6.000% - 0.07  </span></th>
+  <th><span>
+   1.00  </span></th>
+  </tr>
+<tr class="h"><td colspan="4">Payments:</td></tr>
+<tr >
+  <td colspan="3">
+            Payment by Credit Card # XXXX3930            <div>
+      12/10/2023 07:11:01 PM PT    </div>
+      </td>
+  <th><span>
+    15.87  </span>
+  </th>
+</tr>
+
+<tr class="h"><td colspan="4"></td></tr>
+<tr>
+  <th colspan="3">Sub-Total: </th>
+  <th>$13.25</th>
+</tr>
+<tr>
+  <th colspan="3">Premium:</th>
+  <th>$1.72</th>
+</tr>
+<tr>
+  <th colspan="3">Tax:</th>
+  <th>$0.90</th>
+</tr>
+<tr>
+  <th colspan="3">Invoice Total:</th>
+  <th>$15.87</th>
+</tr>
+<tr>
+  <th colspan="3">
+    Balance Due:  </th>
+  <th >
+    $0.00  </th>
+</tr>
+</table>'''
 
 
 
