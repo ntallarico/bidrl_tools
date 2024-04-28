@@ -118,11 +118,10 @@ def parse_invoice_page(browser, invoice_url):
     if invoice_content:
         # pull out invoice date and number
         invoice_info = invoice_content.find('tr', class_="no-borders")
-        print(invoice_info)
-        invoice.date = invoice_info.find('th').find('span', string=re.compile(r'\d{2}/\d{2}/\d{4}')).text.strip()
-        invoice.id = invoice_info.find('th').find('span', string=re.compile(r'\d+')).text.strip()
-        #print("Invoice Date:", invoice.date)
-        #print("Invoice Number:", invoice.id)
+        invoice_info_spans = invoice_info.find('th', style="vertical-align: bottom;").find_all('span')
+        invoice.id = invoice_info_spans[0].text.strip()
+        invoice.date = invoice_info_spans[1].text.strip()
+        #print(f"inv id: {invoice.id}\ninv date: {invoice.date}")
 
         # loop through all tr rows and parse out items
         rows = soup.find_all('tr')
@@ -162,7 +161,7 @@ def parse_invoice_page(browser, invoice_url):
 # log in and pull invoices
 # requires: logged in webdriver
 # returns: list of Invoice objects
-def get_invoice_data(browser):
+def get_invoices(browser):
     '''
     in GET request for invoices page, there is a string "var invoices = " followed by a list invoice dicts
     we want to extract that list string, pull out the invoice id so we can make a url for the invoice
@@ -198,7 +197,7 @@ def get_invoice_data(browser):
         invoices = [] # list of Invoice objects to return at the end
         for invoice in invoices_data:
             invoice_url = 'https://www.bidrl.com/myaccount/invoice/invid/' + invoice['id']
-            print(f"parsing invoice at : {invoice_url}")
+            print(f"parsing invoice at: {invoice_url}")
             invoice_obj = parse_invoice_page(browser, invoice_url)
             invoices.append(invoice_obj)
         return invoices

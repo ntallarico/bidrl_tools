@@ -69,11 +69,11 @@ def test_get_invoices():
     # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
     browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
 
-    invoices = bf.get_invoice_data(browser)
+    invoices = bf.get_invoices(browser)
     for invoice in invoices:
         invoice.display()
 
-#test_get_invoices()
+test_get_invoices()
 
 
 
@@ -81,13 +81,17 @@ def test_parse_invoice_page():
     # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
     browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
 
-    invoice_url = 'https://www.bidrl.com/myaccount/invoice/invid/3262831' # broken one
-    #invoice_url = 'https://www.bidrl.com/myaccount/invoice/invid/3027107'
-
+    invoice_url = 'https://www.bidrl.com/myaccount/invoice/invid/3027107'
     invoice = bf.parse_invoice_page(browser, invoice_url)
-    invoice.display()
+    #invoice.display()
 
-test_parse_invoice_page()
+    print("\n\n")
+
+    invoice_url = 'https://www.bidrl.com/myaccount/invoice/invid/3262831' # previously broken one. bug fixed
+    invoice = bf.parse_invoice_page(browser, invoice_url)
+    #invoice.display()
+
+#test_parse_invoice_page()
 
 
 
