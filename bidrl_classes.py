@@ -39,7 +39,7 @@ class Item:
         self.max_desired_bid = max_desired_bid
 
     def display(self):
-        print(f"ID: {self.id}")
+        print(f"\nID: {self.id}")
         print(f"Auction ID: {self.auction_id}")
         print(f"Description: {self.description}")
         print(f"Tax Rate: {self.tax_rate}")
@@ -72,7 +72,7 @@ class Invoice:
         self.items.append(item)
 
     def display(self):
-        print(f"Invoice ID: {self.id}, Date: {self.date}, Link: {self.link}, Total Cost: {self.total_cost}, Expense Input Form Link: {self.expense_input_form_link}")
+        print(f"\n\nInvoice ID: {self.id}, Date: {self.date}, Link: {self.link}, Total Cost: {self.total_cost}, Expense Input Form Link: {self.expense_input_form_link}")
         print("Items:")
         for item in self.items:
             item.display()

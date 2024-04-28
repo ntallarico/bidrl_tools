@@ -10,6 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from config import user_email, user_password, google_form_link_base
 from datetime import datetime
 from bidrl_classes import Item, Invoice, Auction
+from bs4 import BeautifulSoup
 
 
 
@@ -91,97 +92,119 @@ def wait_for_element_by_ID(browser, element_name):
     #print("found!")
 
 
-# go to invoices page, set records per page to 36
-def load_page_invoices(browser, records_per_page):
-    print("Loading https://www.bidrl.com/myaccount/invoices")
-    time.sleep(1) # seems to be needed. tried to fix in various ways and this is one that worked consistently
-    browser.get('https://www.bidrl.com/myaccount/invoices')
-    time.sleep(1)
-    perpage = browser.find_element(By.ID, 'perpage-top')
-    actions = ActionChains(browser)
-    actions.move_to_element(perpage).click()
-    actions.send_keys(str(records_per_page))
-    actions.send_keys(Keys.ENTER)
-    actions.perform()
+# requires: logged in webdriver, invoice URL
+# returns: Invoice object
+def parse_invoice_page(browser, invoice_url):
+    # get html content returned by GET request to the invoice URL
+    response = browser.request('GET', invoice_url)
+    html_content = response.text
 
+    soup = BeautifulSoup(html_content, 'html.parser')
 
+    # find main invoice content block
+    invoice_content = soup.find('div', id="invoice-content")
+    #print(invoice_content)
 
-# requires: a web driver, a list of invoice links, a date object indicating the furthest back date of invoice we want to scrape
-# returns: a list of Invoice objects (one for each invoice in the link list)
-def scrape_invoices(browser, invoice_link_list, start_date):
-    invoices = []  # list of Invoice objects to return at the end
+    items = [] # list for Item objects to add to the Invoice object
 
-    for link in invoice_link_list:
-        print("going to: " + link)
-        browser.get(link) # go to invoice link
-        time.sleep(0.5)
+    invoice = Invoice(**{
+                        'id': '',
+                        'date': '',
+                        'link': invoice_url,
+                        'items': [],
+                        'total_cost': ''
+                        })
 
-        # information we want to extract for current invoice
-        invoice_date = ''
-        invoice_num = ''
-        invoice_items = []  # This will hold instances of the Item class
+    if invoice_content:
+        # pull out invoice date and number
+        invoice_info = invoice_content.find('tr', class_="no-borders")
+        print(invoice_info)
+        invoice.date = invoice_info.find('th').find('span', string=re.compile(r'\d{2}/\d{2}/\d{4}')).text.strip()
+        invoice.id = invoice_info.find('th').find('span', string=re.compile(r'\d+')).text.strip()
+        #print("Invoice Date:", invoice.date)
+        #print("Invoice Number:", invoice.id)
 
-        # gather list of all elements with tag name "tr"
-        # sometimes no tr elements are found. I don't know why. but if that's the case, keep reloading the page and trying again
-        # time out after 5 tries
-        tr_elements = browser.find_elements(By.TAG_NAME, 'tr')
-        timeout = 0
-        while len(tr_elements) == 0 and timeout <= 5:
-            print('no tr elements found. reloading')
-            browser.get(link)
-            time.sleep(0.5)
-            tr_elements = browser.find_elements(By.TAG_NAME, 'tr')
-            timeout += 1
-
-        # iterate through gathered tr elements to extract information
-        for tr in tr_elements: # each tr element is an item row
-
-            # split up text, search through it to find "Date: " and "Invoice: " and extract date and invoice num if found
-            for line in tr.text.split('\n'):
-                if "Date: " in line:
-                    invoice_date = line.split("Date: ")[1]
-                if "Invoice: " in line:
-                    invoice_num = line.split("Invoice: ")[1]
-
-            # Initialize an empty dictionary to temporarily hold item details
-            temp_item_dict = {'id': '', 'description': '', 'tax_rate': '', 'current_bid': '', 'url': ''}
-
-            # get all td elements in row, then iterate through. these are the Lot and Description columns, and where we'll find the item link
-            td_elements = tr.find_elements(By.TAG_NAME, 'td')
-            if len(td_elements) == 2:
-                temp_item_dict['id'] = td_elements[0].text
-                temp_item_dict['description'] = td_elements[1].text
+        # loop through all tr rows and parse out items
+        rows = soup.find_all('tr')
+        for row in rows:
+            cells = row.find_all(['td', 'th'])
+            if len(cells) == 4:  # ensure the row has the correct number of cells
                 try:
-                    temp_item_dict['url'] = td_elements[1].find_element(By.TAG_NAME, 'a').get_property('href')
-                except:
-                    continue
+                    item_url = cells[0].find('a')['href'] if cells[0].find('a') else 'No URL'
+                    item_id = cells[0].get_text(strip=True)
+                    description = cells[1].get_text(strip=True)
+                    tax_rate = cells[2].get_text(strip=True).split('-')[0].strip()
+                    amount = cells[3].get_text(strip=True)
 
-            # get all th elements in row, then iterate through. these are the Tax Rate and Amount columns
-            th_elements = tr.find_elements(By.TAG_NAME, 'th')
-            if len(th_elements) == 2:
-                temp_item_dict['tax_rate'] = th_elements[0].text
-                temp_item_dict['current_bid'] = th_elements[1].text
+                     # test if item scraped is a real item
+                        # ensure item_id is populated
+                        # ensure item_id != 'Lot', meaning the "item" scraped is just the header row of the table
+                     # then create item in Invoice's item list
+                    if item_id and item_id != 'Lot':
+                        invoice.items.append(Item(**{
+                            'id': item_id,
+                            'description': description,
+                            'tax_rate': tax_rate,
+                            'current_bid': amount,
+                            'url': item_url
+                        }))
+                    #invoice.items[len(items)-1].display() # call display function for most recent item added
+                    
+                except Exception as e:
+                    print(f"Error processing row: {e}")
+    else:
+        print("Parse_invoice_page() could not find '<div id=\"invoice-content\">'. Exiting program.")
+        quit()
 
-            # add scraped item if description is populated and the first value scraped isn't 'Print View'. this trashes the first garbage "item" scraped
-            if temp_item_dict['description'] and temp_item_dict['id'] != 'Print View':
-                #print(temp_item_dict)
-                invoice_items.append(Item(**temp_item_dict))
+    return invoice
 
-        print('invoice date: ' + invoice_date)
-        try:
-            invoice_date_obj = datetime.strptime(invoice_date, '%m/%d/%Y')
-            if invoice_date_obj < start_date:
-                print('encountered earlier date. breaking')
-                break
-        except:
-            print('exception. failed to parse read invoice date as date object')
-            continue
 
-        # Create an Invoice instance and add it to the invoices list
-        new_invoice = Invoice(id=invoice_num, date=invoice_date, link=link, items=invoice_items)
-        invoices.append(new_invoice)
-    
-    return invoices
+# log in and pull invoices
+# requires: logged in webdriver
+# returns: list of Invoice objects
+def get_invoice_data(browser):
+    '''
+    in GET request for invoices page, there is a string "var invoices = " followed by a list invoice dicts
+    we want to extract that list string, pull out the invoice id so we can make a url for the invoice
+    , then go to that url and extract all invoice and item data from it.
+    we return a list of invoice objects
+
+    the list looks like: [{'id': '3301997', ...}, {...}, {...}, ...]
+    each invoice dict in the list looks like the below:
+    {'id': '3301997', 'auction_group_id': '152705', 'bidder': '168516', 'number_emails_sent': '2', 'premium_rate': '13'
+    , 'auction_title': 'Oversize &#38; Furniture Auction - 161 Johns Rd. Unit A -South Carolina - April 26', 'relisting_fee': None
+    , 'amount_paid': '598.0000000', 'amount_paid_actual': '5.980', 'shipment_total': 0, 'sub_total': 5, 'adjustments': '0.00', 'fee_total': '0.00'
+    , 'fee_tax': '0.00', 'invoice_total': '5.98', 'effective_premium': '13', 'premium': '0.65', 'total_tax': '0.33'
+    , 'title': 'Auction Invoice for: Oversize &#38; Furniture Auction - 161 Johns Rd. Unit A -South Carolina - April 26', 'affiliate_id': '47'
+    , 'item_count': '3', 'picked_up': '0', 'relisting_fees': None, 'auction_buyer_premium': '13.000', 'cc_not_needed': '0', 'picked_up_count': '0'
+    , 'refund': '0.000000', 'effective_tax': 5.841, 'tax': 0.33, 'total': 5.98, 'balance': 0, 'init_balance': 0, 'discounted_total': 5.98, 'paid': True}
+    '''
+
+    post_data = {"perpage": 10000}
+    post_url = 'https://www.bidrl.com/myaccount/invoices'
+    response = browser.request('POST', post_url, data=post_data)
+    response.raise_for_status() # ensure the request was successful
+
+    # regular expression to extract the list of JSON-like objects after "var invoicesData = "
+    pattern = r'var invoicesData = (\[.*?\]);'
+    match = re.search(pattern, response.text)
+
+    if match:
+        # convert the matched string to a valid JSON object
+        invoices_json = match.group(1)
+        invoices_data = json.loads(invoices_json) # invoices_data is now a list of dicts, each for an invoice
+        #print(invoices_data)
+
+        invoices = [] # list of Invoice objects to return at the end
+        for invoice in invoices_data:
+            invoice_url = 'https://www.bidrl.com/myaccount/invoice/invid/' + invoice['id']
+            print(f"parsing invoice at : {invoice_url}")
+            invoice_obj = parse_invoice_page(browser, invoice_url)
+            invoices.append(invoice_obj)
+        return invoices
+    else:
+        print("get_invoice_data(): No invoices data found. Exiting.")
+        quit()
 
 
 # calculates total cost of each invoice
