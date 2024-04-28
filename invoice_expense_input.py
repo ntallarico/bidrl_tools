@@ -9,6 +9,8 @@ import bidrl_functions as bf
 from bidrl_classes import Item, Invoice
 
 
+'''
+# DEPRECIATED
 # gathers list of invoice links
 # requires: web driver object that has pulled up and successfully logged in to bidrl.com
 # returns: list of invoice links from logged in account
@@ -34,10 +36,7 @@ def scrape_invoice_links(browser):
                         invoice_links.append(td.find_element(By.TAG_NAME, 'a').get_property('href'))
                 except: continue
     
-    return invoice_links
-
-
-
+    return invoice_links'''
 
 
 # show the user each item and answer: should item be paid for by [N]ick, [B]ry, or [T]ogether
@@ -103,12 +102,9 @@ def main():
     # open chrome window and set size and position
     browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless') # use imported credentials from config.py
 
-    # gather list of invoice links
-    invoice_links = scrape_invoice_links(browser)
-
-    # go through list of invoice links and generate a list of Invoice objects, each containing all the information from each invoice linked
+    # get list of Invoice objects
     # goes back only as far as the date contained in start_date_obj
-    invoices = bf.scrape_invoices(browser, invoice_links, start_date_obj)
+    invoices = bf.get_invoices(browser)#, start_date_obj)
 
     # calculate total cost of each invoice and item
     bf.caculate_total_cost_of_invoices(invoices)
