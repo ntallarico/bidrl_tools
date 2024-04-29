@@ -134,9 +134,9 @@ def login_refresh(browser, last_login_time, last_login_time_unix):
         print(f"Login check success. Last login: {last_login_time}. Time remained logged in: {logged_in_time}.")
 
 
-def main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to account for POST time to API. don't want to extend bid time if we can avoid
-         , auto_bid__interval = 10
-         , login_refresh__interval = 60 # we want to keep this reasonable because it actually submits a request to bidrl
+def main(seconds_before_closing_to_bid # add 5 secs to account for POST time to API. don't want to extend bid time if we can avoid
+         , auto_bid__interval
+         , login_refresh__interval # we want to keep this reasonable because it actually submits a request to bidrl
          ):
 
     # read favorite_items_to_input_max_bid.csv and return list of item objects we intend to bid on
