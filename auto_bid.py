@@ -148,7 +148,7 @@ seconds_before_closing = 60 * 2 + refresh_rate + 5 # 2 mins 5 secs
 
 print(f"\nWe intend to bid on {item_count_with_desired_bid} items, {seconds_before_closing} seconds before they close, checking every {refresh_rate} seconds.\n")
 
-
+'''
 # every refresh_rate seconds, check each item to see if it is time to bid
 # if it is, bid on it and remove it from the bid list
 # once the list is empty, end the loop
@@ -187,4 +187,54 @@ while len(items_to_bid_on) > 0:
 
 print("No remaining items in bid list with max_desired_bid set. Exiting program.")
 browser.quit()
+'''
 
+def auto_bid(browser, items_to_bid_on):
+    for item in items_to_bid_on:
+        remaining_seconds = item.end_time_unix - current_time_unix
+        remaining_time_string = convert_seconds_to_time_string(remaining_seconds)
+        #print(f"{remaining_time_string} remaining on item (intending to bid ${item.max_desired_bid}): {item.description}")
+        print(item.description)
+        print(f"{remaining_time_string} remaining. Intending to bid ${item.max_desired_bid}.")
+        
+        # bid on the item if time remaining on item is <= our set seconds_before_closing time
+        if remaining_seconds <= seconds_before_closing:
+            bf.bid_on_item(item, item.max_desired_bid, browser)
+            print('')
+            items_to_bid_on.remove(item)
+
+def login_check_and_refresh(browser, last_login_time, last_login_time_unix):
+    if bf.check_if_login_success(browser) != 0:
+        print("check_if_login_success() determined we are logged out!")
+        print("Tearing down webdriver, initiating new webdriver, and starting login process.")
+        browser.quit()
+        browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+        last_login_time = get_current_system_time_formatted()
+        last_login_time_unix = int(time.time())
+    else:
+        logged_in_time = convert_seconds_to_time_string(int(time.time()) - last_login_time_unix)
+        print(f"\nLogin check success. Last login: {last_login_time}. We've been logged in for {logged_in_time}.")
+
+
+time_to_wait_until_running_auto_bid = 10
+time_to_wait_until_running_login_check_and_refresh = 20
+
+
+# every refresh_rate seconds, check each item to see if it is time to bid
+# if it is, bid on it and remove it from the bid list
+# once the list is empty, end the loop
+while len(items_to_bid_on) > 0:
+    print('----------------------------------------------------------------------------------------------------\n')
+
+    current_time_unix = int(time.time()) # get unix time
+
+    auto_bid(browser, items_to_bid_on)
+
+    login_check_and_refresh(browser, last_login_time, last_login_time_unix)
+
+    time.sleep(10)
+
+    
+
+print("No remaining items in bid list with max_desired_bid set. Exiting program.")
+browser.quit()
