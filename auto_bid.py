@@ -50,16 +50,16 @@ def convert_seconds_to_time_string(seconds):
     time_string = ''
 
     if days > 0:
-        time_string += f"{days}D, "
+        time_string += f"{days}d, "
 
     if hours > 0:
-        time_string += f"{hours}H, "
+        time_string += f"{hours}h, "
 
     if minutes > 0:
-        time_string += f"{minutes}M, "
+        time_string += f"{minutes}m, "
 
     if seconds > 0:
-        time_string += f"{seconds}S"
+        time_string += f"{seconds}s"
     return time_string
 
 
@@ -88,6 +88,11 @@ def create_item_objects_from_rows(item_rows_list):
         item_list.append(Item(**temp_item_dict))
     return item_list
 
+def get_current_system_time_formatted():
+    system_time = datetime.now() # get current system time
+    format_1 = system_time.strftime("%m/%d/%y %I:%M%p").lower() # format system time as desired
+    format_2 = format_1.lstrip("0").replace("/0", "/") # remove leading zeros
+    return format_2
 
 item_list = create_item_objects_from_rows(read_rows)
 
@@ -101,20 +106,19 @@ for item in item_list:
     elif item.max_desired_bid != '':
         item_count_with_desired_bid += 1
         items_to_bid_on.append(item)
-        print('')
+        '''print('')
         print(f"item_id: {item.id}")
         print(f"auction_id: {item.auction_id}")
         print(f"description: {item.description}")
         print(f"url: {item.url}")
         print(f"end_time_unix: {item.end_time_unix}")
-        print(f"max_desired_bid: {item.max_desired_bid}")
+        print(f"max_desired_bid: {item.max_desired_bid}")'''
     else:
         item_count_no_desired_bid += 1
 
-print('')
-print(f"Items with max_desired_bid: {item_count_with_desired_bid}")
+print(f"\nItems with max_desired_bid: {item_count_with_desired_bid}")
 print(f"Items without max_desired_bid: {item_count_no_desired_bid}")
-print(f"Items with 0 max_desired_bid: {item_count_zero_desired_bid}")
+print(f"Items with 0 max_desired_bid: {item_count_zero_desired_bid}\n")
 
 
 # sort list of items in ascending order based on their end time
@@ -123,11 +127,15 @@ items_to_bid_on.sort(key=lambda x: x.end_time_unix)
 
 # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
 browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+last_login_time = get_current_system_time_formatted()
+last_login_time_unix = int(time.time())
 
 
-
-# how often to check times (in seconds)?
+# how often to check times (in seconds)
 refresh_rate = 10
+
+# how often to check if we are still logged in (in seconds)
+login_test_refresh_rate = 60
 
 # how soon before closing to bid (in seconds)?
 # I add 5 seconds to give api time to post bid so that I don't risk extending bidding time (even by a second or two)
@@ -145,12 +153,16 @@ print(f"\nWe intend to bid on {item_count_with_desired_bid} items, {seconds_befo
 # if it is, bid on it and remove it from the bid list
 # once the list is empty, end the loop
 while len(items_to_bid_on) > 0:
+    print('----------------------------------------------------------------------------------------------------\n')
+
     current_unix_time = int(time.time()) # get unix time
 
     for item in items_to_bid_on:
         remaining_seconds = item.end_time_unix - current_unix_time
         remaining_time_string = convert_seconds_to_time_string(remaining_seconds)
-        print(f"{remaining_time_string} remaining on item: {item.description}")
+        #print(f"{remaining_time_string} remaining on item (intending to bid ${item.max_desired_bid}): {item.description}")
+        print(item.description)
+        print(f"{remaining_time_string} remaining. Intending to bid ${item.max_desired_bid}.")
         
         # bid on the item if time remaining on item is <= our set seconds_before_closing time
         if remaining_seconds <= seconds_before_closing:
@@ -158,8 +170,20 @@ while len(items_to_bid_on) > 0:
             print('')
             items_to_bid_on.remove(item)
 
-    print('')
+    if bf.check_if_login_success(browser) != 0:
+        print("check_if_login_success() determined we are logged out!")
+        print("Tearing down webdriver, initiating new webdriver, and starting login process.")
+        browser.quit()
+        browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+        last_login_time = get_current_system_time_formatted()
+        last_login_time_unix = int(time.time())
+    else:
+        logged_in_time = convert_seconds_to_time_string(int(time.time()) - last_login_time_unix)
+        print(f"\nLogin check success. Last login: {last_login_time}. We've been logged in for {logged_in_time}.")
+
     time.sleep(10)
+
+    
 
 print("No remaining items in bid list with max_desired_bid set. Exiting program.")
 browser.quit()
