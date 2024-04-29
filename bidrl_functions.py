@@ -92,9 +92,9 @@ def wait_for_element_by_ID(browser, element_name):
     #print("found!")
 
 
-# requires: logged in webdriver, invoice URL
+# requires: logged in webdriver, invoice URL, and a date_obj indicating the date of the earliest invoice to scrape
 # returns: Invoice object
-def parse_invoice_page(browser, invoice_url):
+def parse_invoice_page(browser, invoice_url, earliest_invoice_date):
     # get html content returned by GET request to the invoice URL
     response = browser.request('GET', invoice_url)
     html_content = response.text
@@ -123,6 +123,12 @@ def parse_invoice_page(browser, invoice_url):
         invoice.date = invoice_info_spans[1].text.strip()
         #print(f"inv id: {invoice.id}\ninv date: {invoice.date}")
 
+        # if date of invoice is earlier than earliest_invoice_date, return nothing
+        # if function is called by get_invoices(), then get_invoices() knows to then break the invoice processing loop
+        invoice_date_obj = datetime.strptime(invoice.date, "%m/%d/%Y").date()
+        if invoice_date_obj < earliest_invoice_date:
+            return
+
         # loop through all tr rows and parse out items
         rows = soup.find_all('tr')
         for row in rows:
@@ -132,7 +138,9 @@ def parse_invoice_page(browser, invoice_url):
                     item_url = cells[0].find('a')['href'] if cells[0].find('a') else 'No URL'
                     item_id = cells[0].get_text(strip=True)
                     description = cells[1].get_text(strip=True)
-                    tax_rate = cells[2].get_text(strip=True).split('-')[0].strip()
+                    #tax_rate = cells[2].get_text(strip=True).split('-')[0].strip()
+                    tax_rate_text = cells[2].get_text(strip=True)
+
                     amount = cells[3].get_text(strip=True)
 
                      # test if item scraped is a real item
@@ -143,7 +151,7 @@ def parse_invoice_page(browser, invoice_url):
                         invoice.items.append(Item(**{
                             'id': item_id,
                             'description': description,
-                            'tax_rate': tax_rate,
+                            'tax_rate': float(tax_rate_text[0:5]) * 0.01,
                             'current_bid': amount,
                             'url': item_url
                         }))
@@ -159,9 +167,9 @@ def parse_invoice_page(browser, invoice_url):
 
 
 # log in and pull invoices
-# requires: logged in webdriver
+# requires: logged in webdriver, date_obj indicating the date of the earliest invoice to scrape
 # returns: list of Invoice objects
-def get_invoices(browser):
+def get_invoices(browser, earliest_invoice_date):
     '''
     in GET request for invoices page, there is a string "var invoices = " followed by a list invoice dicts
     we want to extract that list string, pull out the invoice id so we can make a url for the invoice
@@ -198,8 +206,13 @@ def get_invoices(browser):
         for invoice in invoices_data:
             invoice_url = 'https://www.bidrl.com/myaccount/invoice/invid/' + invoice['id']
             print(f"parsing invoice at: {invoice_url}")
-            invoice_obj = parse_invoice_page(browser, invoice_url)
-            invoices.append(invoice_obj)
+            invoice_obj = parse_invoice_page(browser, invoice_url, earliest_invoice_date)
+            # if parse_invoice_page() returned an object, then append it to invoices list and continue
+            # if not, that means earliest_invoice_date was reached, and we exit this function, returning our invoices list
+            if invoice_obj: 
+                invoices.append(invoice_obj)
+            else:
+                return invoices
         return invoices
     else:
         print("get_invoice_data(): No invoices data found. Exiting.")
@@ -213,13 +226,10 @@ def caculate_total_cost_of_invoices(invoices):
     for invoice in invoices:
         invoice_total_cost = 0
         for item in invoice.items:
-            taxed_amount = float(item.tax_rate[-4:]) # last 4 characters of string in Tax Rate field, converted to float
-            total_cost_of_item = taxed_amount + float(item.current_bid)
-            invoice_total_cost += total_cost_of_item
-            item.total_cost = total_cost_of_item
+            item.total_cost = item.tax_rate + float(item.current_bid)
+            invoice_total_cost += item.total_cost
 
         invoice.total_cost = invoice_total_cost
-
     return
 
 

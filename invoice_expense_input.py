@@ -86,39 +86,22 @@ def generate_expense_input_form_links(invoices):
 
         invoice.expense_input_form_link = form_link
 
-
-# main driver function for this script
-def main():
+# get user input to determine when to stop pulling invoices
+# returns: date object that indicates the date of the earliest invoice we want to pull
+def get_start_date_from_user():
     # get user input to determine when to stop pulling invoices
     print("How far to go back? Please enter a start date for invoice gathering. (ex: 4/16/24)")
-    #start_date = input("Start date: ")
-    start_date = '4/25/24' # for debugging. switch this out with above line
+    start_date = input("Start date: ")
     try:
-        start_date_obj = datetime.strptime(start_date, '%m/%d/%y')
+        start_date_obj = datetime.strptime(start_date, '%m/%d/%y').date()
     except ValueError:
-        print("Error: Invalid date format. Please enter the date in the format 'mm/dd/yy'. Program will now stop.")
-        sys.exit()
+        print("Error: Invalid date format. Please enter the date in the format 'mm/dd/yy'. Exiting program.")
+        quit()
+    return start_date_obj
 
-    # open chrome window and set size and position
-    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless') # use imported credentials from config.py
-
-    # get list of Invoice objects
-    # goes back only as far as the date contained in start_date_obj
-    invoices = bf.get_invoices(browser)#, start_date_obj)
-
-    # calculate total cost of each invoice and item
-    bf.caculate_total_cost_of_invoices(invoices)
-
-    #browser.close() # closes the browser active window.
-    #browser.quit() # closes all browser windows and ends driver's session/process.
-
-    # now that we have all of our invoices scraped and post-processed information, have the user decide cost split for each item
-    user_decide_item_cost_split(invoices)
-
-    # generate google form expense input link for each invoice
-    generate_expense_input_form_links(invoices)
-
-    # print out all pre-formed google links for entering expenses along with information about each invoice
+# print out all pre-formed google links for entering expenses along with information about each invoice
+# requires: list of invoice objects
+def print_expense_input_links(invoices):
     print('\n\n\n\nInvoices: ')
     for invoice in invoices:
         print('\nInvoice #' + invoice.id)
@@ -133,12 +116,43 @@ def main():
             elif item.cost_split == 't': purchaser = 'Together'
             print('$' + str(round(item.total_cost, 2)) + ' - ' + item.description + ' - ' + purchaser)
 
-    # print out all pre-formed google links together so I can input them into todoist as a block
+
+# print out all pre-formed google links together so I can input them into todoist as a block
+def bulk_print_expense_input_links(invoices):
     print('\n\n\n\nInvoice form links for Todoist copy/paste (same links as above): ')
     for invoice in invoices:
         print(invoice.expense_input_form_link)
 
+# main driver function for this script
+def main():#
+    earliest_invoice_date = get_start_date_from_user()
+    #earliest_invoice_date = datetime.strptime('4/25/24', '%m/%d/%y').date() # for debugging
+
+    # open chrome window and set size and position
+    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless') # use imported credentials from config.py
+
+    # get list of Invoice objects. goes back only as far as the date contained in start_date_obj
+    invoices = bf.get_invoices(browser, earliest_invoice_date)
+
+    # calculate total cost of each invoice and item
+    bf.caculate_total_cost_of_invoices(invoices)
+
+    # tear down browser object
     browser.quit()
+
+    # now that we have all of our invoices scraped and post-processed information, have the user decide cost split for each item
+    user_decide_item_cost_split(invoices)
+
+    # generate google form expense input link for each invoice
+    generate_expense_input_form_links(invoices)
+
+    # print out all pre-formed google links for entering expenses along with information about each invoice
+    print_expense_input_links(invoices)
+
+    # print out all pre-formed google links together so I can input them into todoist as a block
+    bulk_print_expense_input_links(invoices)
+    
 
 
 main()
+
