@@ -182,5 +182,3 @@ print(response.text[0:15])
 
 
 
-
-
