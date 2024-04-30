@@ -114,26 +114,7 @@ other api reference i've seen to explore:
 
 
 
-'''
-questions I'd like to answer in reporting once I have full database:
-- what bidding strategy / timing works best? bidding one single time at 2mins out? 10 seconds out? is there a difference on average at all?
-    - need to analyze full population's bid history
 
-'''
-
-
-
-
-
-'''
-surveillance project
-
-- I'll need a list of all auction ids
-    - brute force?? need to be careful not to DDOS lol
-- then from each auction id I'll need a list of all item ids in those auctions
-    - possibly an API call for this? like a GetItems or something
-- then I'll just need to loop through all auctions, then all items under each auction, then I'll have all the data! easy as that
-'''
 
 
 
