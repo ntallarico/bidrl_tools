@@ -3,3 +3,4 @@ certifi>=2024.2.2
 requests>=2.31.0
 selenium-requests>=2.0.4
 beautifulsoup4>=4.12.3
+pyodbc>=5.1.0
