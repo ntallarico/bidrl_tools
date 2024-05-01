@@ -141,13 +141,13 @@ def main(seconds_before_closing_to_bid # add 5 secs to account for POST time to 
 
     # read favorite_items_to_input_max_bid.csv and return list of item objects we intend to bid on
     items_to_bid_on = read_user_input_csv()
+
+    print(f"\nWe intend to bid on {len(items_to_bid_on)} items, {seconds_before_closing_to_bid} seconds before they close, checking every {auto_bid__interval} seconds.\n")
     
     # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
     browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
     last_login_time_string = time_formatted()
     last_login_time_unix = time_unix()
-
-    print(f"\nWe intend to bid on {len(items_to_bid_on)} items, {seconds_before_closing_to_bid} seconds before they close, checking every {auto_bid__interval} seconds.\n")
 
     # set x__last_run_time to 0 to run immediately when loop processes
     # set to time_unix() to wait x__interval amount of seconds first
