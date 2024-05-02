@@ -52,7 +52,7 @@ def try_login(browser, login_name, login_password):
         return 1
 
 
-# returns 0 if login success and 1 if failure
+# returns 0 if login success, 1 if failure, and 2 if the function itself failed
 # we may need a better way of determining login success at some point, but for now, this works
 # as of now, if login fails the page returned starts with "<!doctype html>" instead of "<!DOCTYPE html>"
 def check_if_login_success(browser):
@@ -64,7 +64,7 @@ def check_if_login_success(browser):
         else: return 1
     except Exception as e:
         print(f"check_if_login_success() failed with exception: {e}")
-        return 1
+        return 2
 
 
 # this function initializes and returns a webdriver object that has been logged in to bidrl.com with credentials supplied in config.py
@@ -76,10 +76,14 @@ def get_logged_in_webdriver(login_name, login_password, headless = ''):
         print(f"Attempt {n} to log in to account: {login_name}")
         try_login_result = try_login(browser, login_name, login_password) # run try_login function, set try_login_result to 0 or 1 depending on success
         if try_login_result == 1:
-            print('Login failed: error in attempting to find elements of login form or execute login steps')
+            print('Login failed: error in attempting to find elements of login form or execute login steps.')
+            time.sleep(1)
         elif check_if_login_success(browser) == 1:
-            print('Login failed: username or password incorrect. Exiting program.')
-            quit() # exit current python script
+            print('Login failed: username or password incorrect.')
+            time.sleep(1)
+        elif check_if_login_success(browser) == 2:
+            print('check_if_login_success() failed.')
+            time.sleep(1)
         else:
             print('Login succeeded!')
             return browser
