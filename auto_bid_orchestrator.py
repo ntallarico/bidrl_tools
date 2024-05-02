@@ -8,7 +8,7 @@ def is_process_running(pid):
     return psutil.pid_exists(pid)
 
 # ensure auto_bid.py is always running
-def run_script():
+def run_auto_bid():
     # start auto_bid.py and get the process ID
     process = subprocess.Popen(['python', 'auto_bid.py'])
     pid = process.pid
@@ -26,4 +26,4 @@ def run_script():
         time.sleep(20) # wait 20 seconds before checking again
 
 if __name__ == "__main__":
-    run_script()
+    run_auto_bid()
