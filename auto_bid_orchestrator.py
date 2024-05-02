@@ -3,13 +3,13 @@ import psutil
 import time
 
 
-# Check if there is any running process that matches the given pid
+# check if there is any running process that matches a given pid
 def is_process_running(pid):
     return psutil.pid_exists(pid)
 
-# Ensure auto_bid.py is always running
+# ensure auto_bid.py is always running
 def run_script():
-    # Start auto_bid.py and get the process ID
+    # start auto_bid.py and get the process ID
     process = subprocess.Popen(['python', 'auto_bid.py'])
     pid = process.pid
     print(f"Started auto_bid.py with PID: {pid}")
