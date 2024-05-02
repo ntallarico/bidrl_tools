@@ -82,7 +82,7 @@ def get_logged_in_webdriver(login_name, login_password, headless = ''):
             print('Login failed: username or password incorrect.')
             time.sleep(1)
         elif check_if_login_success(browser) == 2:
-            print('check_if_login_success() failed.')
+            print('check_if_login_success() failed to properly complete execution.')
             time.sleep(1)
         else:
             print('Login succeeded!')
