@@ -183,7 +183,7 @@ main(seconds_before_closing_to_bid = 120 + 5
 
 
 
-'''
+r"""
 1/16 Wire Rope Kit Factory Sealed
         10m, 53s remaining. Intending to bid $3.
 ----------------------------------------------------------------------------------------------------
@@ -263,7 +263,7 @@ Traceback (most recent call last):
   File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\site-packages\requests\adapters.py", line 532, in send
     raise ReadTimeout(e, request=request)
 requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='www.bidrl.com', port=443): Read timed out. (read timeout=None)
-'''
+"""
 
 
 
