@@ -56,11 +56,15 @@ def try_login(browser, login_name, login_password):
 # we may need a better way of determining login success at some point, but for now, this works
 # as of now, if login fails the page returned starts with "<!doctype html>" instead of "<!DOCTYPE html>"
 def check_if_login_success(browser):
-    response = browser.request('GET', 'https://www.bidrl.com/myaccount/myitems')
-    #print(response.text[0:15])
-    if response.text[0:15] == '<!DOCTYPE html>':
-        return 0
-    else: return 1
+    try:
+        response = browser.request('GET', 'https://www.bidrl.com/myaccount/myitems')
+        #print(response.text[0:15])
+        if response.text[0:15] == '<!DOCTYPE html>':
+            return 0
+        else: return 1
+    except Exception as e:
+        print(f"check_if_login_success() failed with exception: {e}")
+        return 1
 
 
 # this function initializes and returns a webdriver object that has been logged in to bidrl.com with credentials supplied in config.py
