@@ -134,7 +134,7 @@ def login_refresh(browser, last_login_time, last_login_time_unix):
         print(f"Login check success. Last login: {last_login_time}. Time remained logged in: {logged_in_time}.")
 
 
-def main(seconds_before_closing_to_bid # add 5 secs to account for POST time to API. don't want to extend bid time if we can avoid
+def auto_bid_main(seconds_before_closing_to_bid # add 5 secs to account for POST time to API. don't want to extend bid time if we can avoid
          , auto_bid__interval
          , login_refresh__interval # we want to keep this reasonable because it actually submits a request to bidrl
          ):
@@ -174,10 +174,10 @@ def main(seconds_before_closing_to_bid # add 5 secs to account for POST time to 
         browser.quit()
 
 
-
-main(seconds_before_closing_to_bid = 120 + 5
-         , auto_bid__interval = 5
-         , login_refresh__interval = 60)
+if __name__ == "__main__":
+  auto_bid_main(seconds_before_closing_to_bid = 120 + 5
+          , auto_bid__interval = 5
+          , login_refresh__interval = 60)
 
 
 
