@@ -17,7 +17,10 @@ from bidrl_classes import Item, Invoice, Auction
 
 def get_auction_urls(affiliate_company_name = 'south-carolina'):
     # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
-    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+    #browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+
+    # get an initialized web driver. we do not need it to be logged in for scraping auction urls from an affiliate
+    browser = bf.init_webdriver('headless')
 
     get_url = "https://www.bidrl.com/api/landingPage/" + affiliate_company_name
 
