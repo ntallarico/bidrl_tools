@@ -393,7 +393,7 @@ def get_open_auctions(browser, affiliate_company_name = 'south-carolina'):
         return auctions
     else:
         print(f"Failed to retrieve data: {response.status_code}")
-        return 0
+        return 1
     
 
 # parses the json response returned by bid_on_item() and performs next steps
