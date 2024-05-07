@@ -1,5 +1,5 @@
 '''
-This script generates a list of auction links to go through, each set to show the maximum items per page.
+This script generates a list of auction links, each set to show the maximum items per page.
 '''
 
 
