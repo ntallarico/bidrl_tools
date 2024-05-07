@@ -169,8 +169,8 @@ def auto_bid_main(seconds_before_closing_to_bid # add 5 secs to account for POST
                 login_refresh__last_run_time = time_unix()
 
             time.sleep(1)
-    except KeyboardInterrupt:
-        print("Received KeyboardInterrupt. Tearing down browser object and exiting program.")
+    finally:
+        print("Loop interrupted. Tearing down browser object and exiting program.")
         browser.quit()
 
 
