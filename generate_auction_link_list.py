@@ -1,3 +1,8 @@
+'''
+This script generates a list of auction links to go through, each set to show the maximum items per page.
+'''
+
+
 import os, sys, getpass
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
