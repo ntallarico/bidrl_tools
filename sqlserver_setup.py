@@ -138,12 +138,80 @@ if __name__ == "__main__":
 
 
 
+'''
+schema plan:
+
+We're not going to make a separate table for user-item stuff. we're going to design this schema
+from the perspective of a single user running these tools for personal use.
+If at some point in the distant future we had some need to track multiple users, we could make
+a separate table for user_items or something and put all our custom and user-related fields in it
+like is_favorite, max_desired_bid, cost_split, etc.
+For now, we're going to make a giant items table that has all the fields we could need for each item.
+I'm operating in this way to optimize ease of use of this system for myself.
+In terms of query efficiency, I'll only reference this giant table to get specific columns I may need,
+and I'll create an index on item_id. If efficiency ends up being abysmal, then I may consider
+splitting it up in the future, but for now I'm optimizing for simplicity of development and use.
+Single table for all Items, Auctions, Invoices, etc. and then fact tables ofc, like bid history
 
 
 
 
 
+CREATE TABLE Items (
+    item_id NVARCHAR(255) PRIMARY KEY
+    , auction_id NVARCHAR(255)
+    , description TEXT
+    , tax_rate DECIMAL(5, 2)
+    , buyer_premium DECIMAL(5, 2)
+    , current_bid DECIMAL(10, 2)
+    , url NVARCHAR(255)
+    , highbidder_username NVARCHAR(255)
+    , lot_number NVARCHAR(255)
+    , bidding_status NVARCHAR(255)
+    , end_time_unix BIGINT
+    , is_favorite BOOLEAN
+    , bid_count INT
+    , total_cost DECIMAL(10, 2)
+    , cost_split TEXT
+    , max_desired_bid DECIMAL(10, 2)
+);
 
-# commits the current transaction to the database
-# this means that all the operations performed in the transaction are permanently saved in the database
-#conn.commit()
+
+CREATE TABLE Auctions (
+    auction_id NVARCHAR(255) PRIMARY KEY
+    , url NVARCHAR(255)
+    , title NVARCHAR(255)
+    , item_count INT
+    , start_datetime DATETIME
+    , status NVARCHAR(255)
+);
+
+
+CREATE TABLE Invoices (
+    invoice_id NVARCHAR(255) PRIMARY KEY
+    , date DATE
+    , link NVARCHAR(255)
+    , total_cost DECIMAL(10, 2)
+    , expense_input_form_link NVARCHAR(255)
+);
+
+
+CREATE TABLE Users (
+    username NVARCHAR(255) PRIMARY KEY
+);
+
+
+CREATE TABLE Bid_History (
+    bid_id NVARCHAR(255) PRIMARY KEY
+    , item_id NVARCHAR(255)
+    , bid DECIMAL(10, 2)
+    , user_name NVARCHAR(255)
+    , bid_time DATETIME
+    , time_of_bid DATETIME
+    , time_of_bid_unix BIGINT
+    , buyer_number NVARCHAR(255) NULL
+    , description NVARCHAR(512)
+);
+
+
+'''
