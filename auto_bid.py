@@ -102,7 +102,7 @@ def read_user_input_csv():
     return items_to_bid_on
 
 
-def auto_bid(browser, items_to_bid_on, seconds_before_closing_to_bid):
+def print_items_status(items_to_bid_on):
     print('\n----------------------------------------------------------------------------------------------------')
     current_time_unix = int(time.time())
     for item in items_to_bid_on:
@@ -111,13 +111,18 @@ def auto_bid(browser, items_to_bid_on, seconds_before_closing_to_bid):
         #print(f"{remaining_time_string} remaining on item (intending to bid ${item.max_desired_bid}): {item.description}")
         print(item.description)
         print(f"\t{remaining_time_string} remaining. Intending to bid ${item.max_desired_bid}.")
-        
-        # bid on the item if time remaining on item is <= our set seconds_before_closing_to_bid time
+    print('----------------------------------------------------------------------------------------------------')
+
+
+def auto_bid(browser, items_to_bid_on, seconds_before_closing_to_bid):
+    current_time_unix = int(time.time())
+    # loop through each item and bid on it if the time remaining on the item is <= our set seconds_before_closing_to_bid time
+    for item in items_to_bid_on:
+        remaining_seconds = item.end_time_unix - current_time_unix
         if remaining_seconds <= seconds_before_closing_to_bid:
             bf.bid_on_item(item, item.max_desired_bid, browser)
             print('')
             items_to_bid_on.remove(item)
-    print('----------------------------------------------------------------------------------------------------')
 
 
 def login_refresh(browser, last_login_time, last_login_time_unix):
@@ -135,7 +140,8 @@ def login_refresh(browser, last_login_time, last_login_time_unix):
 
 
 def auto_bid_main(seconds_before_closing_to_bid # add 5 secs to account for POST time to API. don't want to extend bid time if we can avoid
-         , auto_bid__interval
+         , auto_bid__interval # how often to check if it is time to bid on each item (and then bid if it is)
+         , print_items_status__interval # how often to print times remaining for all items
          , login_refresh__interval # we want to keep this reasonable because it actually submits a request to bidrl
          ):
 
@@ -153,18 +159,24 @@ def auto_bid_main(seconds_before_closing_to_bid # add 5 secs to account for POST
     # set to time_unix() to wait x__interval amount of seconds first
     auto_bid__last_run_time = 0
     login_refresh__last_run_time = 0
+    print_items_status__last_run_time = 0
 
     try:
         # loop until KeyboardInterrupt, testing if it has been x_function__interval seconds since last run of x_function()
         # if it has been, run x_function(), then test the next function and its corresponding times
         while True:
+            # check if time to run: print_items_status()
+            if time_unix() - print_items_status__last_run_time >= print_items_status__interval:
+                print_items_status(items_to_bid_on)
+                print_items_status__last_run_time = time_unix()
+
+            # check if time to run: auto_bid()
             if time_unix() - auto_bid__last_run_time >= auto_bid__interval:
-                #print(f"{time_unix() - auto_bid__last_run_time} seconds since auto_bid() last completed. Calling auto_bid().")
                 auto_bid(browser, items_to_bid_on, seconds_before_closing_to_bid)
                 auto_bid__last_run_time = time_unix()
 
+            # check if time to run: login_refresh()
             if time_unix() - login_refresh__last_run_time >= login_refresh__interval:
-                #print(f"{time_unix() - login_refresh__last_run_time} seconds since login_refresh() last completed. Calling login_refresh().")
                 login_refresh(browser, last_login_time_string, last_login_time_unix)
                 login_refresh__last_run_time = time_unix()
 
@@ -177,6 +189,7 @@ def auto_bid_main(seconds_before_closing_to_bid # add 5 secs to account for POST
 if __name__ == "__main__":
   auto_bid_main(seconds_before_closing_to_bid = 120 + 5
           , auto_bid__interval = 5
+          , print_items_status__interval = 60
           , login_refresh__interval = 60)
 
 
