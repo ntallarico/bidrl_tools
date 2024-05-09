@@ -126,8 +126,8 @@ def sqlserver_setup():
 
 
     
-    cursor = conn.cursor()
     # continue development of new table creation code here and then move to functions
+    cursor = conn.cursor()
 
 
 
