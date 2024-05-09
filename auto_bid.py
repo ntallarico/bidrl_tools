@@ -108,9 +108,9 @@ def print_items_status(items_to_bid_on):
     for item in items_to_bid_on:
         remaining_seconds = item.end_time_unix - current_time_unix
         remaining_time_string = convert_seconds_to_time_string(remaining_seconds)
-        #print(f"{remaining_time_string} remaining on item (intending to bid ${item.max_desired_bid}): {item.description}")
-        print(item.description)
-        print(f"\t{remaining_time_string} remaining. Intending to bid ${item.max_desired_bid}.")
+        print(f"{remaining_time_string} remaining. Intending to bid ${item.max_desired_bid}: {item.description}")
+        #print(item.description)
+        #print(f"\t{remaining_time_string} remaining. Intending to bid ${item.max_desired_bid}.")
     print('----------------------------------------------------------------------------------------------------')
 
 
