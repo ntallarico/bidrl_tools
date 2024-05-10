@@ -7,56 +7,59 @@ from selenium.webdriver.firefox.options import Options
 from seleniumrequests import Firefox
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from config import user_email, user_password, google_form_link_base
+from config import user_email, user_password, sql_server_name, sql_database_name, sql_admin_username, sql_admin_password
 from datetime import datetime
 from bidrl_classes import Item, Invoice, Auction
-from bs4 import BeautifulSoup
 import bidrl_functions as bf
-
-
-
-
-
 import pyodbc
 
 
+'''
+### step 1:
+send a POST request to: https://www.bidrl.com/api/auctions
+with payload:
+    {
+        "filters[startDate]": 04/11/2024
+        "filters[endDate]": 05/10/2024
+        "filters[perpage]": 100
+        "past_sales": true
+    }
 
-# Set Up Connection
+from this, we get all of our auction urls and ids, and any other information that can be filled in about an auction
 
 
-# Connection parameters
-server = 'your_server_name'
-database = 'BFDB'
-username = 'your_username'
-password = 'your_password'
 
-# Connection string
-conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};'
-                      f'SERVER={server};'
-                      f'DATABASE={database};'
-                      f'UID={username};'
-                      f'PWD={password}')
+### step 2:
+go through each auction entry and send a POST request to: https://www.bidrl.com/api/getitems
+with payload:
+    {
+        "auction_id": auction_id,
+        "filters[perpage]": 10000
+    }
+
+from this, we get all of our item urls and ids
+
+
+### step 3:
+go through each item and send a POST request to https://www.bidrl.com/api/ItemData
+with payload:
+    {
+        "item_id": extracted_ids['item_id'],
+        "auction_id": extracted_ids['auction_id']
+    }
+
+from this, we get all of our item data including bid history for each item
+
+
+
+
+
+'''
+
+
+conn = bf.init_sql_connection(sql_server_name, sql_database_name, sql_admin_username, sql_admin_password)
+
 cursor = conn.cursor()
-
-
-
-
-
-# Create Tables
-
-cursor.execute('''
-CREATE TABLE items (
-    item_id INT PRIMARY KEY,
-    description NVARCHAR(255),
-    auction_id INT,
-    end_time_unix BIGINT,
-    url NVARCHAR(255)
-)
-''')
-conn.commit()
-
-
-
 
 
 
