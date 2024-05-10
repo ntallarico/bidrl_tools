@@ -94,11 +94,11 @@ def create_table_items(conn, schema_name, table_name = 'Items'):
                 item_id NVARCHAR(255) PRIMARY KEY
                 , auction_id NVARCHAR(255)
                 , description TEXT
+                , current_bid DECIMAL(10, 2)
+                , highbidder_username NVARCHAR(255)
+                , url NVARCHAR(255)
                 , tax_rate DECIMAL(5, 2)
                 , buyer_premium DECIMAL(5, 2)
-                , current_bid DECIMAL(10, 2)
-                , url NVARCHAR(255)
-                , highbidder_username NVARCHAR(255)
                 , lot_number NVARCHAR(255)
                 , bidding_status NVARCHAR(255)
                 , end_time_unix BIGINT
@@ -181,8 +181,8 @@ def create_table_bids(conn, schema_name, table_name = 'Bids'):
             CREATE TABLE {schema_name}.{table_name} (
                 bid_id NVARCHAR(255) PRIMARY KEY
                 , item_id NVARCHAR(255)
+                , username NVARCHAR(255)
                 , bid DECIMAL(10, 2)
-                , user_name NVARCHAR(255)
                 , bid_time DATETIME
                 , time_of_bid DATETIME
                 , time_of_bid_unix BIGINT
@@ -252,63 +252,6 @@ Single table for all Items, Auctions, Invoices, etc. and then fact tables ofc, l
 
 
 
-
-
-CREATE TABLE bidrl.Items (
-    item_id NVARCHAR(255) PRIMARY KEY
-    , auction_id NVARCHAR(255)
-    , description TEXT
-    , tax_rate DECIMAL(5, 2)
-    , buyer_premium DECIMAL(5, 2)
-    , current_bid DECIMAL(10, 2)
-    , url NVARCHAR(255)
-    , highbidder_username NVARCHAR(255)
-    , lot_number NVARCHAR(255)
-    , bidding_status NVARCHAR(255)
-    , end_time_unix BIGINT
-    , is_favorite BINARY
-    , bid_count INT
-    , total_cost DECIMAL(10, 2)
-    , cost_split TEXT
-    , max_desired_bid DECIMAL(10, 2)
-);
-
-
-CREATE TABLE bidrl.Auctions (
-    auction_id NVARCHAR(255) PRIMARY KEY
-    , url NVARCHAR(255)
-    , title NVARCHAR(255)
-    , item_count INT
-    , start_datetime DATETIME
-    , status NVARCHAR(255)
-);
-
-
-CREATE TABLE bidrl.Invoices (
-    invoice_id NVARCHAR(255) PRIMARY KEY
-    , date DATE
-    , link NVARCHAR(255)
-    , total_cost DECIMAL(10, 2)
-    , expense_input_form_link NVARCHAR(255)
-);
-
-
-CREATE TABLE bidrl.Users (
-    username NVARCHAR(255) PRIMARY KEY
-);
-
-
-CREATE TABLE bidrl.Bid_History (
-    bid_id NVARCHAR(255) PRIMARY KEY
-    , item_id NVARCHAR(255)
-    , bid DECIMAL(10, 2)
-    , user_name NVARCHAR(255)
-    , bid_time DATETIME
-    , time_of_bid DATETIME
-    , time_of_bid_unix BIGINT
-    , buyer_number NVARCHAR(255) NULL
-    , description NVARCHAR(512)
-);
 
 
 '''
