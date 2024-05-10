@@ -101,6 +101,7 @@ def test_parse_invoice_page():
 '''
 other api reference i've seen to explore:
 - https://www.bidrl.com/api/types/auctions
+    - https://www.bidrl.com/api/auctions/114048
 - https://www.bidrl.com/api/types/errors
 - https://www.bidrl.com/api/types/items
 - https://www.bidrl.com/api/relations/auction_item

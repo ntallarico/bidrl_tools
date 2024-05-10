@@ -39,6 +39,15 @@ with payload:
 
 from this, we get all of our item urls and ids
 
+technically, I could get a lot more item data in this step and entirely skip step 3, but I wouldn't be able to get all the item data.
+this leaves me with the decision, do I:
+1. gather almost all the item data in this step, making the entire scraping operation immensely faster, then provide the option
+to fill in the remaining item data with an additional script that calls step 3
+2. gather only item urls and ids in this step, then gather all the item data in step 3
+I assume that adding in more fields grabbed in a step adds some marginal amount of time. so whether that time is added in step 2 or 3 doesn't make
+a difference in the overall execution of all 3 steps. However, adding it in step 2 would allow me the option to do an only step 1 and 2
+
+
 
 ### step 3:
 go through each item and send a POST request to https://www.bidrl.com/api/ItemData
