@@ -26,11 +26,12 @@ with payload:
     }
 
 from this, we get all of our auction urls and ids, and any other information that can be filled in about an auction
+maybe give a shot at adding "filters[affiliates]: -1" to the payload, replacing -1 with SC's ID
 
 
 
 ### step 2:
-go through each auction entry and send a POST request to: https://www.bidrl.com/api/getitems
+go through each auction entry that we want to scrape data from and send a POST request to: https://www.bidrl.com/api/getitems
 with payload:
     {
         "auction_id": auction_id,
@@ -45,7 +46,8 @@ this leaves me with the decision, do I:
 to fill in the remaining item data with an additional script that calls step 3
 2. gather only item urls and ids in this step, then gather all the item data in step 3
 I assume that adding in more fields grabbed in a step adds some marginal amount of time. so whether that time is added in step 2 or 3 doesn't make
-a difference in the overall execution of all 3 steps. However, adding it in step 2 would allow me the option to do an only step 1 and 2
+a difference in the overall execution of all 3 steps. However, adding it in step 2 would allow me the option to do an only step 1 and 2, then 3
+later if wanted.
 
 
 
@@ -58,6 +60,7 @@ with payload:
     }
 
 from this, we get all of our item data including bid history for each item
+use this to fill in all remaining item data that we want that wasn't grabbed form api/getitems response in step 2
 
 
 
