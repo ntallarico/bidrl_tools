@@ -102,8 +102,8 @@ def create_table_items(conn, schema_name, table_name = 'Items'):
                 , lot_number NVARCHAR(255)
                 , bidding_status NVARCHAR(255)
                 , end_time_unix BIGINT
-                , is_favorite BINARY
                 , bid_count INT
+                , is_favorite BINARY
                 , total_cost DECIMAL(10, 2)
                 , cost_split TEXT
                 , max_desired_bid DECIMAL(10, 2)
@@ -220,12 +220,6 @@ def sqlserver_setup():
     create_table_users(conn, schema_name)
 
     create_table_bids(conn, schema_name)
-
-
-    
-    # continue development of new table creation code here and then move to functions
-    cursor = conn.cursor()
-
 
 
 
