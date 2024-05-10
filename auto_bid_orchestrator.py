@@ -42,10 +42,9 @@ def run_auto_bid():
                 process = subprocess.Popen(['python', 'auto_bid.py'])
                 pid = process.pid
                 print(f"Restarted auto_bid.py with new PID: {pid}")
-            else:
-                print(f"Process with PID {pid} (auto_bid.py) is currently running.")
+            #else: print(f"Process with PID {pid} (auto_bid.py) is currently running.")
 
-            time.sleep(20) # wait 20 seconds before checking again
+            time.sleep(10) # wait 20 seconds before checking again
     finally:
         print("\nReturning Windows power settings to user's default.")
         allow_sleep()
