@@ -44,7 +44,7 @@ def run_auto_bid():
                 print(f"Restarted auto_bid.py with new PID: {pid}")
             #else: print(f"Process with PID {pid} (auto_bid.py) is currently running.")
 
-            time.sleep(10) # wait 20 seconds before checking again
+            time.sleep(10) # wait 10 seconds before checking again
     finally:
         print("\nReturning Windows power settings to user's default.")
         allow_sleep()
