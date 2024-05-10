@@ -104,7 +104,7 @@ def read_user_input_csv():
 
 def print_items_status(items_to_bid_on):
     print('\n----------------------------------------------------------------------------------------------------')
-    current_time_unix = int(time.time())
+    current_time_unix = time_unix()
     for item in items_to_bid_on:
         remaining_seconds = item.end_time_unix - current_time_unix
         remaining_time_string = convert_seconds_to_time_string(remaining_seconds)
@@ -126,7 +126,7 @@ def auto_bid(browser, items_to_bid_on, seconds_before_closing_to_bid):
 
 
 def login_refresh(browser, last_login_time, last_login_time_unix):
-    print("Checking login status.")
+    print(f"Checking login status ({time_formatted()}).")
     if bf.check_if_login_success(browser) != 0:
         print("Login check failed!")
         print("Tearing down webdriver, initiating new webdriver, and starting login process.")
