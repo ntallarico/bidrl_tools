@@ -206,19 +206,12 @@ def sqlserver_setup():
 
     schema_name = 'bidrl'
 
-    # this is only called here for debugging! remove before production!
-    drop_entire_schema(conn, schema_name)
-
+    drop_entire_schema(conn, schema_name) # this is only called here for debugging! remove before production!
     create_schema(conn, schema_name)
-
     create_table_items(conn, schema_name)
-
     create_table_auctions(conn, schema_name)
-
     create_table_invoices(conn, schema_name)
-
     create_table_users(conn, schema_name)
-
     create_table_bids(conn, schema_name)
 
 
