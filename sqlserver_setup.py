@@ -14,7 +14,7 @@ from config import sql_server_name, sql_database_name, sql_admin_username, sql_a
 # returns: 1 if table exists in database.schema and 0 if it does not
 def check_if_table_exists(conn, sql_schema_name, table_name):
     cursor = conn.cursor()
-    print(f"\nChecking to see if table exists: {sql_schema_name}.{table_name}")
+    print(f"\nChecking if table exists: {sql_schema_name}.{table_name}")
     cursor.execute(f'''
         SELECT IIF(EXISTS (
             SELECT * FROM INFORMATION_SCHEMA.TABLES
@@ -34,7 +34,7 @@ def check_if_table_exists(conn, sql_schema_name, table_name):
 # returns: 1 if schema exists in database and 0 if it does not
 def check_if_schema_exists(conn, schema_name):
     cursor = conn.cursor()
-    print(f"\nChecking to see if schema exists: {schema_name}")
+    print(f"\nChecking if schema exists: {schema_name}")
     cursor.execute(f'''
         SELECT IIF(EXISTS (SELECT * FROM sys.schemas WHERE name = '{schema_name}'), 1, 0) AS status;
     ''')
@@ -50,7 +50,7 @@ def check_if_schema_exists(conn, schema_name):
 # drops the entire schema including all of its contents
 def drop_entire_schema(conn, schema_name):
     cursor = conn.cursor()
-    print(f"\nDropping schema {schema_name} and its entire contents.")
+    print(f"\nDropping schema and its entire contents: {schema_name}.")
     # drop all tables in the schema first
     cursor.execute(f'''
         DECLARE @sql NVARCHAR(MAX) = '';
@@ -68,7 +68,7 @@ def drop_entire_schema(conn, schema_name):
 
 
 # creates schema, checking if it already exists first
-def create_bidrl_schema(conn, schema_name):
+def create_schema(conn, schema_name):
     cursor = conn.cursor()
     # check if the schema exists
     if check_if_schema_exists(conn, schema_name) == 1:
@@ -82,21 +82,113 @@ def create_bidrl_schema(conn, schema_name):
 
 
 # creates table for items in schema, checking if it already exists first
-def create_items_table(conn, schema_name, items_table_name):
+def create_table_items(conn, schema_name, table_name = 'Items'):
     cursor = conn.cursor()
-    if check_if_table_exists(conn, schema_name, items_table_name) == 1:
+    if check_if_table_exists(conn, schema_name, table_name) == 1:
         print(f"Already exists. Skipping creation.")
     else:
-        print(f"Does not exist. Creating table: {schema_name}.{items_table_name}")
+        print(f"Does not exist. Creating table: {schema_name}.{table_name}")
         cursor.execute(f'''
             USE {sql_database_name};
-            CREATE TABLE {schema_name}.{items_table_name} (
-                item_id INT PRIMARY KEY,
-                description NVARCHAR(255),
-                auction_id INT,
-                end_time_unix BIGINT,
-                url NVARCHAR(255)
-            )
+            CREATE TABLE {schema_name}.{table_name} (
+                item_id NVARCHAR(255) PRIMARY KEY
+                , auction_id NVARCHAR(255)
+                , description TEXT
+                , tax_rate DECIMAL(5, 2)
+                , buyer_premium DECIMAL(5, 2)
+                , current_bid DECIMAL(10, 2)
+                , url NVARCHAR(255)
+                , highbidder_username NVARCHAR(255)
+                , lot_number NVARCHAR(255)
+                , bidding_status NVARCHAR(255)
+                , end_time_unix BIGINT
+                , is_favorite BINARY
+                , bid_count INT
+                , total_cost DECIMAL(10, 2)
+                , cost_split TEXT
+                , max_desired_bid DECIMAL(10, 2)
+            );
+        ''')
+    conn.commit() # save changes to database
+
+
+# creates table for auctions in schema, checking if it already exists first
+def create_table_auctions(conn, schema_name, table_name = 'Auctions'):
+    cursor = conn.cursor()
+    if check_if_table_exists(conn, schema_name, table_name) == 1:
+        print(f"Already exists. Skipping creation.")
+    else:
+        print(f"Does not exist. Creating table: {schema_name}.{table_name}")
+        cursor.execute(f'''
+            USE {sql_database_name};
+            CREATE TABLE {schema_name}.{table_name} (
+                auction_id NVARCHAR(255) PRIMARY KEY
+                , url NVARCHAR(255)
+                , title NVARCHAR(255)
+                , item_count INT
+                , start_datetime DATETIME
+                , status NVARCHAR(255)
+            );
+        ''')
+    conn.commit() # save changes to database
+
+
+# creates table for invoices in schema, checking if it already exists first
+def create_table_invoices(conn, schema_name, table_name = 'Invoices'):
+    cursor = conn.cursor()
+    if check_if_table_exists(conn, schema_name, table_name) == 1:
+        print(f"Already exists. Skipping creation.")
+    else:
+        print(f"Does not exist. Creating table: {schema_name}.{table_name}")
+        cursor.execute(f'''
+            USE {sql_database_name};
+            CREATE TABLE {schema_name}.{table_name} (
+                invoice_id NVARCHAR(255) PRIMARY KEY
+                , date DATE
+                , link NVARCHAR(255)
+                , total_cost DECIMAL(10, 2)
+                , expense_input_form_link NVARCHAR(255)
+            );
+        ''')
+    conn.commit() # save changes to database
+
+
+# creates table for users in schema, checking if it already exists first
+def create_table_users(conn, schema_name, table_name = 'Users'):
+    cursor = conn.cursor()
+    if check_if_table_exists(conn, schema_name, table_name) == 1:
+        print(f"Already exists. Skipping creation.")
+    else:
+        print(f"Does not exist. Creating table: {schema_name}.{table_name}")
+        cursor.execute(f'''
+            USE {sql_database_name};
+            CREATE TABLE {schema_name}.{table_name} (
+                username NVARCHAR(255) PRIMARY KEY
+            );
+        ''')
+    conn.commit() # save changes to database
+
+
+# creates table for bid history in schema, checking if it already exists first
+def create_table_bids(conn, schema_name, table_name = 'Bids'):
+    cursor = conn.cursor()
+    if check_if_table_exists(conn, schema_name, table_name) == 1:
+        print(f"Already exists. Skipping creation.")
+    else:
+        print(f"Does not exist. Creating table: {schema_name}.{table_name}")
+        cursor.execute(f'''
+            USE {sql_database_name};
+            CREATE TABLE {schema_name}.{table_name} (
+                bid_id NVARCHAR(255) PRIMARY KEY
+                , item_id NVARCHAR(255)
+                , bid DECIMAL(10, 2)
+                , user_name NVARCHAR(255)
+                , bid_time DATETIME
+                , time_of_bid DATETIME
+                , time_of_bid_unix BIGINT
+                , buyer_number NVARCHAR(255) NULL
+                , description NVARCHAR(512)
+            );
         ''')
     conn.commit() # save changes to database
 
@@ -113,16 +205,21 @@ def sqlserver_setup():
                         f'PWD={sql_admin_password}')
 
     schema_name = 'bidrl'
-    items_table_name = 'Items'
 
     # this is only called here for debugging! remove before production!
     drop_entire_schema(conn, schema_name)
 
+    create_schema(conn, schema_name)
 
-    create_bidrl_schema(conn, schema_name)
+    create_table_items(conn, schema_name)
 
+    create_table_auctions(conn, schema_name)
 
-    create_items_table(conn, schema_name, items_table_name)
+    create_table_invoices(conn, schema_name)
+
+    create_table_users(conn, schema_name)
+
+    create_table_bids(conn, schema_name)
 
 
     
@@ -157,7 +254,7 @@ Single table for all Items, Auctions, Invoices, etc. and then fact tables ofc, l
 
 
 
-CREATE TABLE Items (
+CREATE TABLE bidrl.Items (
     item_id NVARCHAR(255) PRIMARY KEY
     , auction_id NVARCHAR(255)
     , description TEXT
@@ -169,7 +266,7 @@ CREATE TABLE Items (
     , lot_number NVARCHAR(255)
     , bidding_status NVARCHAR(255)
     , end_time_unix BIGINT
-    , is_favorite BOOLEAN
+    , is_favorite BINARY
     , bid_count INT
     , total_cost DECIMAL(10, 2)
     , cost_split TEXT
@@ -177,7 +274,7 @@ CREATE TABLE Items (
 );
 
 
-CREATE TABLE Auctions (
+CREATE TABLE bidrl.Auctions (
     auction_id NVARCHAR(255) PRIMARY KEY
     , url NVARCHAR(255)
     , title NVARCHAR(255)
@@ -187,7 +284,7 @@ CREATE TABLE Auctions (
 );
 
 
-CREATE TABLE Invoices (
+CREATE TABLE bidrl.Invoices (
     invoice_id NVARCHAR(255) PRIMARY KEY
     , date DATE
     , link NVARCHAR(255)
@@ -196,12 +293,12 @@ CREATE TABLE Invoices (
 );
 
 
-CREATE TABLE Users (
+CREATE TABLE bidrl.Users (
     username NVARCHAR(255) PRIMARY KEY
 );
 
 
-CREATE TABLE Bid_History (
+CREATE TABLE bidrl.Bid_History (
     bid_id NVARCHAR(255) PRIMARY KEY
     , item_id NVARCHAR(255)
     , bid DECIMAL(10, 2)
