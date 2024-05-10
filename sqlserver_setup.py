@@ -7,6 +7,7 @@ It requires a server name, database name, username, and password for an admin ac
 This script will make no changes to a database already in the goal state.
 '''
 
+import bidrl_functions as bf
 import pyodbc
 from config import sql_server_name, sql_database_name, sql_admin_username, sql_admin_password
 
@@ -196,13 +197,7 @@ def create_table_bids(conn, schema_name, table_name = 'Bids'):
 
 
 def sqlserver_setup():
-    print(f"\nEstablishing connection to server {sql_server_name}, database {sql_database_name}, user {sql_admin_username}")
-    # set up connection string
-    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};'
-                        f'SERVER={sql_server_name};'
-                        f'DATABASE={sql_database_name};'
-                        f'UID={sql_admin_username};'
-                        f'PWD={sql_admin_password}')
+    conn = bf.init_sql_connection(sql_server_name, sql_database_name, sql_admin_username, sql_admin_password)
 
     schema_name = 'bidrl'
 

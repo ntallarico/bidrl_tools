@@ -7,11 +7,11 @@ from selenium.webdriver.firefox.options import Options
 from seleniumrequests import Firefox
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from config import user_email, user_password, google_form_link_base
 from datetime import datetime
 from bidrl_classes import Item, Invoice, Auction
 from bs4 import BeautifulSoup
-
+import pyodbc
+#from config import user_email, user_password, google_form_link_base, sql_server_name, sql_database_name, sql_admin_username, sql_admin_password
 
 
 def init_webdriver(headless = ''):
@@ -471,3 +471,15 @@ def read_items_from_csv(filename, fieldnames):
             quit()
 
     return rows
+
+# establishes connection to sql database
+# returns connection object
+def init_sql_connection(sql_server_name, sql_database_name, sql_admin_username, sql_admin_password):
+    print(f"\nEstablishing connection to server {sql_server_name}, database {sql_database_name}, user {sql_admin_username}")
+    # set up connection string
+    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};'
+                        f'SERVER={sql_server_name};'
+                        f'DATABASE={sql_database_name};'
+                        f'UID={sql_admin_username};'
+                        f'PWD={sql_admin_password}')
+    return conn
