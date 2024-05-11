@@ -7,95 +7,177 @@ from selenium.webdriver.firefox.options import Options
 from seleniumrequests import Firefox
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from config import user_email, user_password, sql_server_name, sql_database_name, sql_admin_username, sql_admin_password
-from datetime import datetime
+from config import user_email, user_password#, sql_server_name, sql_database_name, sql_admin_username, sql_admin_password
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from bidrl_classes import Item, Invoice, Auction
 import bidrl_functions as bf
 import pyodbc
 
 
-'''
-### step 1:
-send a POST request to: https://www.bidrl.com/api/auctions
-with payload:
-    {
-        "filters[startDate]": 04/11/2024
-        "filters[endDate]": 05/10/2024
-        "filters[perpage]": 100
-        "past_sales": true
-    }
 
-from this, we get all of our auction urls and ids, and any other information that can be filled in about an auction
-maybe give a shot at adding "filters[affiliates]: -1" to the payload, replacing -1 with SC's ID
+# generates a list of dicts with start_date and end_date to use as intervals for auction scraping
+# intervals are 1 year apart because api will only allow 1 year pull at a time
+def generate_date_intervals_for_auction_scrape():
+    start_date = "01/01/2008" # bidrl says they've been running since 2008
+    end_date = datetime.now().strftime("%m/%d/%Y") # current day
 
-
-
-### step 2:
-go through each auction entry that we want to scrape data from and send a POST request to: https://www.bidrl.com/api/getitems
-with payload:
-    {
-        "auction_id": auction_id,
-        "filters[perpage]": 10000
-    }
-
-from this, we get all of our item urls and ids
-
-technically, I could get a lot more item data in this step and entirely skip step 3, but I wouldn't be able to get all the item data.
-this leaves me with the decision, do I:
-1. gather almost all the item data in this step, making the entire scraping operation immensely faster, then provide the option
-to fill in the remaining item data with an additional script that calls step 3
-2. gather only item urls and ids in this step, then gather all the item data in step 3
-I assume that adding in more fields grabbed in a step adds some marginal amount of time. so whether that time is added in step 2 or 3 doesn't make
-a difference in the overall execution of all 3 steps. However, adding it in step 2 would allow me the option to do an only step 1 and 2, then 3
-later if wanted.
+    # Convert string dates to datetime objects
+    start = datetime.strptime(start_date, "%m/%d/%Y")
+    end = datetime.strptime(end_date, "%m/%d/%Y")
+    
+    # List to hold dicts with start and end dates of each year
+    yearly_date_ranges = []
+    
+    current_date = start
+    while current_date <= end:
+        yearly_date_ranges.append({
+            "start_date": current_date,
+            "end_date": current_date.replace(month=12, day=31)
+        })
+        # Increment the date by one year
+        current_date += relativedelta(years=1)
+    
+    return yearly_date_ranges
 
 
+# we'll add an entire scraped aution with its full data and all items at once.
+    # so there will never be a partial auction added. instead of adding all auctions, then items, then history
+    # we'll go one auction at a time. Therefore, since its quick to get a list of auctions from the API for
+    # an affiliate, then we can just get a list of auction_ids from the sql and remove that from our list from
+    # the api. then just exclusively scrape the remaining list.
+    # plan:
+    #   1. only insert to the sql once we have absolutely all the data for an auction.
+    #   2. get list of auctions from the api
+    #   3. get list of auction_ids from the sql (this is the list of auctions that we've already scraped)
+    #   4. remove auction_ids from the api list that are in the sql list
+    #   5. loop through the remaining auctions in the api list, then get all the data for that auction
+    #   6. insert the data for that auction into the sql
+def get_all_auctions():
+    browser = bf.init_webdriver('headless')
 
-### step 3:
-go through each item and send a POST request to https://www.bidrl.com/api/ItemData
-with payload:
-    {
-        "item_id": extracted_ids['item_id'],
-        "auction_id": extracted_ids['auction_id']
-    }
+    # send browser to bidrl.com. this gets us the cookies we need to send the POST requests properly next
+    browser.get('https://www.bidrl.com')
 
-from this, we get all of our item data including bid history for each item
-use this to fill in all remaining item data that we want that wasn't grabbed form api/getitems response in step 2
+    post_url = "https://www.bidrl.com/api/auctions"
 
+    # get list of date intervals to pull auctions from
+    # can only pull a max of 1 year at a time
+    dates = generate_date_intervals_for_auction_scrape()
+    for date in dates:
+        start_date = date['start_date'].strftime("%Y-%m-%d")
+        end_date = date['end_date'].strftime("%Y-%m-%d")
+        print(f"\nAuction pull date range: {start_date} to {end_date}")
 
-
-
-
-'''
-
-
-conn = bf.init_sql_connection(sql_server_name, sql_database_name, sql_admin_username, sql_admin_password)
-
-cursor = conn.cursor()
-
-
-
-# Insert Data
-
-def insert_items(items):
-    for item in items:
-        cursor.execute('''
-        INSERT INTO items (item_id, description, auction_id, end_time_unix, url)
-        VALUES (?, ?, ?, ?, ?)
-        ''', (item['item_id'], item['description'], item['auction_id'], item['end_time_unix'], item['url']))
-    conn.commit()
-
-# Example usage
-items_data = [{'item_id': 1, 'description': 'Example item', 'auction_id': 101, 'end_time_unix': 1714579800, 'url': 'http://example.com'}]
-insert_items(items_data)
+        post_data = {
+            "filters[startDate]": start_date
+            , "filters[endDate]": end_date
+            , "filters[perpage]": 10000
+            , "past_sales": "true"
+            , "filters[affiliates]": 47
+        }
 
 
+        print("Attempting to get response from POST request to https://www.bidrl.com/api/auctions")
+        start_time = time.time()
+        response = browser.request('POST', post_url, data=post_data) # send the POST request with the session that contains the cookies
+        end_time = time.time()
+        response.raise_for_status() # ensure the request was successful
+        print("Response recieved! Time taken: " + str(end_time - start_time))
+        auction_json = response.json()
+
+        # only execute the rest of the contents of this loop if result == 'success'
+        # meaning we recieved auction json properly
+        if auction_json['result'] == 'success':
+            auction_data_json = auction_json['data'][2:]
+            print("Number of auctions recieved: " + str(len(auction_data_json)))
+        elif auction_json['code'] == 'NO_AUCTION_LIST':
+            print("No auctions found for this date range.")
+            continue
+        else:
+            print("\n\nRecieved response that wasn't 'success'. add it to the if/else ladder in get_all_auctions():\n\n")
+            print(auction_json)
+            quit()
+
+
+        # for auction in auction_data_json:
+        #     print('')
+        #     print(auction['id'])
+        #     print(auction['title'])
+        #     print(auction['affiliate_id'])
+        #     print(auction['item_count'])
+        #     print(auction['status'])
+        #     print(auction['url'])
+        #     print(auction['aff_company_name'])
+        #     print(auction['state_abbreviation'])
+        #     print(auction['city'])
+        #     print(auction['zip'])
+        #     print(auction['address'])
+
+        auction_url = "https://www.bidrl.com/auction/" + auction_json['auction_id_slug'] + "/bidgallery/"
+
+        print("scaping item urls from: " + auction_url)
+        item_urls = bf.get_auction_item_urls(auction_url)
+        print(str(len(item_urls)) + " items found")
+
+        print("scraping item info")
+        items = bf.get_items(item_urls, browser)
+
+        # dictionary to temporarily hold auction details before creating object
+        temp_auction_dict = {'id': auction_json['id']
+                                , 'url': auction_url
+                                , 'items': items
+                                , 'title': auction_json['title']
+                                , 'item_count': auction_json['item_count']
+                                , 'start_datetime': auction_json['starts']
+                                , 'status': auction_json['status']}
+
+        # to do: add fields to Auction class from commented out print statement above
+        # to do: create Bid class
+        # to do: modify get_items() to return a list of Bids
+        # to do: run a check on temp_auction_dict to make sure it has all the data we need
+        # to do: then add it to the sql database
+    
+    browser.quit()
+
+    #return item_json
+
+get_all_auctions()
 
 
 
 
-# Closing the Connection
-conn.close()
+
+
+
+# conn = bf.init_sql_connection(sql_server_name, sql_database_name, sql_admin_username, sql_admin_password)
+
+# cursor = conn.cursor()
+
+
+
+# # Insert Data
+
+# def insert_items(items):
+#     for item in items:
+#         cursor.execute('''
+#         INSERT INTO items (item_id, description, auction_id, end_time_unix, url)
+#         VALUES (?, ?, ?, ?, ?)
+#         ''', (item['item_id'], item['description'], item['auction_id'], item['end_time_unix'], item['url']))
+#     conn.commit()
+
+# # Example usage
+# items_data = [{'item_id': 1, 'description': 'Example item', 'auction_id': 101, 'end_time_unix': 1714579800, 'url': 'http://example.com'}]
+# insert_items(items_data)
+
+
+
+
+
+
+# # Closing the Connection
+# conn.close()
+
 
 
 
