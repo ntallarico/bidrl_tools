@@ -10,7 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from config import user_email, user_password#, sql_server_name, sql_database_name, sql_admin_username, sql_admin_password
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-from bidrl_classes import Item, Invoice, Auction
+from bidrl_classes import Item, Invoice, Auction, Bid
 import bidrl_functions as bf
 import pyodbc
 
@@ -80,16 +80,26 @@ def verify_auction_object_complete(auction_obj):
             return False
         
         if item.highbidder_username == None and item.bid_count != str(0):
-            print(f"Item {item.id} has {item.bid_count} bids but no highbidder_username.")
+            print(f"Item {item.url}\n has {item.bid_count} bids but no highbidder_username.")
             item.display()
             return False
         
-        # check to make sure the the # of bids in the bids list = the bid_count field in the item data
-        if str(len(item.bids)) != item.bid_count:
-            print(f"Item {item.id} has {len(item.bids)} bids in the bid list" + \
+        # check to make sure that the bids list is not empty if bid_count > 0
+        if int(item.bid_count) > 0 and len(item.bids) == 0:
+            print(f"Item {item.url}\nhas 0 bids in the bid list" + \
                 f", but the bid_count field in the item data is {item.bid_count}")
             item.display_bids()
             return False
+        
+        # check to make sure the # of bids in the bids list = the bid_count field in the item data
+        # this function eliminated because some of the items from bidrl have an incorrect bid_count
+        # I cannot figure out why or what the correlation is
+        r'''if str(len(item.bids)) != item.bid_count:
+            print(f"Item {item.url}\nhas {len(item.bids)} bids in the bid list" + \
+                f", but the bid_count field in the item data is {item.bid_count}")
+            item.display_bids()
+            return False'''
+        
         
         # if anything is missing from the auction's item's bids return False
         for bid in item.bids:
@@ -107,7 +117,7 @@ def verify_auction_object_complete(auction_obj):
             
     # check to make sure the the # of items in the items list = the item_count field in the auction data
     if str(len(auction_obj.items)) != auction_obj.item_count:
-        print(f"Auction {auction_obj.id} has {len(auction_obj.items)} items in the items list" + \
+        print(f"Auction {auction_obj.url}\n has {len(auction_obj.items)} items in the items list" + \
               f", but the item_count field in the auction data is {auction_obj.item_count}")
         return False
                 
@@ -168,7 +178,7 @@ def gigascrape():
             print("No auctions found for this date range.")
             continue
         else:
-            print("\n\nRecieved response that wasn't 'success'. add it to the if/else ladder in gigascrape():\n\n")
+            print("\n\nRecieved response that wasn't 'success'. Add it to the if/else ladder in gigascrape():\n\n")
             print(auction_json)
             quit()
 
@@ -203,7 +213,6 @@ def gigascrape():
                 address=auction['address']
             )
 
-            # to do: run a check on auction_obj to validate and ensure that it is complete
             if verify_auction_object_complete(auction_obj) == False:
                 print("Auction did not complete! Not adding to sql database. Exiting program.")
                 quit()
@@ -216,6 +225,15 @@ def gigascrape():
 
 gigascrape()
 
+
+
+
+
+# get an initialized web driver that has logged in to bidrl with credentials stored in config.py
+#browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+#item_obj = get_item_with_ids(browser, '14838053', '104503')
+#item_obj.display()
+#item_obj.display_bids()
 
 
 
