@@ -526,6 +526,30 @@ def init_sql_connection(sql_server_name, sql_database_name, sql_admin_username, 
 def init_sqlite_connection():
     return sqlite3.connect('local_files/bidrl.db')
 
+# returns: 1 if table exists in database and 0 if it does not
+def check_if_table_exists(conn, table_name):
+    cursor = conn.cursor()
+    print(f"Checking if table exists: {table_name}")
+    cursor.execute(f'''
+        SELECT COUNT(name) FROM sqlite_master WHERE type='table' AND name='{table_name}';
+    ''')
+    result = cursor.fetchone()
+    if result:
+        if result[0] == 1: return 1
+        else: return 0
+    else:
+        print("error getting result in check_if_table_exists(). Exiting.")
+        quit()
+
+def create_table(conn, table_name, table_creation_sql):
+    cursor = conn.cursor()
+    if check_if_table_exists(conn, table_name) == 0:
+        print(f"Does not exist. Creating table: {table_name}.")
+        cursor.execute(table_creation_sql)
+        conn.commit()
+    else:
+        print("Does exist - skipping.")
+
 # inserts an item object into the items table in the sql database
 # requires sqlite database connection object and an Item object
 def insert_item_to_sql_db(conn, item):

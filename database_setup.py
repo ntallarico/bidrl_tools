@@ -1,33 +1,6 @@
 import sqlite3
 import bidrl_functions as bf
 
-
-# returns: 1 if table exists in database and 0 if it does not
-def check_if_table_exists(conn, table_name):
-    cursor = conn.cursor()
-    print(f"Checking if table exists: {table_name}")
-    cursor.execute(f'''
-        SELECT COUNT(name) FROM sqlite_master WHERE type='table' AND name='{table_name}';
-    ''')
-    result = cursor.fetchone()
-    if result:
-        if result[0] == 1: return 1
-        else: return 0
-    else:
-        print("error getting result in check_if_table_exists(). Exiting.")
-        quit()
-
-
-def create_table(conn, table_name, table_creation_sql):
-    cursor = conn.cursor()
-    if check_if_table_exists(conn, table_name) == 0:
-        print(f"Does not exist. Creating table: {table_name}.")
-        cursor.execute(table_creation_sql)
-        conn.commit()
-    else:
-        print("Does exist - skipping.")
-
-
 def drop_database(conn):
     cursor = conn.cursor()
     print("\nAttempting to drop all tables in the database.")
@@ -39,10 +12,6 @@ def drop_database(conn):
     print("All tables dropped successfully.")
 
 
-
-
-
-
 def sql_database_setup():
     conn = bf.init_sqlite_connection()
     cursor = conn.cursor()
@@ -50,7 +19,7 @@ def sql_database_setup():
     drop_database(conn) # this is only called here for debugging! remove before production!
 
     # create affiliates table
-    create_table(conn, 'affiliates', '''
+    bf.create_table(conn, 'affiliates', '''
         CREATE TABLE IF NOT EXISTS affiliates (
             affiliate_id TEXT PRIMARY KEY,
             affiliate_name TEXT
@@ -58,7 +27,7 @@ def sql_database_setup():
     ''')
 
     # create auctions table
-    create_table(conn, 'auctions', '''
+    bf.create_table(conn, 'auctions', '''
         CREATE TABLE IF NOT EXISTS auctions (
                 auction_id TEXT PRIMARY KEY,
                 url TEXT,
@@ -70,7 +39,7 @@ def sql_database_setup():
     ''')
 
     # create items table
-    create_table(conn, 'items', '''
+    bf.create_table(conn, 'items', '''
         CREATE TABLE IF NOT EXISTS items (
                 item_id TEXT PRIMARY KEY,
                 auction_id TEXT,
@@ -92,7 +61,7 @@ def sql_database_setup():
     ''')
 
     # create bids table
-    create_table(conn, 'bids', '''
+    bf.create_table(conn, 'bids', '''
         CREATE TABLE IF NOT EXISTS bids (
                 bid_id TEXT PRIMARY KEY,
                 item_id TEXT,
@@ -107,7 +76,7 @@ def sql_database_setup():
     ''')
 
     # create invoices table
-    create_table(conn, 'invoices', '''
+    bf.create_table(conn, 'invoices', '''
         CREATE TABLE IF NOT EXISTS invoices (
                 invoice_id TEXT PRIMARY KEY,
                 date TEXT,
@@ -118,7 +87,7 @@ def sql_database_setup():
     ''')
 
     # create users table
-    create_table(conn, 'users', '''
+    bf.create_table(conn, 'users', '''
         CREATE TABLE IF NOT EXISTS users (
             username TEXT PRIMARY KEY,
             user_id INTEGER
