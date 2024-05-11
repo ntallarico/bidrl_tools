@@ -11,6 +11,7 @@ from datetime import datetime
 from bidrl_classes import Item, Invoice, Auction, Bid
 from bs4 import BeautifulSoup
 import pyodbc
+import sqlite3
 #from config import user_email, user_password, google_form_link_base, sql_server_name, sql_database_name, sql_admin_username, sql_admin_password
 
 
@@ -507,6 +508,7 @@ def read_items_from_csv(filename, fieldnames):
 
     return rows
 
+
 # establishes connection to sql database
 # returns connection object
 def init_sql_connection(sql_server_name, sql_database_name, sql_admin_username, sql_admin_password):
@@ -518,3 +520,8 @@ def init_sql_connection(sql_server_name, sql_database_name, sql_admin_username, 
                         f'UID={sql_admin_username};'
                         f'PWD={sql_admin_password}')
     return conn
+
+# return sqlite database connection object
+# this will create the file if it does not already exist
+def init_sqlite_connection():
+    return sqlite3.connect('local_files/bidrl.db')
