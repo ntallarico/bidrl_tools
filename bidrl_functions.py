@@ -525,3 +525,39 @@ def init_sql_connection(sql_server_name, sql_database_name, sql_admin_username, 
 # this will create the file if it does not already exist
 def init_sqlite_connection():
     return sqlite3.connect('local_files/bidrl.db')
+
+# inserts an item object into the items table in the sql database
+# requires sqlite database connection object and an Item object
+def insert_item_to_sql_db(conn, item):
+    sql = ''' INSERT INTO items(item_id, title, description, starting_bid, current_bid, highbidder_username, url, tax_rate, buyer_premium, lot_number, bidding_status, end_time_unix, bid_count, is_favorite, total_cost, cost_split, max_desired_bid)
+            VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) '''
+    cur = conn.cursor()
+    cur.execute(sql, (item.id, item.title, item.description, item.starting_bid, item.current_bid, item.highbidder_username, item.url, item.tax_rate, item.buyer_premium, item.lot_number, item.bidding_status, item.end_time_unix, item.bid_count, item.is_favorite, item.total_cost, item.cost_split, item.max_desired_bid))
+    conn.commit()
+
+# inserts a bid object into the bids table in the sql database
+# requires sqlite database connection object and a Bid object
+def insert_bid_to_sql_db(conn, bid):
+    sql = ''' INSERT INTO bids(bid_id, item_id, username, bid, bid_time, time_of_bid, time_of_bid_unix, buyer_number, description)
+              VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?) '''
+    cur = conn.cursor()
+    cur.execute(sql, (bid.bid_id, bid.item_id, bid.user_name, bid.bid, bid.bid_time, bid.time_of_bid, bid.time_of_bid_unix, bid.buyer_number, bid.description))
+    conn.commit()
+
+# inserts an auction object into the auctions table in the sql database
+# requires sqlite database connection object and an Auction object
+def insert_auction_to_sql_db(conn, auction):
+    sql = ''' INSERT INTO auctions(auction_id, url, title, item_count, start_datetime, status, affiliate_id, aff_company_name, state_abbreviation, city, zip, address)
+              VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) '''
+    cur = conn.cursor()
+    cur.execute(sql, (auction.id, auction.url, auction.title, auction.item_count, auction.start_datetime, auction.status, auction.affiliate_id, auction.aff_company_name, auction.state_abbreviation, auction.city, auction.zip, auction.address))
+    conn.commit()
+
+# inserts an invoice object into the invoices table in the sql database
+# requires sqlite database connection object and an Invoice object
+def insert_invoice_to_sql_db(conn, invoice):
+    sql = ''' INSERT INTO invoices(invoice_id, date, link, total_cost, expense_input_form_link)
+              VALUES(?, ?, ?, ?, ?) '''
+    cur = conn.cursor()
+    cur.execute(sql, (invoice.id, invoice.date, invoice.link, invoice.total_cost, invoice.expense_input_form_link))
+    conn.commit()

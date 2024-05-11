@@ -1,10 +1,11 @@
 import sqlite3
+import bidrl_functions as bf
 
 
 # returns: 1 if table exists in database and 0 if it does not
 def check_if_table_exists(conn, table_name):
     cursor = conn.cursor()
-    print(f"\nChecking if table exists: {table_name}")
+    print(f"Checking if table exists: {table_name}")
     cursor.execute(f'''
         SELECT COUNT(name) FROM sqlite_master WHERE type='table' AND name='{table_name}';
     ''')
@@ -16,9 +17,20 @@ def check_if_table_exists(conn, table_name):
         print("error getting result in check_if_table_exists(). Exiting.")
         quit()
 
+
+def create_table(conn, table_name, table_creation_sql):
+    cursor = conn.cursor()
+    if check_if_table_exists(conn, table_name) == 0:
+        print(f"Does not exist. Creating table: {table_name}.")
+        cursor.execute(table_creation_sql)
+        conn.commit()
+    else:
+        print("Does exist - skipping.")
+
+
 def drop_database(conn):
     cursor = conn.cursor()
-    print("\nDropping all tables in the database.")
+    print("\nAttempting to drop all tables in the database.")
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
     tables = cursor.fetchall()
     for table in tables:
@@ -28,100 +40,101 @@ def drop_database(conn):
 
 
 
+
+
+
 def sql_database_setup():
-    conn = sqlite3.connect('local_files/bidrl.db') # connect to SQLite database (or create if not exists)
+    conn = bf.init_sqlite_connection()
     cursor = conn.cursor()
 
     drop_database(conn) # this is only called here for debugging! remove before production!
 
     # create affiliates table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users (
+    create_table(conn, 'affiliates', '''
+        CREATE TABLE IF NOT EXISTS affiliates (
             affiliate_id TEXT PRIMARY KEY,
             affiliate_name TEXT
         );
     ''')
-    conn.commit()
 
     # create auctions table
-    cursor.execute('''
+    create_table(conn, 'auctions', '''
         CREATE TABLE IF NOT EXISTS auctions (
-            auction_id TEXT PRIMARY KEY,
-            url TEXT,
-            title TEXT,
-            item_count INTEGER,
-            start_datetime TEXT,
-            status TEXT
+                auction_id TEXT PRIMARY KEY,
+                url TEXT,
+                title TEXT,
+                item_count INTEGER,
+                start_datetime TEXT,
+                status TEXT
         );
     ''')
-    conn.commit()
 
     # create items table
-    cursor.execute('''
+    create_table(conn, 'items', '''
         CREATE TABLE IF NOT EXISTS items (
-            item_id TEXT PRIMARY KEY,
-            auction_id TEXT,
-            description TEXT,
-            current_bid REAL,
-            highbidder_username TEXT,
-            url TEXT,
-            tax_rate REAL,
-            buyer_premium REAL,
-            lot_number TEXT,
-            bidding_status TEXT,
-            end_time_unix INTEGER,
-            bid_count INTEGER,
-            is_favorite INTEGER,
-            total_cost REAL,
-            cost_split TEXT,
-            max_desired_bid REAL
+                item_id TEXT PRIMARY KEY,
+                auction_id TEXT,
+                description TEXT,
+                current_bid REAL,
+                highbidder_username TEXT,
+                url TEXT,
+                tax_rate REAL,
+                buyer_premium REAL,
+                lot_number TEXT,
+                bidding_status TEXT,
+                end_time_unix INTEGER,
+                bid_count INTEGER,
+                is_favorite INTEGER,
+                total_cost REAL,
+                cost_split TEXT,
+                max_desired_bid REAL
         );
     ''')
-    conn.commit()
 
     # create bids table
-    cursor.execute('''
+    create_table(conn, 'bids', '''
         CREATE TABLE IF NOT EXISTS bids (
-            bid_id TEXT PRIMARY KEY,
-            item_id TEXT,
-            username TEXT,
-            bid REAL,
-            bid_time TEXT,
-            time_of_bid TEXT,
-            time_of_bid_unix INTEGER,
-            buyer_number TEXT,
-            description TEXT
+                bid_id TEXT PRIMARY KEY,
+                item_id TEXT,
+                username TEXT,
+                bid REAL,
+                bid_time TEXT,
+                time_of_bid TEXT,
+                time_of_bid_unix INTEGER,
+                buyer_number TEXT,
+                description TEXT
         );
     ''')
-    conn.commit()
 
     # create invoices table
-    cursor.execute('''
+    create_table(conn, 'invoices', '''
         CREATE TABLE IF NOT EXISTS invoices (
-            invoice_id TEXT PRIMARY KEY,
-            date TEXT,
-            link TEXT,
-            total_cost REAL,
-            expense_input_form_link TEXT
+                invoice_id TEXT PRIMARY KEY,
+                date TEXT,
+                link TEXT,
+                total_cost REAL,
+                expense_input_form_link TEXT
         );
     ''')
-    conn.commit()
 
     # create users table
-    cursor.execute('''
+    create_table(conn, 'users', '''
         CREATE TABLE IF NOT EXISTS users (
-            username TEXT PRIMARY KEY
-            , user_id INTEGER
+            username TEXT PRIMARY KEY,
+            user_id INTEGER
         );
-    ''')
-    conn.commit()
+    ''') 
     
+
     conn.close()
 
 
 
 if __name__ == "__main__":
     sql_database_setup()
+
+
+
 
 
 

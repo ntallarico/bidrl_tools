@@ -234,45 +234,6 @@ gigascrape()
 
 
 
-
-
-
-# conn = bf.init_sql_connection(sql_server_name, sql_database_name, sql_admin_username, sql_admin_password)
-
-# cursor = conn.cursor()
-
-
-
-# # Insert Data
-
-# def insert_items(items):
-#     for item in items:
-#         cursor.execute('''
-#         INSERT INTO items (item_id, description, auction_id, end_time_unix, url)
-#         VALUES (?, ?, ?, ?, ?)
-#         ''', (item['item_id'], item['description'], item['auction_id'], item['end_time_unix'], item['url']))
-#     conn.commit()
-
-# # Example usage
-# items_data = [{'item_id': 1, 'description': 'Example item', 'auction_id': 101, 'end_time_unix': 1714579800, 'url': 'http://example.com'}]
-# insert_items(items_data)
-
-
-
-
-
-
-# # Closing the Connection
-# conn.close()
-
-
-
-
-
-
-
-
-
 '''
 questions I'd like to answer in reporting once I have full database:
 - what bidding strategy / timing works best? bidding one single time at 2mins out? 10 seconds out? is there a difference on average at all?
