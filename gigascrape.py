@@ -230,11 +230,7 @@ gigascrape()
 
 
 
-# get an initialized web driver that has logged in to bidrl with credentials stored in config.py
-#browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
-#item_obj = get_item_with_ids(browser, '14838053', '104503')
-#item_obj.display()
-#item_obj.display_bids()
+
 
 
 
