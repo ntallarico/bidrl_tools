@@ -94,8 +94,13 @@ def test_parse_invoice_page():
 #test_parse_invoice_page()
 
 
+def test_get_item_with_ids():
+    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+    item_obj = bf.get_item_with_ids(browser, '14838053', '104503')
+    item_obj.display()
+    item_obj.display_bids()
 
-
+#test_get_item_with_ids()
 
 
 '''
