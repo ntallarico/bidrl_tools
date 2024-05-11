@@ -3,6 +3,7 @@
 
 
 # define Item class to hold all of our information about a given item
+# Item class will contain a list of Bid classes
 class Item:
     def __init__(self
                  , id=''
@@ -16,6 +17,7 @@ class Item:
                  , lot_number=''
                  , bidding_status=''
                  , end_time_unix=''
+                 , bids=''
                  , is_favorite=''
                  , bid_count=''
                  , total_cost=''
@@ -32,6 +34,7 @@ class Item:
         self.lot_number = lot_number
         self.bidding_status = bidding_status
         self.end_time_unix = end_time_unix
+        self.bids = bids if bids is not None else []
         self.is_favorite = is_favorite
         self.bid_count = bid_count
         self.total_cost = total_cost # calculated total cost based on current_bid, tax rate, and buyer_premium
@@ -55,6 +58,11 @@ class Item:
         print(f"Total Cost: {self.total_cost}")
         print(f"Cost Split: {self.cost_split}")
         print(f"Max Desired Bid: {self.max_desired_bid}")
+
+    def display_bids(self):
+        for bid in self.bids:
+            bid.display()
+
 
 
 # define Invoice class to hold all of our information about a given invoice
@@ -117,18 +125,19 @@ class Auction:
         for item in self.items:
             item.display()
 
+
 # define Bid class to hold all of our information about a given bid
 class Bid:
-    def __init__(self, bid_id='', item_id='', user_name='', bid='', bid_time='', buyer_number=None, description='', time_of_bid='', time_of_bid_unix=''):
+    def __init__(self, bid_id='', item_id='', user_name='', bid='', bid_time='', time_of_bid='', time_of_bid_unix='', buyer_number=None, description=''):
         self.bid_id = bid_id
         self.item_id = item_id
         self.user_name = user_name
         self.bid = bid
         self.bid_time = bid_time
-        self.buyer_number = buyer_number
-        self.description = description
         self.time_of_bid = time_of_bid
         self.time_of_bid_unix = time_of_bid_unix
+        self.buyer_number = buyer_number
+        self.description = description
 
     def display(self):
         print(f"Bid ID: {self.bid_id}")
@@ -136,7 +145,7 @@ class Bid:
         print(f"User Name: {self.user_name}")
         print(f"Bid: {self.bid}")
         print(f"Bid Time: {self.bid_time}")
-        print(f"Buyer Number: {self.buyer_number}")
-        print(f"Description: {self.description}")
         print(f"Time of Bid: {self.time_of_bid}")
         print(f"Time of Bid Unix: {self.time_of_bid_unix}")
+        print(f"Buyer Number: {self.buyer_number}")
+        print(f"Description: {self.description}")

@@ -126,7 +126,6 @@ def gigascrape():
                 address=auction['address']
             )
 
-        # to do: create Bid class
         # to do: modify get_items() to return a list of Bids
         # to do: run a check on auction_obj to make sure it has all the data we need
         # to do: then add it to the sql database

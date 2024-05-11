@@ -8,7 +8,7 @@ from seleniumrequests import Firefox
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
-from bidrl_classes import Item, Invoice, Auction
+from bidrl_classes import Item, Invoice, Auction, Bid
 from bs4 import BeautifulSoup
 import pyodbc
 #from config import user_email, user_password, google_form_link_base, sql_server_name, sql_database_name, sql_admin_username, sql_admin_password
@@ -302,9 +302,9 @@ def get_auction_item_urls(auction_url):
 
 
 # get item data from a list of item URLS
-# requires: list of item URLs, webdriver object
+# requires: list of item URLs, webdriver object, and an optional specification to get bid history or not
 # returns: list of Item objects
-def get_items(item_urls, browser):
+def get_items(item_urls, browser, get_bid_history = 'true'):
     items = [] # list to fill with item objects and return at end
 
     post_url = "https://www.bidrl.com/api/ItemData"
@@ -323,6 +323,23 @@ def get_items(item_urls, browser):
         response.raise_for_status() # ensure the request was successful
         item_json = response.json()
 
+        # if get_bid_history is set to true, then get the bid history for the item
+        bids = []
+        if get_bid_history == 'true':
+            for bid_json in item_json['bid_history']:
+                bids.append(Bid(**{
+                    'bid_id': bid_json['id']
+                    , 'item_id': item_json['id']
+                    , 'user_name': bid_json['user_name']
+                    , 'bid': bid_json['bid']
+                    , 'bid_time': bid_json['bid_time']
+                    , 'time_of_bid': bid_json['time_of_bid']
+                    , 'time_of_bid_unix': bid_json['time_of_bid_unix']
+                    , 'buyer_number': bid_json['buyer_number']
+                    , 'description': bid_json['description']
+                }))
+                #bids[len(bids)-1].display()
+
         # extract data from json into temp dictionary to create item with later
         temp_item_dict = {'id': item_json['id']
                                 , 'auction_id': item_json['auction_id']
@@ -335,6 +352,7 @@ def get_items(item_urls, browser):
                                 , 'lot_number': item_json['lot_number']
                                 , 'bidding_status': item_json['bidding_status']
                                 , 'end_time_unix': int(item_json['end_time_unix']) - int(item_json['time_offset'])
+                                , 'bids': bids
                                 , 'bid_count': item_json['bid_count']}
         
         # can only see is_favorite key if logged in. check if it exists before attempting to add to dict
