@@ -132,7 +132,6 @@ def get_all_auctions():
                                 , 'start_datetime': auction_json['starts']
                                 , 'status': auction_json['status']}
 
-        # to do: add fields to Auction class from commented out print statement above
         # to do: create Bid class
         # to do: modify get_items() to return a list of Bids
         # to do: run a check on temp_auction_dict to make sure it has all the data we need

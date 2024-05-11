@@ -81,7 +81,8 @@ class Invoice:
 # define Auction class to hold all of our information about a given auction
 # Auction class will contain a list of Item classes
 class Auction:
-    def __init__(self, id='', url='', items=None, title = '', item_count = '', start_datetime = '', status = ''):
+    def __init__(self, id='', url='', items=None, title='', item_count='', start_datetime='', status='',
+                 affiliate_id='', aff_company_name='', state_abbreviation='', city='', zip='', address=''):
         self.id = id
         self.url = url
         self.items = items if items is not None else []
@@ -89,6 +90,12 @@ class Auction:
         self.item_count = item_count
         self.start_datetime = start_datetime
         self.status = status
+        self.affiliate_id = affiliate_id
+        self.aff_company_name = aff_company_name
+        self.state_abbreviation = state_abbreviation
+        self.city = city
+        self.zip = zip
+        self.address = address
 
     def add_item(self, item):
         self.items.append(item)
@@ -100,6 +107,12 @@ class Auction:
         print(f"Item Count: {self.item_count}")
         print(f"Start Date: {self.start_datetime}")
         print(f"Status: {self.status}")
+        print(f"Affiliate ID: {self.affiliate_id}")
+        print(f"Affiliate Company Name: {self.aff_company_name}")
+        print(f"State Abbreviation: {self.state_abbreviation}")
+        print(f"City: {self.city}")
+        print(f"ZIP: {self.zip}")
+        print(f"Address: {self.address}")
         print("Items:")
         for item in self.items:
             item.display()
