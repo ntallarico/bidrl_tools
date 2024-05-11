@@ -301,68 +301,79 @@ def get_auction_item_urls(auction_url):
     return item_urls
 
 
+# requires instantiated webdriver, item_id, auction_id, and optionally an indication to also/not scrape bids
+# returns an Item object
+def get_item_with_ids(browser, item_id, auction_id, get_bid_history = 'true'):
+    response = browser.request('GET', 'https://www.bidrl.com/') # make GET request to get cookies
+
+    # submit requests to API and get JSON response
+    post_url = "https://www.bidrl.com/api/ItemData"
+    post_data = {
+        "item_id": item_id
+        , "auction_id": auction_id
+        , "show_closed": "closed"
+    }
+    response = browser.request('POST', post_url, data=post_data) # send the POST request with the session that contains the cookies
+    response.raise_for_status() # ensure the request was successful
+    item_json = response.json()
+
+    # if get_bid_history is set to true, then get the bid history for the item
+    bids = []
+    if get_bid_history == 'true':
+        for bid_json in item_json['bid_history']:
+            bids.append(Bid(**{
+                'bid_id': bid_json['id']
+                , 'item_id': item_json['id']
+                , 'user_name': bid_json['user_name']
+                , 'bid': bid_json['bid']
+                , 'bid_time': bid_json['bid_time']
+                , 'time_of_bid': bid_json['time_of_bid']
+                , 'time_of_bid_unix': bid_json['time_of_bid_unix']
+                , 'buyer_number': bid_json['buyer_number']
+                , 'description': bid_json['description']
+            }))
+            #bids[len(bids)-1].display()
+
+    # extract data from json into temp dictionary to create item with later
+    temp_item_dict = {'id': item_json['id']
+                            , 'auction_id': item_json['auction_id']
+                            , 'description': item_json['title']
+                            , 'tax_rate': str(round(float(item_json['tax_rate']) * 0.01, 4))
+                            , 'buyer_premium': str(round(float(item_json['buyer_premium']) * 0.01, 4))
+                            , 'current_bid': item_json['current_bid']
+                            , 'highbidder_username': item_json['highbidder_username']
+                            , 'url': item_json['url']
+                            , 'lot_number': item_json['lot_number']
+                            , 'bidding_status': item_json['bidding_status']
+                            , 'end_time_unix': int(item_json['end_time_unix']) - int(item_json['time_offset'])
+                            , 'bids': bids
+                            , 'bid_count': item_json['bid_count']}
+    
+    # can only see is_favorite key if logged in. check if it exists before attempting to add to dict
+    if 'is_favorite' in item_json:
+        temp_item_dict['is_favorite'] = item_json['is_favorite']
+
+    # instantiate Item object with info from temp_auction_dict, print message, and return item object
+    item_obj = Item(**temp_item_dict)
+    print(f"get_item_with_ids() scraped: {item_obj.description} (with {len(bids)} bids)")
+    return item_obj
+
+
 # get item data from a list of item URLS
 # requires: list of item URLs, webdriver object, and an optional specification to get bid history or not
 # returns: list of Item objects
 def get_items(item_urls, browser, get_bid_history = 'true'):
     items = [] # list to fill with item objects and return at end
-
-    post_url = "https://www.bidrl.com/api/ItemData"
-
     for item_url in item_urls:
         extracted_ids = extract_ids_from_item_url(item_url) # extract auction id and item id from url
         
-        # submit requests to API and get JSON response
-        response = browser.request('GET', item_url) # make GET request to get the cookies
-        post_data = { # make POST request to login or submit data
-            "item_id": extracted_ids['item_id']
-            , "auction_id": extracted_ids['auction_id']
-            , "show_closed": "closed"
-        }
-        response = browser.request('POST', post_url, data=post_data) # send the POST request with the session that contains the cookies
-        response.raise_for_status() # ensure the request was successful
-        item_json = response.json()
+        item_obj = get_item_with_ids(browser
+                                     , extracted_ids['item_id']
+                                     , extracted_ids['auction_id']
+                                     , get_bid_history)
+        items.append(Item(item_obj))
 
-        # if get_bid_history is set to true, then get the bid history for the item
-        bids = []
-        if get_bid_history == 'true':
-            for bid_json in item_json['bid_history']:
-                bids.append(Bid(**{
-                    'bid_id': bid_json['id']
-                    , 'item_id': item_json['id']
-                    , 'user_name': bid_json['user_name']
-                    , 'bid': bid_json['bid']
-                    , 'bid_time': bid_json['bid_time']
-                    , 'time_of_bid': bid_json['time_of_bid']
-                    , 'time_of_bid_unix': bid_json['time_of_bid_unix']
-                    , 'buyer_number': bid_json['buyer_number']
-                    , 'description': bid_json['description']
-                }))
-                #bids[len(bids)-1].display()
-
-        # extract data from json into temp dictionary to create item with later
-        temp_item_dict = {'id': item_json['id']
-                                , 'auction_id': item_json['auction_id']
-                                , 'description': item_json['title']
-                                , 'tax_rate': str(round(float(item_json['tax_rate']) * 0.01, 4))
-                                , 'buyer_premium': str(round(float(item_json['buyer_premium']) * 0.01, 4))
-                                , 'current_bid': item_json['current_bid']
-                                , 'highbidder_username': item_json['highbidder_username']
-                                , 'url': item_url
-                                , 'lot_number': item_json['lot_number']
-                                , 'bidding_status': item_json['bidding_status']
-                                , 'end_time_unix': int(item_json['end_time_unix']) - int(item_json['time_offset'])
-                                , 'bids': bids
-                                , 'bid_count': item_json['bid_count']}
-        
-        # can only see is_favorite key if logged in. check if it exists before attempting to add to dict
-        if 'is_favorite' in item_json:
-            temp_item_dict['is_favorite'] = item_json['is_favorite']
-
-        # instantiate Item object with info from temp_auction_dict and add to list
-        items.append(Item(**temp_item_dict))
-
-        print(f"get_items() scraped: {items[len(items)-1].description} (with {len(bids)} bids)")
+        print(f"get_items() scraped: {item_obj.description} (with {len(item_obj.bids)} bids)")
     return items
 
 
