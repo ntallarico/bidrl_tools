@@ -41,6 +41,80 @@ def generate_date_intervals_for_auction_scrape():
     return yearly_date_ranges
 
 
+# run a series of checks on an auction_obj to verify / validate that the object has been
+# completely scraped properly. 
+# if anything incorrect is found, print indication of what and the relevant object's display function
+def verify_auction_object_complete(auction_obj):
+    # if anything is missing from the auction return False
+    if auction_obj.id == None \
+        or auction_obj.url == None \
+        or auction_obj.items == None \
+        or auction_obj.title == None \
+        or auction_obj.item_count == None \
+        or auction_obj.start_datetime == None \
+        or auction_obj.status == None \
+        or auction_obj.affiliate_id == None \
+        or auction_obj.aff_company_name == None \
+        or auction_obj.state_abbreviation == None \
+        or auction_obj.city == None \
+        or auction_obj.zip == None \
+        or auction_obj.address == None:
+        print("Element missing from auction: ")
+        bid.auction_obj()
+        return False
+    
+    # if anything is missing from the auction's items return False
+    for item in auction_obj.items:
+        if item.id == None \
+            or item.auction_id == None \
+            or item.description == None \
+            or item.tax_rate == None \
+            or item.buyer_premium == None \
+            or item.current_bid == None \
+            or item.url == None \
+            or item.lot_number == None \
+            or item.bidding_status == None \
+            or item.end_time_unix == None:
+            print("Element missing from item: ")
+            item.display()
+            return False
+        
+        if item.highbidder_username == None and item.bid_count != str(0):
+            print(f"Item {item.id} has {item.bid_count} bids but no highbidder_username.")
+            item.display()
+            return False
+        
+        # check to make sure the the # of bids in the bids list = the bid_count field in the item data
+        if str(len(item.bids)) != item.bid_count:
+            print(f"Item {item.id} has {len(item.bids)} bids in the bid list" + \
+                f", but the bid_count field in the item data is {item.bid_count}")
+            item.display_bids()
+            return False
+        
+        # if anything is missing from the auction's item's bids return False
+        for bid in item.bids:
+            if bid.bid_id == None \
+                or bid.item_id == None \
+                or bid.user_name == None \
+                or bid.bid == None \
+                or bid.bid_time == None \
+                or bid.time_of_bid == None \
+                or bid.time_of_bid_unix == None \
+                or bid.description == None:
+                print("Element missing from bid: ")
+                bid.display()
+                return False
+            
+    # check to make sure the the # of items in the items list = the item_count field in the auction data
+    if str(len(auction_obj.items)) != auction_obj.item_count:
+        print(f"Auction {auction_obj.id} has {len(auction_obj.items)} items in the items list" + \
+              f", but the item_count field in the auction data is {auction_obj.item_count}")
+        return False
+                
+    # if we've made it here, then the auction object is complete and validated. return True
+    return True
+
+
 # we'll add an entire scraped aution with its full data and all items at once.
     # so there will never be a partial auction added. instead of adding all auctions, then items, then history
     # we'll go one auction at a time. Therefore, since its quick to get a list of auctions from the API for
@@ -98,6 +172,9 @@ def gigascrape():
             print(auction_json)
             quit()
 
+        # to do: get auction_ids from sql, then remove those from auction_data_json list
+        # so that we do not attempt to scrape any auction that is already in the sql
+
         for auction in auction_data_json:
             auction_url = "https://www.bidrl.com/auction/" + auction['auction_id_slug'] + "/bidgallery/"
 
@@ -126,13 +203,16 @@ def gigascrape():
                 address=auction['address']
             )
 
-        # to do: modify get_items() to return a list of Bids
-        # to do: run a check on auction_obj to make sure it has all the data we need
-        # to do: then add it to the sql database
+            # to do: run a check on auction_obj to validate and ensure that it is complete
+            if verify_auction_object_complete(auction_obj) == False:
+                print("Auction did not complete! Not adding to sql database. Exiting program.")
+                quit()
+            else:
+                print("Auction object is complete! Adding to sql database.")
+                # to do: add it to the sql database
     
     browser.quit()
 
-    #return item_json
 
 gigascrape()
 

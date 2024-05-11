@@ -362,7 +362,7 @@ def get_items(item_urls, browser, get_bid_history = 'true'):
         # instantiate Item object with info from temp_auction_dict and add to list
         items.append(Item(**temp_item_dict))
 
-        print("get_items() scraped: " + items[len(items)-1].description)
+        print(f"get_items() scraped: {items[len(items)-1].description} (with {len(bids)} bids)")
     return items
 
 
