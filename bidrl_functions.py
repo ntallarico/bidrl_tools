@@ -355,7 +355,7 @@ def get_item_with_ids(browser, item_id, auction_id, get_bid_history = 'true'):
 
     # instantiate Item object with info from temp_auction_dict, print message, and return item object
     item_obj = Item(**temp_item_dict)
-    print(f"get_item_with_ids() scraped: {item_obj.description} (with {len(bids)} bids)")
+    #print(f"get_item_with_ids() scraped: {item_obj.description} (with {len(bids)} bids)")
     return item_obj
 
 
@@ -371,7 +371,7 @@ def get_items(item_urls, browser, get_bid_history = 'true'):
                                      , extracted_ids['item_id']
                                      , extracted_ids['auction_id']
                                      , get_bid_history)
-        items.append(Item(item_obj))
+        items.append(item_obj)
 
         print(f"get_items() scraped: {item_obj.description} (with {len(item_obj.bids)} bids)")
     return items

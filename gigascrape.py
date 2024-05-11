@@ -65,16 +65,17 @@ def verify_auction_object_complete(auction_obj):
     
     # if anything is missing from the auction's items return False
     for item in auction_obj.items:
-        if item.id == None \
-            or item.auction_id == None \
-            or item.description == None \
-            or item.tax_rate == None \
-            or item.buyer_premium == None \
-            or item.current_bid == None \
-            or item.url == None \
-            or item.lot_number == None \
-            or item.bidding_status == None \
-            or item.end_time_unix == None:
+        if item.id == None or item.id == '' \
+            or item.auction_id == None or item.auction_id == '' \
+            or item.description == None or item.description == '' \
+            or item.tax_rate == None or item.tax_rate == '' \
+            or item.buyer_premium == None or item.buyer_premium == '' \
+            or item.current_bid == None or item.current_bid == '' \
+            or item.url == None or item.url == '' \
+            or item.lot_number == None or item.lot_number == '' \
+            or item.bidding_status == None or item.bidding_status == '' \
+            or item.end_time_unix == None or item.end_time_unix == '' \
+            or item.bid_count == None or item.bid_count == '':
             print("Element missing from item: ")
             item.display()
             return False
