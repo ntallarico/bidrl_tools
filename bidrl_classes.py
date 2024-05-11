@@ -117,3 +117,26 @@ class Auction:
         for item in self.items:
             item.display()
 
+# define Bid class to hold all of our information about a given bid
+class Bid:
+    def __init__(self, bid_id='', item_id='', user_name='', bid='', bid_time='', buyer_number=None, description='', time_of_bid='', time_of_bid_unix=''):
+        self.bid_id = bid_id
+        self.item_id = item_id
+        self.user_name = user_name
+        self.bid = bid
+        self.bid_time = bid_time
+        self.buyer_number = buyer_number
+        self.description = description
+        self.time_of_bid = time_of_bid
+        self.time_of_bid_unix = time_of_bid_unix
+
+    def display(self):
+        print(f"Bid ID: {self.bid_id}")
+        print(f"Item ID: {self.bid_id}")
+        print(f"User Name: {self.user_name}")
+        print(f"Bid: {self.bid}")
+        print(f"Bid Time: {self.bid_time}")
+        print(f"Buyer Number: {self.buyer_number}")
+        print(f"Description: {self.description}")
+        print(f"Time of Bid: {self.time_of_bid}")
+        print(f"Time of Bid Unix: {self.time_of_bid_unix}")
