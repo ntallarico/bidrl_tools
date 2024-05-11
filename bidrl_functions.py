@@ -285,7 +285,7 @@ def get_auction_item_urls(auction_url):
 
     # set items per page to 10k to ensure we capture all item urls in auction
     # this prevents us from having to loop through pages with attribute filters[page]
-    post_data = {"auction_id": auction_id, "filters[perpage]": 10000} 
+    post_data = {"auction_id": auction_id, "filters[perpage]": 10000}
     response = session.post(post_url, data=post_data)
     response.raise_for_status() # ensure the request was successful
 
