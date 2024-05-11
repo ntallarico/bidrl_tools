@@ -285,9 +285,14 @@ def get_auction_item_urls(auction_url):
 
     # set items per page to 10k to ensure we capture all item urls in auction
     # this prevents us from having to loop through pages with attribute filters[page]
-    post_data = {"auction_id": auction_id, "filters[perpage]": 10000}
+    post_data = {"auction_id": auction_id
+                 , "filters[perpage]": 10000
+                 , "show_closed": "closed"
+                 , "item_type": "itemlist"}
     response = session.post(post_url, data=post_data)
     response.raise_for_status() # ensure the request was successful
+
+    #print(response.json())
 
     item_urls = [] # list for item urls to return
     for item in response.json()['items']:
@@ -310,8 +315,9 @@ def get_items(item_urls, browser):
         # submit requests to API and get JSON response
         response = browser.request('GET', item_url) # make GET request to get the cookies
         post_data = { # make POST request to login or submit data
-            "item_id": extracted_ids['item_id'],
-            "auction_id": extracted_ids['auction_id']
+            "item_id": extracted_ids['item_id']
+            , "auction_id": extracted_ids['auction_id']
+            , "show_closed": "closed"
         }
         response = browser.request('POST', post_url, data=post_data) # send the POST request with the session that contains the cookies
         response.raise_for_status() # ensure the request was successful

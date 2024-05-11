@@ -53,7 +53,7 @@ def generate_date_intervals_for_auction_scrape():
     #   4. remove auction_ids from the api list that are in the sql list
     #   5. loop through the remaining auctions in the api list, then get all the data for that auction
     #   6. insert the data for that auction into the sql
-def get_all_auctions():
+def gigascrape():
     browser = bf.init_webdriver('headless')
 
     # send browser to bidrl.com. this gets us the cookies we need to send the POST requests properly next
@@ -77,7 +77,6 @@ def get_all_auctions():
             , "filters[affiliates]": 47
         }
 
-
         print("Attempting to get response from POST request to https://www.bidrl.com/api/auctions")
         start_time = time.time()
         response = browser.request('POST', post_url, data=post_data) # send the POST request with the session that contains the cookies
@@ -95,53 +94,48 @@ def get_all_auctions():
             print("No auctions found for this date range.")
             continue
         else:
-            print("\n\nRecieved response that wasn't 'success'. add it to the if/else ladder in get_all_auctions():\n\n")
+            print("\n\nRecieved response that wasn't 'success'. add it to the if/else ladder in gigascrape():\n\n")
             print(auction_json)
             quit()
 
+        for auction in auction_data_json:
+            auction_url = "https://www.bidrl.com/auction/" + auction['auction_id_slug'] + "/bidgallery/"
 
-        # for auction in auction_data_json:
-        #     print('')
-        #     print(auction['id'])
-        #     print(auction['title'])
-        #     print(auction['affiliate_id'])
-        #     print(auction['item_count'])
-        #     print(auction['status'])
-        #     print(auction['url'])
-        #     print(auction['aff_company_name'])
-        #     print(auction['state_abbreviation'])
-        #     print(auction['city'])
-        #     print(auction['zip'])
-        #     print(auction['address'])
+            print("scaping item urls from: " + auction_url)
+            item_urls = bf.get_auction_item_urls(auction_url)
+            print(str(len(item_urls)) + " items found")
 
-        auction_url = "https://www.bidrl.com/auction/" + auction_json['auction_id_slug'] + "/bidgallery/"
+            print("scraping item info")
+            items = bf.get_items(item_urls, browser)
 
-        print("scaping item urls from: " + auction_url)
-        item_urls = bf.get_auction_item_urls(auction_url)
-        print(str(len(item_urls)) + " items found")
 
-        print("scraping item info")
-        items = bf.get_items(item_urls, browser)
-
-        # dictionary to temporarily hold auction details before creating object
-        temp_auction_dict = {'id': auction_json['id']
-                                , 'url': auction_url
-                                , 'items': items
-                                , 'title': auction_json['title']
-                                , 'item_count': auction_json['item_count']
-                                , 'start_datetime': auction_json['starts']
-                                , 'status': auction_json['status']}
+            # auction object to hold all of our auction data before we insert it into the sql database
+            auction_obj = Auction(
+                id=auction['id'],
+                url=auction_url,
+                items=items,
+                title=auction['title'],
+                item_count=auction['item_count'],
+                start_datetime=auction['starts'],
+                status=auction['status'],
+                affiliate_id=auction['affiliate_id'],
+                aff_company_name=auction['aff_company_name'],
+                state_abbreviation=auction['state_abbreviation'],
+                city=auction['city'],
+                zip=auction['zip'],
+                address=auction['address']
+            )
 
         # to do: create Bid class
         # to do: modify get_items() to return a list of Bids
-        # to do: run a check on temp_auction_dict to make sure it has all the data we need
+        # to do: run a check on auction_obj to make sure it has all the data we need
         # to do: then add it to the sql database
     
     browser.quit()
 
     #return item_json
 
-get_all_auctions()
+gigascrape()
 
 
 
