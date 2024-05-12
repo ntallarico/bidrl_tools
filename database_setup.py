@@ -101,6 +101,7 @@ def sql_database_setup():
     ''') 
     
 
+    conn.commit()
     conn.close()
 
 
