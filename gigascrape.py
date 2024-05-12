@@ -185,12 +185,11 @@ def gigascrape():
             print(auction_json)
             quit()
 
-        # get auction_ids from sql so we can avoid scraping auctions that have already been scraped
+        # get auction_ids from sql so we can skip scraping auctions that have already been scraped
         cursor.execute("SELECT auction_id FROM auctions")
         auctions_in_db = cursor.fetchall()
         # extract auction_id from each row and store in a list
         auctions_in_db_list = [auction['auction_id'] for auction in auctions_in_db]
-        #print(auctions_in_db_list)
 
         for auction in auction_data_json:
             # check if auction_id we are about to scrape has already been scraped. skip if so
