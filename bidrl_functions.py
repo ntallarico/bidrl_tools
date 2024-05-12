@@ -407,7 +407,7 @@ def get_open_auctions(browser, affiliate_company_name = 'south-carolina', debug 
 
             auction_url = "https://www.bidrl.com/auction/" + auction_json['auction_id_slug'] + "/bidgallery/"
 
-            print("\nscaping item urls from: " + auction_url)
+            print("\nscraping item urls from: " + auction_url)
             item_urls = get_auction_item_urls(auction_url)
             print(str(len(item_urls)) + " items found")
 
