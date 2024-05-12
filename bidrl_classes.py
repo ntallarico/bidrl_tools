@@ -370,7 +370,7 @@ ok, so in order to enact this, what do I need to do
     --- test add item
     --- test add bid
     --- test add auction
-    - test add invoice?
+    --- test add invoice?
     - test add affiliate?
 3. then go through and make field names consistent
     - lets to item_id. fuck it, that's what I'd rather have.

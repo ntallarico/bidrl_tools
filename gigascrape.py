@@ -89,7 +89,7 @@ def verify_auction_object_complete(auction_obj):
             return False
         
         # commented out because apparently this can happen when username is NULL (e.g. https://www.bidrl.com/auction/108065/item/hotwheels-mattel-flying-customs-factory-sealed-15179822/)
-        '''if item.highbidder_username == None and item.bid_count != str(0):
+        '''if item.highbidder_username == None and item.bid_count != 0:
             print(f"Item {item.url}\n has {item.bid_count} bids but no highbidder_username.")
             item.display()
             return False'''
@@ -98,7 +98,7 @@ def verify_auction_object_complete(auction_obj):
         # only do this, however, if highbidder_username is null. this was added because
         # some of the items from bidrl have an incorrect bid_count, so we need another element to check
         # to make sure there actually were no bids on the item
-        if int(item.bid_count) > 0 and len(item.bids) == 0 and item.highbidder_username != None:
+        if item.bid_count > 0 and len(item.bids) == 0 and item.highbidder_username != None:
             print(f"Item {item.url}\nhas 0 bids in the bid list" + \
                 f", but the bid_count field in the item data is {item.bid_count}")
             item.display_bids()
@@ -107,7 +107,7 @@ def verify_auction_object_complete(auction_obj):
         # check to make sure the # of bids in the bids list = the bid_count field in the item data
         # this function eliminated because some of the items from bidrl have an incorrect bid_count
         # I cannot figure out why or what the correlation is
-        r'''if str(len(item.bids)) != item.bid_count:
+        r'''if len(item.bids) != item.bid_count:
             print(f"Item {item.url}\nhas {len(item.bids)} bids in the bid list" + \
                 f", but the bid_count field in the item data is {item.bid_count}")
             item.display_bids()
@@ -130,7 +130,7 @@ def verify_auction_object_complete(auction_obj):
                 return False
             
     # check to make sure the the # of items in the items list = the item_count field in the auction data
-    if str(len(auction_obj.items)) != auction_obj.item_count:
+    if len(auction_obj.items) != auction_obj.item_count:
         print(f"Auction {auction_obj.url}\n has {len(auction_obj.items)} items in the items list" + \
               f", but the item_count field in the auction data is {auction_obj.item_count}")
         return False
