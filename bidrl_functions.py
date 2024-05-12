@@ -583,10 +583,10 @@ def insert_item_to_sql_db(conn, item):
         #print(f"item_id {item.id} already found in database. Skipping insert.")
         return
     else:
-        sql = ''' INSERT INTO items(item_id, description, current_bid, highbidder_username, url, tax_rate, buyer_premium, lot_number, bidding_status, end_time_unix, bid_count, is_favorite, total_cost, cost_split, max_desired_bid)
-                VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) '''
+        sql = ''' INSERT INTO items(item_id, auction_id, description, current_bid, highbidder_username, url, tax_rate, buyer_premium, lot_number, bidding_status, end_time_unix, bid_count, is_favorite, total_cost, cost_split, max_desired_bid)
+                VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) '''
         cur = conn.cursor()
-        cur.execute(sql, (item.id, item.description, item.current_bid, item.highbidder_username, item.url, item.tax_rate, item.buyer_premium, item.lot_number, item.bidding_status, item.end_time_unix, item.bid_count, item.is_favorite, item.total_cost, item.cost_split, item.max_desired_bid))
+        cur.execute(sql, (item.id, item.auction_id, item.description, item.current_bid, item.highbidder_username, item.url, item.tax_rate, item.buyer_premium, item.lot_number, item.bidding_status, item.end_time_unix, item.bid_count, item.is_favorite, item.total_cost, item.cost_split, item.max_desired_bid))
 
 # inserts a bid object into the bids table in the sql database
 # requires sqlite database connection object and a Bid object

@@ -112,8 +112,10 @@ def verify_auction_object_complete(auction_obj):
                 or bid.time_of_bid == None \
                 or bid.time_of_bid_unix == None \
                 or bid.description == None:
-                print("Element missing from bid: ")
+                print("\nElement missing from bid: ")
                 bid.display()
+                print("\nItem:")
+                item.display()
                 return False
             
     # check to make sure the the # of items in the items list = the item_count field in the auction data
