@@ -324,10 +324,10 @@ def get_item_with_ids(browser, item_id, auction_id, get_bid_history = 'true'):
                 'bid_id': bid_json['id']
                 , 'item_id': item_json['id']
                 , 'user_name': bid_json['user_name']
-                , 'bid': bid_json['bid']
+                , 'bid': float(bid_json['bid'])
                 , 'bid_time': bid_json['bid_time']
                 , 'time_of_bid': bid_json['time_of_bid']
-                , 'time_of_bid_unix': bid_json['time_of_bid_unix']
+                , 'time_of_bid_unix': int(bid_json['time_of_bid_unix'])
                 , 'buyer_number': bid_json['buyer_number']
                 , 'description': bid_json['description']
             }))
@@ -337,21 +337,21 @@ def get_item_with_ids(browser, item_id, auction_id, get_bid_history = 'true'):
     temp_item_dict = {'id': item_json['id']
                             , 'auction_id': item_json['auction_id']
                             , 'description': item_json['title']
-                            , 'tax_rate': str(round(float(item_json['tax_rate']) * 0.01, 4))
-                            , 'buyer_premium': str(round(float(item_json['buyer_premium']) * 0.01, 4))
-                            , 'current_bid': item_json['current_bid']
+                            , 'tax_rate': round(float(item_json['tax_rate']) * 0.01, 4)
+                            , 'buyer_premium': round(float(item_json['buyer_premium']) * 0.01, 4)
+                            , 'current_bid': float(item_json['current_bid'])
                             , 'highbidder_username': item_json['highbidder_username']
                             , 'url': item_json['url']
                             , 'lot_number': item_json['lot_number']
                             , 'bidding_status': item_json['bidding_status']
                             , 'end_time_unix': int(item_json['end_time_unix']) - int(item_json['time_offset'])
                             , 'bids': bids
-                            , 'bid_count': item_json['bid_count']
+                            , 'bid_count': int(item_json['bid_count'])
                             , 'viewed': int(item_json['viewed'])}
     
     # can only see is_favorite key if logged in. check if it exists before attempting to add to dict
     if 'is_favorite' in item_json:
-        temp_item_dict['is_favorite'] = item_json['is_favorite']
+        temp_item_dict['is_favorite'] = int(item_json['is_favorite'])
 
     # instantiate Item object with info from temp_auction_dict, print message, and return item object
     item_obj = Item(**temp_item_dict)
@@ -420,7 +420,7 @@ def get_open_auctions(browser, affiliate_company_name = 'south-carolina', debug 
                                     , 'url': auction_url
                                     , 'items': items
                                     , 'title': auction_json['title']
-                                    , 'item_count': auction_json['item_count']
+                                    , 'item_count': int(auction_json['item_count'])
                                     , 'start_datetime': auction_json['starts']
                                     , 'status': auction_json['status']
                                     , 'affiliate_id': response_json['affiliate']['affiliate_id']

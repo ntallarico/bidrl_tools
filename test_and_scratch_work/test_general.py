@@ -158,6 +158,13 @@ def test_insert_bid_to_sql_db():
 #test_insert_bid_to_sql_db()
 
 
+def test_get_auction():
+    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+    auction_obj = bf.get_open_auctions(browser, debug = 'true')[0]
+    auction_obj.display()
+
+
+test_get_auction()
 
 
 
@@ -188,7 +195,7 @@ def test_insert_entire_auction_to_sql_db():
     # for bid in bids:
     #     print(bid)
 
-test_insert_entire_auction_to_sql_db()
+#test_insert_entire_auction_to_sql_db()
 
 
 '''
