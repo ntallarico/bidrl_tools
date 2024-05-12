@@ -47,7 +47,10 @@ def generate_date_intervals_for_auction_scrape():
 # some things I found that I needed to account for:
     # https://www.bidrl.com/auction/107248/item/high-speed-remote-control-drift-car-factory-sealed-retail-4999-15080699/
         # has null for a username in bid history
-    #
+    # https://www.bidrl.com/auction/108065/item/hotwheels-mattel-flying-customs-factory-sealed-15179822/
+        # has 103 bids but no highbidder_username
+    # https://www.bidrl.com/auction/104502/item/apex-adjustable-massaging-footrest-14830697/
+        # has no bid history, but bid_count = 1
 def verify_auction_object_complete(auction_obj):
     # if anything is missing from the auction return False
     if auction_obj.id == None \
@@ -84,13 +87,17 @@ def verify_auction_object_complete(auction_obj):
             item.display()
             return False
         
-        if item.highbidder_username == None and item.bid_count != str(0):
+        # commented out because apparently this can happen when username is NULL (e.g. https://www.bidrl.com/auction/108065/item/hotwheels-mattel-flying-customs-factory-sealed-15179822/)
+        '''if item.highbidder_username == None and item.bid_count != str(0):
             print(f"Item {item.url}\n has {item.bid_count} bids but no highbidder_username.")
             item.display()
-            return False
+            return False'''
         
-        # check to make sure that the bids list is not empty if bid_count > 0
-        if int(item.bid_count) > 0 and len(item.bids) == 0:
+        # return false if bid_count > 0 but the scraped bids list is empty
+        # only do this, however, if highbidder_username is null. this was added because
+        # some of the items from bidrl have an incorrect bid_count, so we need another element to check
+        # to make sure there actually were no bids on the item
+        if int(item.bid_count) > 0 and len(item.bids) == 0 and item.highbidder_username != None:
             print(f"Item {item.url}\nhas 0 bids in the bid list" + \
                 f", but the bid_count field in the item data is {item.bid_count}")
             item.display_bids()
@@ -180,7 +187,7 @@ def gigascrape():
         # only execute the rest of the contents of this loop if result == 'success'
         # meaning we recieved auction json properly
         if auction_json['result'] == 'success':
-            auction_data_json = auction_json['data'][2:]
+            auction_data_json = auction_json['data']
             print("Number of auctions recieved: " + str(len(auction_data_json)))
         elif auction_json['code'] == 'NO_AUCTION_LIST':
             print("No auctions found for this date range.")
@@ -200,6 +207,11 @@ def gigascrape():
             # check if auction_id we are about to scrape has already been scraped. skip if so
             if auction['id'] in auctions_in_db_list:
                 print(f"Auction {auction['id']} already exists in the database. Skipping.")
+                continue
+
+            # skip if auction is not a real auction
+            if auction['item_count'] == '0':
+                print(f"Auction item_count = 0. Concluding not a real auction and skipping.")
                 continue
 
             auction_url = "https://www.bidrl.com/auction/" + auction['auction_id_slug'] + "/bidgallery/"
