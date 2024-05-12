@@ -51,6 +51,8 @@ def generate_date_intervals_for_auction_scrape():
         # has 103 bids but no highbidder_username
     # https://www.bidrl.com/auction/104502/item/apex-adjustable-massaging-footrest-14830697/
         # has no bid history, but bid_count = 1
+    # https://www.bidrl.com/auction/118391/item/glory-season-decorative-throw-blanket-factory-sealed-16188241/
+        # has no lot_number
 def verify_auction_object_complete(auction_obj):
     # if anything is missing from the auction return False
     if auction_obj.id == None \
@@ -79,7 +81,6 @@ def verify_auction_object_complete(auction_obj):
             or item.buyer_premium == None or item.buyer_premium == '' \
             or item.current_bid == None or item.current_bid == '' \
             or item.url == None or item.url == '' \
-            or item.lot_number == None or item.lot_number == '' \
             or item.bidding_status == None or item.bidding_status == '' \
             or item.end_time_unix == None or item.end_time_unix == '' \
             or item.bid_count == None or item.bid_count == '':
