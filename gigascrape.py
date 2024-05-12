@@ -139,7 +139,8 @@ def verify_auction_object_complete(auction_obj):
     #   5. loop through the remaining auctions in the api list, then get all the data for that auction
     #   6. insert the data for that auction into the sql
 def gigascrape():
-    browser = bf.init_webdriver('headless')
+    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+    conn = bf.init_sqlite_connection()
 
     # send browser to bidrl.com. this gets us the cookies we need to send the POST requests properly next
     browser.get('https://www.bidrl.com')
@@ -220,6 +221,7 @@ def gigascrape():
             else:
                 print("Auction object is complete! Adding to sql database.")
                 # to do: add it to the sql database
+                bf.insert_auction_to_sql_db(conn, auction_obj)
     
     browser.quit()
 

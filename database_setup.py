@@ -29,12 +29,18 @@ def sql_database_setup():
     # create auctions table
     bf.create_table(conn, 'auctions', '''
         CREATE TABLE IF NOT EXISTS auctions (
-                auction_id TEXT PRIMARY KEY,
-                url TEXT,
-                title TEXT,
-                item_count INTEGER,
-                start_datetime TEXT,
-                status TEXT
+            auction_id TEXT PRIMARY KEY,
+            url TEXT,
+            title TEXT,
+            item_count INTEGER,
+            start_datetime TEXT,
+            status TEXT,
+            affiliate_id TEXT,
+            aff_company_name TEXT,
+            state_abbreviation TEXT,
+            city TEXT,
+            zip TEXT,
+            address TEXT
         );
     ''')
 

@@ -73,7 +73,7 @@ def test_get_invoices():
     for invoice in invoices:
         invoice.display()
 
-test_get_invoices()
+#test_get_invoices()
 
 
 
@@ -101,6 +101,56 @@ def test_get_item_with_ids():
     item_obj.display_bids()
 
 #test_get_item_with_ids()
+
+def test_insert_auction_to_sql_db():
+    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+    item_obj = bf.get_item_with_ids(browser, '14838053', '104503')
+    conn = bf.init_sqlite_connection()
+    bf.insert_auction_to_sql_db(conn, item_obj)
+
+#test_insert_auction_to_sql_db()
+
+
+
+def test_insert_item_to_sql_db():
+    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+    item_obj = bf.get_item_with_ids(browser, '14838053', '104503')
+    conn = bf.init_sqlite_connection()
+    cursor = conn.cursor()
+    bf.insert_item_to_sql_db(conn, item_obj)
+
+    cursor.execute("SELECT * FROM items")
+    items = cursor.fetchall()
+    for item in items:
+        print(item)
+
+#test_insert_item_to_sql_db()
+
+def test_insert_auction_to_sql_db():
+    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+    auction_obj = bf.get_open_auctions(browser, debug = 'true')[0]
+    conn = bf.init_sqlite_connection()
+    cursor = conn.cursor()
+    bf.insert_auction_to_sql_db(conn, auction_obj)
+    
+    cursor.execute("SELECT * FROM auctions")
+    auctions = cursor.fetchall()
+    for auction in auctions:
+        print(auction)
+
+#test_insert_auction_to_sql_db()
+
+
+
+
+
+
+# to do
+### test items get + insert
+### test auction get + insert
+# test bid get + insert
+# test invoice get + insert
+
 
 
 '''

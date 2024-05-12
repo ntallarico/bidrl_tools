@@ -271,12 +271,10 @@ def extract_id_from_auction_url(url):
     return {'auction_id': auction_id}
 
 
-'''
-- get list of item urls from an auction
-- requires URL in this format:
-https://www.bidrl.com/auction/outdoor-sports-auction-161-johns-rd-unit-a-south-carolina-april-25-152770/bidgallery/
-- returns: list of urls, one for each item in the auction provided
-'''
+# get list of item urls from an auction
+# requires URL in this format:
+# https://www.bidrl.com/auction/outdoor-sports-auction-161-johns-rd-unit-a-south-carolina-april-25-152770/bidgallery/
+# returns: list of urls, one for each item in the auction provided
 def get_auction_item_urls(auction_url):
     auction_id = extract_id_from_auction_url(auction_url)['auction_id'] # extract auction id from url
 
@@ -383,7 +381,7 @@ def get_items(item_urls, browser, get_bid_history = 'true'):
     # name of affiliate "company". ex: 'south-carolina'. defaults to sc
     # webdriver object. if webdriver object has been logged in as a user, then the attribute is_favorite will be filled in for items
 # returns: list of Auction objects
-def get_open_auctions(browser, affiliate_company_name = 'south-carolina'):
+def get_open_auctions(browser, affiliate_company_name = 'south-carolina', debug = 'false'):
     get_url = "https://www.bidrl.com/api/landingPage/" + affiliate_company_name
 
     response = browser.request('GET', get_url) # make the GET request
@@ -398,7 +396,9 @@ def get_open_auctions(browser, affiliate_company_name = 'south-carolina'):
         for auction in response_json['auctions']:
             auctions_num_list.append(auction)
 
-        #auctions_num_list = auctions_num_list[0] # FOR DEBUGGING. causes function to only scrape first auction
+        if debug == 'true':
+           # FOR DEBUGGING. causes function to only scrape first auction
+           auctions_num_list = auctions_num_list[0]
 
         # loop through each auction by number in the json and extract information to an Auction object
         auctions = []
@@ -416,12 +416,19 @@ def get_open_auctions(browser, affiliate_company_name = 'south-carolina'):
 
             # dictionary to temporarily hold auction details before creating object
             temp_auction_dict = {'id': auction_json['id']
-                                 , 'url': auction_url
-                                 , 'items': items
-                                 , 'title': auction_json['title']
-                                 , 'item_count': auction_json['item_count']
-                                 , 'start_datetime': auction_json['starts']
-                                 , 'status': auction_json['status']}
+                                    , 'url': auction_url
+                                    , 'items': items
+                                    , 'title': auction_json['title']
+                                    , 'item_count': auction_json['item_count']
+                                    , 'start_datetime': auction_json['starts']
+                                    , 'status': auction_json['status']
+                                    , 'affiliate_id': response_json['affiliate']['affiliate_id']
+                                    , 'aff_company_name': response_json['affiliate']['aff_company_name']
+                                    , 'state_abbreviation': auction_json['state_abbreviation'].strip()
+                                    , 'city': auction_json['city']
+                                    , 'zip': auction_json['zip']
+                                    , 'address': auction_json['address']
+                                }
             
             # instantiate Autcion object with info from temp_auction_dict and add to list
             auctions.append(Auction(**temp_auction_dict))
@@ -524,6 +531,7 @@ def init_sql_connection(sql_server_name, sql_database_name, sql_admin_username, 
 # return sqlite database connection object
 # this will create the file if it does not already exist
 def init_sqlite_connection():
+    print("Initializing sqlite connection")
     return sqlite3.connect('local_files/bidrl.db')
 
 # returns: 1 if table exists in database and 0 if it does not
@@ -550,38 +558,59 @@ def create_table(conn, table_name, table_creation_sql):
     else:
         print("Does exist - skipping.")
 
+# inserts an auction object into the auctions table in the sql database
+# requires sqlite database connection object and an Auction object
+def insert_auction_to_sql_db(conn, auction):
+    cur = conn.cursor()
+    # Check if auction_id already exists
+    cur.execute("SELECT auction_id FROM auctions WHERE auction_id = ?", (auction.id,))
+    if cur.fetchone():
+        print(f"auction_id {auction.id} already found in database. Skipping insert.")
+    else:
+        sql = ''' INSERT INTO auctions(auction_id, url, title, item_count, start_datetime, status, affiliate_id, aff_company_name, state_abbreviation, city, zip, address)
+                  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) '''
+        cur.execute(sql, (auction.id, auction.url, auction.title, auction.item_count, auction.start_datetime, auction.status, auction.affiliate_id, auction.aff_company_name, auction.state_abbreviation, auction.city, auction.zip, auction.address))
+        conn.commit()
+
 # inserts an item object into the items table in the sql database
 # requires sqlite database connection object and an Item object
 def insert_item_to_sql_db(conn, item):
-    sql = ''' INSERT INTO items(item_id, title, description, starting_bid, current_bid, highbidder_username, url, tax_rate, buyer_premium, lot_number, bidding_status, end_time_unix, bid_count, is_favorite, total_cost, cost_split, max_desired_bid)
-            VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) '''
-    cur = conn.cursor()
-    cur.execute(sql, (item.id, item.title, item.description, item.starting_bid, item.current_bid, item.highbidder_username, item.url, item.tax_rate, item.buyer_premium, item.lot_number, item.bidding_status, item.end_time_unix, item.bid_count, item.is_favorite, item.total_cost, item.cost_split, item.max_desired_bid))
-    conn.commit()
+    cursor = conn.cursor()
+    # Check if item_id already exists
+    cursor.execute("SELECT item_id FROM items WHERE item_id = ?", (item.id,))
+    if cursor.fetchone():
+        print(f"item_id {item.id} already found in database. Skipping insert.")
+    else:
+        sql = ''' INSERT INTO items(item_id, description, current_bid, highbidder_username, url, tax_rate, buyer_premium, lot_number, bidding_status, end_time_unix, bid_count, is_favorite, total_cost, cost_split, max_desired_bid)
+                VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) '''
+        cur = conn.cursor()
+        cur.execute(sql, (item.id, item.description, item.current_bid, item.highbidder_username, item.url, item.tax_rate, item.buyer_premium, item.lot_number, item.bidding_status, item.end_time_unix, item.bid_count, item.is_favorite, item.total_cost, item.cost_split, item.max_desired_bid))
+        conn.commit()
 
 # inserts a bid object into the bids table in the sql database
 # requires sqlite database connection object and a Bid object
 def insert_bid_to_sql_db(conn, bid):
-    sql = ''' INSERT INTO bids(bid_id, item_id, username, bid, bid_time, time_of_bid, time_of_bid_unix, buyer_number, description)
-              VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?) '''
     cur = conn.cursor()
-    cur.execute(sql, (bid.bid_id, bid.item_id, bid.user_name, bid.bid, bid.bid_time, bid.time_of_bid, bid.time_of_bid_unix, bid.buyer_number, bid.description))
-    conn.commit()
-
-# inserts an auction object into the auctions table in the sql database
-# requires sqlite database connection object and an Auction object
-def insert_auction_to_sql_db(conn, auction):
-    sql = ''' INSERT INTO auctions(auction_id, url, title, item_count, start_datetime, status, affiliate_id, aff_company_name, state_abbreviation, city, zip, address)
-              VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) '''
-    cur = conn.cursor()
-    cur.execute(sql, (auction.id, auction.url, auction.title, auction.item_count, auction.start_datetime, auction.status, auction.affiliate_id, auction.aff_company_name, auction.state_abbreviation, auction.city, auction.zip, auction.address))
-    conn.commit()
+    # Check if bid_id already exists
+    cur.execute("SELECT bid_id FROM bids WHERE bid_id = ?", (bid.bid_id,))
+    if cur.fetchone():
+        print(f"bid_id {bid.bid_id} already found in database. Skipping insert.")
+    else:
+        sql = ''' INSERT INTO bids(bid_id, item_id, username, bid, bid_time, time_of_bid, time_of_bid_unix, buyer_number, description)
+                  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?) '''
+        cur.execute(sql, (bid.bid_id, bid.item_id, bid.user_name, bid.bid, bid.bid_time, bid.time_of_bid, bid.time_of_bid_unix, bid.buyer_number, bid.description))
+        conn.commit()
 
 # inserts an invoice object into the invoices table in the sql database
 # requires sqlite database connection object and an Invoice object
 def insert_invoice_to_sql_db(conn, invoice):
-    sql = ''' INSERT INTO invoices(invoice_id, date, link, total_cost, expense_input_form_link)
-              VALUES(?, ?, ?, ?, ?) '''
     cur = conn.cursor()
-    cur.execute(sql, (invoice.id, invoice.date, invoice.link, invoice.total_cost, invoice.expense_input_form_link))
-    conn.commit()
+    # Check if invoice_id already exists
+    cur.execute("SELECT invoice_id FROM invoices WHERE invoice_id = ?", (invoice.id,))
+    if cur.fetchone():
+        print(f"invoice_id {invoice.id} already found in database. Skipping insert.")
+    else:
+        sql = ''' INSERT INTO invoices(invoice_id, date, link, total_cost, expense_input_form_link)
+                  VALUES(?, ?, ?, ?, ?) '''
+        cur.execute(sql, (invoice.id, invoice.date, invoice.link, invoice.total_cost, invoice.expense_input_form_link))
+        conn.commit()
