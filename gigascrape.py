@@ -141,6 +141,7 @@ def verify_auction_object_complete(auction_obj):
 def gigascrape():
     browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
     conn = bf.init_sqlite_connection()
+    cursor = conn.cursor()
 
     # send browser to bidrl.com. this gets us the cookies we need to send the POST requests properly next
     browser.get('https://www.bidrl.com')
@@ -184,10 +185,19 @@ def gigascrape():
             print(auction_json)
             quit()
 
-        # to do: get auction_ids from sql, then remove those from auction_data_json list
-        # so that we do not attempt to scrape any auction that is already in the sql
+        # get auction_ids from sql so we can avoid scraping auctions that have already been scraped
+        cursor.execute("SELECT auction_id FROM auctions")
+        auctions_in_db = cursor.fetchall()
+        # extract auction_id from each row and store in a list
+        auctions_in_db_list = [auction['auction_id'] for auction in auctions_in_db]
+        #print(auctions_in_db_list)
 
         for auction in auction_data_json:
+            # check if auction_id we are about to scrape has already been scraped. skip if so
+            if auction['id'] in auctions_in_db_list:
+                print(f"Auction {auction['id']} already exists in the database. Skipping.")
+                continue
+
             auction_url = "https://www.bidrl.com/auction/" + auction['auction_id_slug'] + "/bidgallery/"
 
             print("scaping item urls from: " + auction_url)
@@ -220,9 +230,8 @@ def gigascrape():
                 quit()
             else:
                 print("Auction object is complete! Adding to sql database.")
-                # add auction to sql database
-                bf.insert_entire_auction_to_sql_db(conn, auction_obj)
-                print("All data from auction added to database.")
+                bf.insert_entire_auction_to_sql_db(conn, auction_obj) # add auction to sql database
+                print("Completed attempt to add to database.")
     
     browser.quit()
 

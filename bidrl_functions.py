@@ -407,7 +407,7 @@ def get_open_auctions(browser, affiliate_company_name = 'south-carolina', debug 
 
             auction_url = "https://www.bidrl.com/auction/" + auction_json['auction_id_slug'] + "/bidgallery/"
 
-            print("scaping item urls from: " + auction_url)
+            print("\nscaping item urls from: " + auction_url)
             item_urls = get_auction_item_urls(auction_url)
             print(str(len(item_urls)) + " items found")
 
@@ -532,7 +532,9 @@ def init_sql_connection(sql_server_name, sql_database_name, sql_admin_username, 
 # this will create the file if it does not already exist
 def init_sqlite_connection():
     print("Initializing sqlite connection")
-    return sqlite3.connect('local_files/bidrl.db')
+    conn = sqlite3.connect('local_files/bidrl.db')
+    conn.row_factory = sqlite3.Row
+    return conn
 
 # returns: 1 if table exists in database and 0 if it does not
 def check_if_table_exists(conn, table_name):
@@ -565,6 +567,7 @@ def insert_auction_to_sql_db(conn, auction):
     cur.execute("SELECT auction_id FROM auctions WHERE auction_id = ?", (auction.id,))
     if cur.fetchone():
         print(f"auction_id {auction.id} already found in database. Skipping insert.")
+        return
     else:
         sql = ''' INSERT INTO auctions(auction_id, url, title, item_count, start_datetime, status, affiliate_id, aff_company_name, state_abbreviation, city, zip, address)
                   VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) '''
@@ -577,7 +580,8 @@ def insert_item_to_sql_db(conn, item):
     # Check if item_id already exists
     cursor.execute("SELECT item_id FROM items WHERE item_id = ?", (item.id,))
     if cursor.fetchone():
-        print(f"item_id {item.id} already found in database. Skipping insert.")
+        #print(f"item_id {item.id} already found in database. Skipping insert.")
+        return
     else:
         sql = ''' INSERT INTO items(item_id, description, current_bid, highbidder_username, url, tax_rate, buyer_premium, lot_number, bidding_status, end_time_unix, bid_count, is_favorite, total_cost, cost_split, max_desired_bid)
                 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) '''
@@ -591,7 +595,8 @@ def insert_bid_to_sql_db(conn, bid):
     # Check if bid_id already exists
     cur.execute("SELECT bid_id FROM bids WHERE bid_id = ?", (bid.bid_id,))
     if cur.fetchone():
-        print(f"bid_id {bid.bid_id} already found in database. Skipping insert.")
+        #print(f"bid_id {bid.bid_id} already found in database. Skipping insert.")
+        return
     else:
         sql = ''' INSERT INTO bids(bid_id, item_id, username, bid, bid_time, time_of_bid, time_of_bid_unix, buyer_number, description)
                   VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?) '''
@@ -604,7 +609,8 @@ def insert_invoice_to_sql_db(conn, invoice):
     # Check if invoice_id already exists
     cur.execute("SELECT invoice_id FROM invoices WHERE invoice_id = ?", (invoice.id,))
     if cur.fetchone():
-        print(f"invoice_id {invoice.id} already found in database. Skipping insert.")
+        #print(f"invoice_id {invoice.id} already found in database. Skipping insert.")
+        return
     else:
         sql = ''' INSERT INTO invoices(invoice_id, date, link, total_cost, expense_input_form_link)
                   VALUES(?, ?, ?, ?, ?) '''

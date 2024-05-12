@@ -174,13 +174,13 @@ def test_insert_entire_auction_to_sql_db():
     cursor.execute("SELECT * FROM auctions")
     auctions = cursor.fetchall()
     for auction in auctions:
-        print(auction)
+        print(auction['auction_id'])
 
-    print("\n\n\nItems:")
-    cursor.execute("SELECT * FROM items")
-    items = cursor.fetchall()
-    for item in items:
-        print(item)
+    # print("\n\n\nItems:")
+    # cursor.execute("SELECT * FROM items")
+    # items = cursor.fetchall()
+    # for item in items:
+    #     print(item)
 
     # print("\n\n\nBids:")
     # cursor.execute("SELECT * FROM bids")
