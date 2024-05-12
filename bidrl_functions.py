@@ -346,7 +346,8 @@ def get_item_with_ids(browser, item_id, auction_id, get_bid_history = 'true'):
                             , 'bidding_status': item_json['bidding_status']
                             , 'end_time_unix': int(item_json['end_time_unix']) - int(item_json['time_offset'])
                             , 'bids': bids
-                            , 'bid_count': item_json['bid_count']}
+                            , 'bid_count': item_json['bid_count']
+                            , 'viewed': int(item_json['viewed'])}
     
     # can only see is_favorite key if logged in. check if it exists before attempting to add to dict
     if 'is_favorite' in item_json:
@@ -583,10 +584,10 @@ def insert_item_to_sql_db(conn, item):
         #print(f"item_id {item.id} already found in database. Skipping insert.")
         return
     else:
-        sql = ''' INSERT INTO items(item_id, auction_id, description, current_bid, highbidder_username, url, tax_rate, buyer_premium, lot_number, bidding_status, end_time_unix, bid_count, is_favorite, total_cost, cost_split, max_desired_bid)
-                VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) '''
+        sql = ''' INSERT INTO items(item_id, auction_id, description, current_bid, highbidder_username, url, tax_rate, buyer_premium, lot_number, bidding_status, end_time_unix, bid_count, viewed, is_favorite, total_cost, cost_split, max_desired_bid)
+                VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) '''
         cur = conn.cursor()
-        cur.execute(sql, (item.id, item.auction_id, item.description, item.current_bid, item.highbidder_username, item.url, item.tax_rate, item.buyer_premium, item.lot_number, item.bidding_status, item.end_time_unix, item.bid_count, item.is_favorite, item.total_cost, item.cost_split, item.max_desired_bid))
+        cur.execute(sql, (item.id, item.auction_id, item.description, item.current_bid, item.highbidder_username, item.url, item.tax_rate, item.buyer_premium, item.lot_number, item.bidding_status, item.end_time_unix, item.bid_count, item.viewed, item.is_favorite, item.total_cost, item.cost_split, item.max_desired_bid))
 
 # inserts a bid object into the bids table in the sql database
 # requires sqlite database connection object and a Bid object
@@ -630,7 +631,8 @@ def insert_entire_auction_to_sql_db(conn, auction_obj):
                 insert_bid_to_sql_db(conn, bid)
         
         conn.commit() # commit the transaction if everything is successful
+        return 0
     except Exception as e:
+        print(f"An unexpected error occurred: {e}")
         conn.rollback() # roll back any changes since start of transaction if an error occurs
-        print(f"An error occurred: {e}")
-        #raise  # Optionally re-raise the exception to handle it further up the call stack
+        return 1

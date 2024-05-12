@@ -216,11 +216,11 @@ def gigascrape():
 
             auction_url = "https://www.bidrl.com/auction/" + auction['auction_id_slug'] + "/bidgallery/"
 
-            print("scaping item urls from: " + auction_url)
+            print("\nScraping item urls from: " + auction_url)
             item_urls = bf.get_auction_item_urls(auction_url)
             print(str(len(item_urls)) + " items found")
 
-            print("scraping item info")
+            print("Scraping item info")
             items = bf.get_items(item_urls, browser)
 
 
@@ -245,9 +245,12 @@ def gigascrape():
                 print("Auction did not complete! Not adding to sql database. Exiting program.")
                 quit()
             else:
-                print("Auction object is complete! Adding to sql database.")
-                bf.insert_entire_auction_to_sql_db(conn, auction_obj) # add auction to sql database
-                print("Completed attempt to add to database.")
+                print("Auction object is complete! Attempting to add to sql database.")
+                if bf.insert_entire_auction_to_sql_db(conn, auction_obj) == 0:
+                    print("Successfully added to database.")
+                else:
+                    print("Failed to add to database. Exiting.")
+                    quit()
     
     browser.quit()
 

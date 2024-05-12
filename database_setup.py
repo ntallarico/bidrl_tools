@@ -59,6 +59,7 @@ def sql_database_setup():
                 bidding_status TEXT,
                 end_time_unix INTEGER,
                 bid_count INTEGER,
+                viewed INTEGER,
                 is_favorite INTEGER,
                 total_cost REAL,
                 cost_split TEXT,

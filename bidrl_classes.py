@@ -20,6 +20,7 @@ class Item:
                  , bids=''
                  , is_favorite=''
                  , bid_count=''
+                 , viewed=''
                  , total_cost=''
                  , cost_split=''
                  , max_desired_bid=''):
@@ -37,6 +38,7 @@ class Item:
         self.bids = bids if bids is not None else []
         self.is_favorite = is_favorite
         self.bid_count = bid_count
+        self.viewed = viewed
         self.total_cost = total_cost # calculated total cost based on current_bid, tax rate, and buyer_premium
         self.cost_split = cost_split
         self.max_desired_bid = max_desired_bid
@@ -55,6 +57,7 @@ class Item:
         print(f"End Time Unix: {self.end_time_unix}")
         print(f"Is Favorite: {self.is_favorite}")
         print(f"Bid Count: {self.bid_count}")
+        print(f"Viewed: {self.viewed}")
         print(f"Total Cost: {self.total_cost}")
         print(f"Cost Split: {self.cost_split}")
         print(f"Max Desired Bid: {self.max_desired_bid}")
