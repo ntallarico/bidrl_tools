@@ -164,7 +164,7 @@ def test_get_auction():
     auction_obj.display()
 
 
-test_get_auction()
+#test_get_auction()
 
 
 
@@ -196,6 +196,45 @@ def test_insert_entire_auction_to_sql_db():
     #     print(bid)
 
 #test_insert_entire_auction_to_sql_db()
+
+
+def test_itemdata_api():
+    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+
+    response = browser.request('GET', 'https://www.bidrl.com/') # make GET request to get cookies
+
+    # submit requests to API and get JSON response
+    post_url = "https://www.bidrl.com/api/ItemData"
+    post_data = {
+        "item_id": '18461004'
+        , "auction_id": '143518'
+        , "show_closed": "closed"
+    }
+    response = browser.request('POST', post_url, data=post_data) # send the POST request with the session that contains the cookies
+    try:
+        response.raise_for_status() # ensure the request was successful
+    except requests.exceptions.HTTPError as err:
+        print(f"Error in get_item_with_ids(): {err}")
+        print(f"post_url: {post_url}")
+        print(f"post_data: {post_data}")
+        quit()
+    item_json = response.json()
+
+    print(item_json)
+
+
+#test_itemdata_api()
+
+def test_scrape_auctions():
+    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+    auctions = bf.scrape_auctions(browser)
+    for auction in auctions:
+        auction.display()
+    browser.quit()
+
+test_scrape_auctions()
+
+
 
 
 '''

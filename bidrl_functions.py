@@ -294,6 +294,10 @@ def get_auction_item_urls(auction_url):
     item_urls = [] # list for item urls to return
     for item in response.json()['items']:
         item_urls.append(item['item_url'])
+        '''if item['item_id_slug'] == 'i':
+            asdf
+        else:
+            item_urls.append(item['item_url'])'''
 
     return item_urls
 
@@ -311,7 +315,13 @@ def get_item_with_ids(browser, item_id, auction_id, get_bid_history = 'true'):
         , "show_closed": "closed"
     }
     response = browser.request('POST', post_url, data=post_data) # send the POST request with the session that contains the cookies
-    response.raise_for_status() # ensure the request was successful
+    try:
+        response.raise_for_status() # ensure the request was successful
+    except requests.exceptions.HTTPError as err:
+        print(f"Error in get_item_with_ids(): {err}")
+        print(f"post_url: {post_url}")
+        print(f"post_data: {post_data}")
+        quit()
     item_json = response.json()
 
     # if get_bid_history is set to true, then get the bid history for the item
@@ -463,10 +473,26 @@ def generate_date_intervals_for_auction_scrape():
     
     return yearly_date_ranges
 
-
+# requires webdriver object, affiliate_id, and optional auctions_to_scrape
+# in auctions_to_scrape, specify:
+    # 'all' for all historical and currently open auctions
+    # 'open' for just currently open auctions
+    # 'one' for just a single auction (used for debugging)
+# returns list of all Auction objects 
 def scrape_auctions(browser
-                , auctions_to_scrape = 'all'
-                 , affiliate_company_name = 'south-carolina'):
+                , affiliate_id = '47' # default to SC
+                , auctions_to_scrape = 'all' # all, open, or one (for debugging)
+                 ):
+    
+    # set past_sales variable for use in payload to send in POST request later
+    past_sales = 'true'
+    if auctions_to_scrape == 'open':
+        past_sales = 'false'
+    elif auctions_to_scrape == 'one':
+        print("\n\nscrape_auctions() called with auctions_to_scrape = 'one'. go implement this.")
+        quit()
+    
+    auctions = [] # list of auctions to populate and return at the end
 
     # send browser to bidrl.com. this gets us the cookies we need to send the POST requests properly next
     browser.get('https://www.bidrl.com')
@@ -485,11 +511,11 @@ def scrape_auctions(browser
             "filters[startDate]": start_date
             , "filters[endDate]": end_date
             , "filters[perpage]": 10000
-            , "past_sales": "true"
-            , "filters[affiliates]": 47
+            , "past_sales": past_sales
+            , "filters[affiliates]": int(affiliate_id)
         }
 
-        print("Attempting to get response from POST request to https://www.bidrl.com/api/auctions")
+        print(f"Attempting to get response from POST request to {post_url}")
         start_time = time.time()
         response = browser.request('POST', post_url, data=post_data) # send the POST request with the session that contains the cookies
         end_time = time.time()
@@ -510,38 +536,19 @@ def scrape_auctions(browser
             print(auction_json)
             quit()
 
-        # get auction_ids from sql so we can skip scraping auctions that have already been scraped
-        cursor.execute("SELECT auction_id FROM auctions")
-        auctions_in_db = cursor.fetchall()
-        # extract auction_id from each row and store in a list
-        auctions_in_db_list = [auction['auction_id'] for auction in auctions_in_db]
-
         for auction in auction_data_json:
-            # check if auction_id we are about to scrape has already been scraped. skip if so
-            if auction['id'] in auctions_in_db_list:
-                print(f"Auction {auction['id']} already exists in the database. Skipping.")
-                continue
-
             # skip if auction is not a real auction
             if auction['item_count'] == '0':
-                print(f"Auction item_count = 0. Concluding not a real auction and skipping.")
+                print(f"Auction {auction['id']} has item_count: 0. Concluding not a real auction and skipping.")
                 continue
 
             auction_url = "https://www.bidrl.com/auction/" + auction['auction_id_slug'] + "/bidgallery/"
-
-            print("\nScraping item urls from: " + auction_url)
-            item_urls = bf.get_auction_item_urls(auction_url)
-            print(str(len(item_urls)) + " items found")
-
-            print("Scraping item info")
-            items = get_items(item_urls, browser)
-
 
             # auction object to hold all of our auction data before we insert it into the sql database
             auction_obj = Auction(
                 id=auction['id'],
                 url=auction_url,
-                items=items,
+                items=None,
                 title=auction['title'],
                 item_count=int(auction['item_count']),
                 start_datetime=auction['starts'],
@@ -554,18 +561,9 @@ def scrape_auctions(browser
                 address=auction['address']
             )
 
-            if verify_auction_object_complete(auction_obj) == False:
-                print("Auction did not complete! Not adding to sql database. Exiting program.")
-                quit()
-            else:
-                print("Auction object is complete! Attempting to add to sql database.")
-                if bf.insert_entire_auction_to_sql_db(conn, auction_obj) == 0:
-                    print("Successfully added to database.")
-                else:
-                    print("Failed to add to database. Exiting.")
-                    quit()
-    
-    browser.quit()
+            auctions.append(auction_obj)
+            
+    return auctions
     
 
 # parses the json response returned by bid_on_item() and performs next steps

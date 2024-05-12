@@ -27,7 +27,7 @@ import pyodbc
         # has no bid history, but bid_count = 1
     # https://www.bidrl.com/auction/118391/item/glory-season-decorative-throw-blanket-factory-sealed-16188241/
         # has no lot_number
-def verify_auction_object_complete(auction_obj):
+def verify_auction_object_complete(auction_obj, items_removed):
     # if anything is missing from the auction return False
     if auction_obj.id == None \
         or auction_obj.url == None \
@@ -104,7 +104,7 @@ def verify_auction_object_complete(auction_obj):
                 return False
             
     # check to make sure the the # of items in the items list = the item_count field in the auction data
-    if len(auction_obj.items) != auction_obj.item_count:
+    if (len(auction_obj.items) + items_removed) != auction_obj.item_count:
         print(f"Auction {auction_obj.url}\n has {len(auction_obj.items)} items in the items list" + \
               f", but the item_count field in the auction data is {auction_obj.item_count}")
         return False
@@ -195,6 +195,17 @@ def gigascrape():
             item_urls = bf.get_auction_item_urls(auction_url)
             print(str(len(item_urls)) + " items found")
 
+            # remove any item urls that end with '/i/'
+            # track items_removed so that verification function doesn't get tripped up
+            # ex: the "I <3 ZACH T-Shirt 2XL" item in this auction:
+                # https://www.bidrl.com/auction/high-end-auction-161-johns-rd-unit-a-south-carolina-december-10-143518/bidgallery/perpage_NjA/page_Mg
+            items_removed = 0
+            for url in item_urls[:]:  # Use a slice copy to iterate over while modifying the original list
+                if url.endswith("/i/"):
+                    item_urls.remove(url)
+                    items_removed += 1
+                    print(f"Removed URL ending with '/i/': {url}")
+
             print("Scraping item info")
             items = bf.get_items(item_urls, browser)
 
@@ -216,11 +227,11 @@ def gigascrape():
                 address=auction['address']
             )
 
-            if verify_auction_object_complete(auction_obj) == False:
-                print("Auction did not complete! Not adding to sql database. Exiting program.")
+            if verify_auction_object_complete(auction_obj, items_removed) == False:
+                print("Auction did not pass verification! Not adding to sql database. Exiting program.")
                 quit()
             else:
-                print("Auction object is complete! Attempting to add to sql database.")
+                print("Auction object passed verification. Attempting to add to sql database.")
                 if bf.insert_entire_auction_to_sql_db(conn, auction_obj) == 0:
                     print("Successfully added to database.")
                 else:
