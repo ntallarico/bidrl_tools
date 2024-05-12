@@ -15,32 +15,6 @@ import bidrl_functions as bf
 import pyodbc
 
 
-
-# generates a list of dicts with start_date and end_date to use as intervals for auction scraping
-# intervals are 1 year apart because api will only allow 1 year pull at a time
-def generate_date_intervals_for_auction_scrape():
-    start_date = "01/01/2008" # bidrl says they've been running since 2008
-    end_date = datetime.now().strftime("%m/%d/%Y") # current day
-
-    # Convert string dates to datetime objects
-    start = datetime.strptime(start_date, "%m/%d/%Y")
-    end = datetime.strptime(end_date, "%m/%d/%Y")
-    
-    # List to hold dicts with start and end dates of each year
-    yearly_date_ranges = []
-    
-    current_date = start
-    while current_date <= end:
-        yearly_date_ranges.append({
-            "start_date": current_date,
-            "end_date": current_date.replace(month=12, day=31)
-        })
-        # Increment the date by one year
-        current_date += relativedelta(years=1)
-    
-    return yearly_date_ranges
-
-
 # run a series of checks on an auction_obj to verify / validate that the object has been
 # completely scraped properly. 
 # if anything incorrect is found, print indication of what and the relevant object's display function
@@ -163,7 +137,7 @@ def gigascrape():
 
     # get list of date intervals to pull auctions from
     # can only pull a max of 1 year at a time
-    dates = generate_date_intervals_for_auction_scrape()
+    dates = bf.generate_date_intervals_for_auction_scrape()
     for date in dates:
         start_date = date['start_date'].strftime("%Y-%m-%d")
         end_date = date['end_date'].strftime("%Y-%m-%d")
