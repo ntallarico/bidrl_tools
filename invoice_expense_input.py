@@ -135,7 +135,7 @@ def main():#
     invoices = bf.get_invoices(browser, earliest_invoice_date)
 
     # calculate total cost of each invoice and item
-    bf.caculate_total_cost_of_invoices(invoices)
+    bf.calculate_total_cost_of_invoices(invoices)
 
     # tear down browser object
     browser.quit()

@@ -366,12 +366,11 @@ then I can do like extra info kind of processing in the sql database, like total
 
 ok, so in order to enact this, what do I need to do
 ###1. I need to set a type on my object variables, making sure that what is placed into them is that type.
-2. then go through and fix all those types along with their scraping functions
+###2. then go through and fix all those types along with their scraping functions
     --- test add item
     --- test add bid
     --- test add auction
     --- test add invoice?
-    - test add affiliate?
 3. then go through and make field names consistent
     - lets to item_id. fuck it, that's what I'd rather have.
 2. I need to consolidate my scraping functions to ensure that objects are only being populated by a few functions

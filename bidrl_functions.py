@@ -230,7 +230,7 @@ def get_invoices(browser, earliest_invoice_date):
 # calculates total cost of each invoice
 # requires: list of Invoice objects with Amount and Tax_Rate attributes populated
 # returns: nothing. alters the Invoice objects in the list and the Item objects in the lists of those Invoices
-def caculate_total_cost_of_invoices(invoices):
+def calculate_total_cost_of_invoices(invoices):
     for invoice in invoices:
         invoice_total_cost = 0
         for item in invoice.items:
@@ -251,8 +251,6 @@ def extract_ids_from_item_url(url):
 
     auction_id_segment = parts[-4] if url.endswith('/') else parts[-3]
     auction_id = auction_id_segment.split('-')[-1]
-
-    #print(f"Item ID: {item_id}, Auction ID: {auction_id}")
 
     return {'item_id': item_id, 'auction_id': auction_id}
 
