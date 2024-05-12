@@ -7,7 +7,8 @@ from selenium.webdriver.firefox.options import Options
 from seleniumrequests import Firefox
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from datetime import datetime
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from bidrl_classes import Item, Invoice, Auction, Bid
 from bs4 import BeautifulSoup
 import pyodbc
@@ -435,6 +436,136 @@ def get_open_auctions(browser, affiliate_company_name = 'south-carolina', debug 
     else:
         print(f"Failed to retrieve data: {response.status_code}")
         return 1
+    
+
+# generates a list of dicts with start_date and end_date to use as intervals for auction scraping.
+# used when setting date range filters when sending POST request to https://www.bidrl.com/api/auctions
+# intervals are 1 year apart because api will only allow 1 year pull at a time
+def generate_date_intervals_for_auction_scrape():
+    start_date = "01/01/2008" # bidrl says they've been running since 2008
+    end_date = datetime.now().strftime("%m/%d/%Y") # current day
+
+    # Convert string dates to datetime objects
+    start = datetime.strptime(start_date, "%m/%d/%Y")
+    end = datetime.strptime(end_date, "%m/%d/%Y")
+    
+    # List to hold dicts with start and end dates of each year
+    yearly_date_ranges = []
+    
+    current_date = start
+    while current_date <= end:
+        yearly_date_ranges.append({
+            "start_date": current_date,
+            "end_date": current_date.replace(month=12, day=31)
+        })
+        # Increment the date by one year
+        current_date += relativedelta(years=1)
+    
+    return yearly_date_ranges
+
+
+def scrape_auctions(browser
+                , auctions_to_scrape = 'all'
+                 , affiliate_company_name = 'south-carolina'):
+
+    # send browser to bidrl.com. this gets us the cookies we need to send the POST requests properly next
+    browser.get('https://www.bidrl.com')
+
+    post_url = "https://www.bidrl.com/api/auctions"
+
+    # get list of date intervals to pull auctions from
+    # can only pull a max of 1 year at a time
+    dates = generate_date_intervals_for_auction_scrape()
+    for date in dates:
+        start_date = date['start_date'].strftime("%Y-%m-%d")
+        end_date = date['end_date'].strftime("%Y-%m-%d")
+        print(f"\nAuction pull date range: {start_date} to {end_date}")
+
+        post_data = {
+            "filters[startDate]": start_date
+            , "filters[endDate]": end_date
+            , "filters[perpage]": 10000
+            , "past_sales": "true"
+            , "filters[affiliates]": 47
+        }
+
+        print("Attempting to get response from POST request to https://www.bidrl.com/api/auctions")
+        start_time = time.time()
+        response = browser.request('POST', post_url, data=post_data) # send the POST request with the session that contains the cookies
+        end_time = time.time()
+        response.raise_for_status() # ensure the request was successful
+        print("Response recieved! Time taken: " + str(end_time - start_time))
+        auction_json = response.json()
+
+        # only execute the rest of the contents of this loop if result == 'success'
+        # meaning we recieved auction json properly
+        if auction_json['result'] == 'success':
+            auction_data_json = auction_json['data']
+            print("Number of auctions recieved: " + str(len(auction_data_json)))
+        elif auction_json['code'] == 'NO_AUCTION_LIST':
+            print("No auctions found for this date range.")
+            continue
+        else:
+            print("\n\nRecieved response that wasn't 'success'. Add it to the if/else ladder in gigascrape():\n\n")
+            print(auction_json)
+            quit()
+
+        # get auction_ids from sql so we can skip scraping auctions that have already been scraped
+        cursor.execute("SELECT auction_id FROM auctions")
+        auctions_in_db = cursor.fetchall()
+        # extract auction_id from each row and store in a list
+        auctions_in_db_list = [auction['auction_id'] for auction in auctions_in_db]
+
+        for auction in auction_data_json:
+            # check if auction_id we are about to scrape has already been scraped. skip if so
+            if auction['id'] in auctions_in_db_list:
+                print(f"Auction {auction['id']} already exists in the database. Skipping.")
+                continue
+
+            # skip if auction is not a real auction
+            if auction['item_count'] == '0':
+                print(f"Auction item_count = 0. Concluding not a real auction and skipping.")
+                continue
+
+            auction_url = "https://www.bidrl.com/auction/" + auction['auction_id_slug'] + "/bidgallery/"
+
+            print("\nScraping item urls from: " + auction_url)
+            item_urls = bf.get_auction_item_urls(auction_url)
+            print(str(len(item_urls)) + " items found")
+
+            print("Scraping item info")
+            items = get_items(item_urls, browser)
+
+
+            # auction object to hold all of our auction data before we insert it into the sql database
+            auction_obj = Auction(
+                id=auction['id'],
+                url=auction_url,
+                items=items,
+                title=auction['title'],
+                item_count=int(auction['item_count']),
+                start_datetime=auction['starts'],
+                status=auction['status'],
+                affiliate_id=auction['affiliate_id'],
+                aff_company_name=auction['aff_company_name'],
+                state_abbreviation=auction['state_abbreviation'].strip(),
+                city=auction['city'],
+                zip=auction['zip'],
+                address=auction['address']
+            )
+
+            if verify_auction_object_complete(auction_obj) == False:
+                print("Auction did not complete! Not adding to sql database. Exiting program.")
+                quit()
+            else:
+                print("Auction object is complete! Attempting to add to sql database.")
+                if bf.insert_entire_auction_to_sql_db(conn, auction_obj) == 0:
+                    print("Successfully added to database.")
+                else:
+                    print("Failed to add to database. Exiting.")
+                    quit()
+    
+    browser.quit()
     
 
 # parses the json response returned by bid_on_item() and performs next steps
