@@ -155,12 +155,40 @@ def test_insert_bid_to_sql_db():
     for bid in bids:
         print(bid)
 
-test_insert_bid_to_sql_db()
+#test_insert_bid_to_sql_db()
 
 
 
 
 
+
+def test_insert_entire_auction_to_sql_db():
+    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+    auction_obj = bf.get_open_auctions(browser, debug = 'true')[0]
+    conn = bf.init_sqlite_connection()
+    cursor = conn.cursor()
+    bf.insert_entire_auction_to_sql_db(conn, auction_obj)
+    conn.commit()
+    
+    print("\n\n\nAuctions:")
+    cursor.execute("SELECT * FROM auctions")
+    auctions = cursor.fetchall()
+    for auction in auctions:
+        print(auction)
+
+    print("\n\n\nItems:")
+    cursor.execute("SELECT * FROM items")
+    items = cursor.fetchall()
+    for item in items:
+        print(item)
+
+    # print("\n\n\nBids:")
+    # cursor.execute("SELECT * FROM bids")
+    # bids = cursor.fetchall()
+    # for bid in bids:
+    #     print(bid)
+
+test_insert_entire_auction_to_sql_db()
 
 
 '''

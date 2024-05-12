@@ -609,3 +609,22 @@ def insert_invoice_to_sql_db(conn, invoice):
         sql = ''' INSERT INTO invoices(invoice_id, date, link, total_cost, expense_input_form_link)
                   VALUES(?, ?, ?, ?, ?) '''
         cur.execute(sql, (invoice.id, invoice.date, invoice.link, invoice.total_cost, invoice.expense_input_form_link))
+
+# requires a sqlite connection object and an Auction object full of items, each full of bids
+# inserts the auction, all items, and all items' bids into the sql database
+# rolls back the transaction if any error occurs, so either all the data gets inserted or none of it does
+def insert_entire_auction_to_sql_db(conn, auction_obj):
+    try:
+        conn.execute('BEGIN') # start transaction
+        
+        insert_auction_to_sql_db(conn, auction_obj)
+        for item in auction_obj.items:
+            insert_item_to_sql_db(conn, item)
+            for bid in item.bids:
+                insert_bid_to_sql_db(conn, bid)
+        
+        conn.commit() # commit the transaction if everything is successful
+    except Exception as e:
+        conn.rollback() # roll back any changes since start of transaction if an error occurs
+        print(f"An error occurred: {e}")
+        #raise  # Optionally re-raise the exception to handle it further up the call stack

@@ -126,24 +126,6 @@ def verify_auction_object_complete(auction_obj):
     return True
 
 
-def insert_entire_auction_to_sql_db(conn, auction_obj):
-    try:
-        conn.execute('BEGIN') # Start a transaction
-        
-        bf.insert_auction_to_sql_db(conn, auction_obj)
-        for item in auction_obj.items:
-            bf.insert_item_to_sql_db(conn, item)
-            for bid in item.bids:
-                bf.insert_bid_to_sql_db(conn, bid)
-        
-        # Commit the transaction if everything is successful
-        conn.commit()
-    except Exception as e:
-        conn.rollback() # Roll back any changes since start of transaction if an error occurs
-        print(f"An error occurred: {e}")
-        raise  # Optionally re-raise the exception to handle it further up the call stack
-
-
 # we'll add an entire scraped aution with its full data and all items at once.
     # so there will never be a partial auction added. instead of adding all auctions, then items, then history
     # we'll go one auction at a time. Therefore, since its quick to get a list of auctions from the API for
@@ -239,7 +221,8 @@ def gigascrape():
             else:
                 print("Auction object is complete! Adding to sql database.")
                 # add auction to sql database
-                bf.insert_auction_to_sql_db(conn, auction_obj)
+                bf.insert_entire_auction_to_sql_db(conn, auction_obj)
+                print("All data from auction added to database.")
     
     browser.quit()
 
