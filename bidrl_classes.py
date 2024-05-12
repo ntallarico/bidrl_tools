@@ -141,7 +141,7 @@ class Bid:
 
     def display(self):
         print(f"Bid ID: {self.bid_id}")
-        print(f"Item ID: {self.bid_id}")
+        print(f"Item ID: {self.item_id}")
         print(f"User Name: {self.user_name}")
         print(f"Bid: {self.bid}")
         print(f"Bid Time: {self.bid_time}")
