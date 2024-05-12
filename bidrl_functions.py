@@ -117,11 +117,11 @@ def parse_invoice_page(browser, invoice_url, earliest_invoice_date):
     items = [] # list for Item objects to add to the Invoice object
 
     invoice = Invoice(**{
-                        'id': '',
-                        'date': '',
+                        'id': None,
+                        'date': None,
                         'link': invoice_url,
                         'items': [],
-                        'total_cost': ''
+                        'total_cost': None
                         })
 
     if invoice_content:
@@ -147,9 +147,7 @@ def parse_invoice_page(browser, invoice_url, earliest_invoice_date):
                     item_url = cells[0].find('a')['href'] if cells[0].find('a') else 'No URL'
                     item_id = cells[0].get_text(strip=True)
                     description = cells[1].get_text(strip=True)
-                    #tax_rate = cells[2].get_text(strip=True).split('-')[0].strip()
                     tax_rate_text = cells[2].get_text(strip=True)
-
                     amount = cells[3].get_text(strip=True)
 
                      # test if item scraped is a real item
@@ -161,13 +159,14 @@ def parse_invoice_page(browser, invoice_url, earliest_invoice_date):
                             'id': item_id,
                             'description': description,
                             'tax_rate': float(tax_rate_text[0:5]) * 0.01,
-                            'current_bid': amount,
+                            'current_bid': float(amount),
                             'url': item_url
                         }))
                     #invoice.items[len(items)-1].display() # call display function for most recent item added
                     
                 except Exception as e:
-                    print(f"Error processing row: {e}")
+                    print(f"parse_invoice_page(): Error processing row: {e}")
+                    quit()
     else:
         print("Parse_invoice_page() could not find '<div id=\"invoice-content\">'. Exiting program.")
         quit()
