@@ -44,6 +44,10 @@ def generate_date_intervals_for_auction_scrape():
 # run a series of checks on an auction_obj to verify / validate that the object has been
 # completely scraped properly. 
 # if anything incorrect is found, print indication of what and the relevant object's display function
+# some things I found that I needed to account for:
+    # https://www.bidrl.com/auction/107248/item/high-speed-remote-control-drift-car-factory-sealed-retail-4999-15080699/
+        # has null for a username in bid history
+    #
 def verify_auction_object_complete(auction_obj):
     # if anything is missing from the auction return False
     if auction_obj.id == None \
@@ -106,7 +110,6 @@ def verify_auction_object_complete(auction_obj):
         for bid in item.bids:
             if bid.bid_id == None \
                 or bid.item_id == None \
-                or bid.user_name == None \
                 or bid.bid == None \
                 or bid.bid_time == None \
                 or bid.time_of_bid == None \
