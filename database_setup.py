@@ -1,6 +1,8 @@
 import sqlite3
 import bidrl_functions as bf
 
+
+# drop entire database and all of its contents
 def drop_database(conn):
     cursor = conn.cursor()
     print("\nAttempting to drop all tables in the database.")
@@ -16,13 +18,18 @@ def sql_database_setup():
     conn = bf.init_sqlite_connection()
     cursor = conn.cursor()
 
-    drop_database(conn) # this is only called here for debugging! remove before production!
+    #drop_database(conn) # this is only called here for debugging
 
     # create affiliates table
     bf.create_table(conn, 'affiliates', '''
         CREATE TABLE IF NOT EXISTS affiliates (
             affiliate_id TEXT PRIMARY KEY,
-            affiliate_name TEXT
+            logo TEXT,
+            do_not_display_tab INTEGER,
+            company_name TEXT,
+            firstname TEXT,
+            lastname TEXT,
+            auc_count INTEGER
         );
     ''')
 
