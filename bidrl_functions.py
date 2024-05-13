@@ -269,35 +269,6 @@ def extract_id_from_auction_url(url):
     return {'auction_id': auction_id}
 
 
-# get list of item urls from an auction
-# requires URL in this format:
-# https://www.bidrl.com/auction/outdoor-sports-auction-161-johns-rd-unit-a-south-carolina-april-25-152770/bidgallery/
-# returns: list of urls, one for each item in the auction provided
-def get_auction_item_urls(auction_url):
-    auction_id = extract_id_from_auction_url(auction_url)['auction_id'] # extract auction id from url
-
-    session = requests.Session() # create a session object to persist cookies
-    response = session.get(auction_url) # make a GET request to get the cookies
-    post_url = "https://www.bidrl.com/api/getitems"
-
-    # set items per page to 10k to ensure we capture all item urls in auction
-    # this prevents us from having to loop through pages with attribute filters[page]
-    post_data = {"auction_id": auction_id
-                 , "filters[perpage]": 10000
-                 , "show_closed": "closed"
-                 , "item_type": "itemlist"}
-    response = session.post(post_url, data=post_data)
-    response.raise_for_status() # ensure the request was successful
-
-    #print(response.json())
-
-    item_urls = [] # list for item urls to return
-    for item in response.json()['items']:
-        item_urls.append(item['item_url'])
-
-    return item_urls
-
-
 # requires instantiated webdriver, item_id, auction_id, and optionally an indication to also/not scrape bids
 # returns an Item object
 def get_item_with_ids(browser, item_id, auction_id, get_bid_history = 'true'):
@@ -363,85 +334,16 @@ def get_item_with_ids(browser, item_id, auction_id, get_bid_history = 'true'):
     return item_obj
 
 
-# get item data from a list of item URLS
-# requires: list of item URLs, webdriver object, and an optional specification to get bid history or not
-# returns: list of Item objects
-def get_items(item_urls, browser, get_bid_history = 'true'):
-    items = [] # list to fill with item objects and return at end
-    for item_url in item_urls:
-        extracted_ids = extract_ids_from_item_url(item_url) # extract auction id and item id from url
-        
-        item_obj = get_item_with_ids(browser
-                                     , extracted_ids['item_id']
-                                     , extracted_ids['auction_id']
-                                     , get_bid_history)
-        items.append(item_obj)
-
-        print(f"get_items() scraped: {item_obj.description} (with {len(item_obj.bids)} bids)")
-    return items
-
-
 # get auctions list
 # requires:
-    # name of affiliate "company". ex: 'south-carolina'. defaults to sc
+    # id of affiliate "company". ex: '47' for SC
     # webdriver object. if webdriver object has been logged in as a user, then the attribute is_favorite will be filled in for items
 # returns: list of Auction objects
-def get_open_auctions(browser, affiliate_company_name = 'south-carolina', debug = 'false'):
-    get_url = "https://www.bidrl.com/api/landingPage/" + affiliate_company_name
-
-    response = browser.request('GET', get_url) # make the GET request
-
-    if response.status_code == 200: # check if the request was successful
-
-        response_json = response.json()
-        #print(f"JSON recieved. total auctions: {response_json['total']}")
-
-        # get list of number ids for each auction listed in the JSON
-        auctions_num_list = []
-        for auction in response_json['auctions']:
-            auctions_num_list.append(auction)
-
-        if debug == 'true':
-           # FOR DEBUGGING. causes function to only scrape first auction
-           auctions_num_list = auctions_num_list[0]
-
-        # loop through each auction by number in the json and extract information to an Auction object
-        auctions = []
-        for auction_num in auctions_num_list:
-            auction_json = response_json['auctions'][auction_num]
-
-            auction_url = "https://www.bidrl.com/auction/" + auction_json['auction_id_slug'] + "/bidgallery/"
-
-            print("\nscraping item urls from: " + auction_url)
-            item_urls = get_auction_item_urls(auction_url)
-            print(str(len(item_urls)) + " items found")
-
-            print("scraping item info")
-            items = get_items(item_urls, browser)
-
-            # dictionary to temporarily hold auction details before creating object
-            temp_auction_dict = {'id': auction_json['id']
-                                    , 'url': auction_url
-                                    , 'items': items
-                                    , 'title': auction_json['title']
-                                    , 'item_count': int(auction_json['item_count'])
-                                    , 'start_datetime': auction_json['starts']
-                                    , 'status': auction_json['status']
-                                    , 'affiliate_id': response_json['affiliate']['affiliate_id']
-                                    , 'aff_company_name': response_json['affiliate']['aff_company_name']
-                                    , 'state_abbreviation': auction_json['state_abbreviation'].strip()
-                                    , 'city': auction_json['city']
-                                    , 'zip': auction_json['zip']
-                                    , 'address': auction_json['address']
-                                }
-            
-            # instantiate Autcion object with info from temp_auction_dict and add to list
-            auctions.append(Auction(**temp_auction_dict))
-
-        return auctions
-    else:
-        print(f"Failed to retrieve data: {response.status_code}")
-        return 1
+def get_open_auctions(browser, affiliate_id = '47'):
+    auctions = scrape_auctions(browser, affiliate_id, auctions_to_scrape = 'open')
+    for auction in auctions:
+        auction.items = scrape_items(browser, auction.id)
+    return auctions
     
 
 # generates a list of dicts with start_date and end_date to use as intervals for auction scraping.
@@ -481,14 +383,6 @@ def scrape_auctions(browser
                 , auctions_to_scrape = 'all' # all, open, or one (for debugging)
                  ):
     
-    # set past_sales variable for use in payload to send in POST request later
-    past_sales = 'true'
-    if auctions_to_scrape == 'open':
-        past_sales = 'false'
-    elif auctions_to_scrape == 'one':
-        print("\n\nscrape_auctions() called with auctions_to_scrape = 'one'. go implement this.")
-        quit()
-    
     auctions = [] # list of auctions to populate and return at the end
 
     # send browser to bidrl.com. this gets us the cookies we need to send the POST requests properly next
@@ -499,6 +393,17 @@ def scrape_auctions(browser
     # get list of date intervals to pull auctions from
     # can only pull a max of 1 year at a time
     dates = generate_date_intervals_for_auction_scrape()
+
+    # handle auctions_to_scrape
+    # set past_sales variable for use in payload to send in POST request later
+    past_sales = 'true'
+    if auctions_to_scrape == 'open':
+        past_sales = 'false'
+        dates = [dates[-1]] if dates else [] # set to just last entry in date range list
+    elif auctions_to_scrape == 'one':
+        print("\n\nscrape_auctions() called with auctions_to_scrape = 'one'. go implement this.")
+        quit()
+
     for date in dates:
         start_date = date['start_date'].strftime("%Y-%m-%d")
         end_date = date['end_date'].strftime("%Y-%m-%d")

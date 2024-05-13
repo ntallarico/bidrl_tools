@@ -159,7 +159,8 @@ def gigascrape():
             auctions_scraped_this_run = 0
             for auction in auctions:
                 print('')
-                print(f"{affiliate.company_name} auctions remaining: {len(auctions) - auctions_scraped_this_run}")
+                print(f"{affiliate.company_name} auctions complete: {auctions_already_scraped + auctions_scraped_this_run}."
+                      " Remaining: {len(auctions) - auctions_scraped_this_run}")
                 start_time = time.time()
                 auction.items = bf.scrape_items(browser, auction.id)
                 end_time = time.time()
@@ -176,6 +177,10 @@ def gigascrape():
                         print("Failed to add to database. Exiting.")
                         quit()
                 auctions_scraped_this_run += 1
+            
+            print(f"\nCompleted full scrape of affiliate {affiliate.company_name}!")
+
+        print("\ngigacrape complete! everything is now yours. have fun :)")
     finally:
         browser.quit()
 
@@ -184,7 +189,17 @@ gigascrape()
 
 
 
+''''
+plan for ultimate scrape script
 
+1. check if everything is installed from requirements.txt?
+2. run database_setup.py
+3. scrape and insert all affiliates
+4. present user with affiliate names and ids and option for 'all', and ask user to input an id for what to scrape
+5. run gigascrape() from gigascrape.py()
+
+
+'''
 
 
 
