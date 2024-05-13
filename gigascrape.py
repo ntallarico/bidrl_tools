@@ -164,7 +164,7 @@ def gigascrape():
                 start_time = time.time()
                 auction.items = bf.scrape_items(browser, auction.id)
                 end_time = time.time()
-                print("Auction items scraped. Time taken: " + str(end_time - start_time))
+                print("Auction items scraped. Time taken: {:.4f} seconds".format(end_time - start_time))
 
 
                 if verify_auction_object_complete(auction) == False:
