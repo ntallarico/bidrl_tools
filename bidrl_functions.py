@@ -9,7 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-from bidrl_classes import Item, Invoice, Auction, Bid, Affiliate
+from bidrl_classes import Item, Invoice, Auction, Bid, Affiliate, Image
 from bs4 import BeautifulSoup
 import pyodbc
 import sqlite3
@@ -270,9 +270,10 @@ def extract_id_from_auction_url(url):
     return {'auction_id': auction_id}
 
 
-# requires instantiated webdriver, item_id, auction_id, and optionally an indication to also/not scrape bids
+# requires instantiated webdriver, item_id, auction_id, optionally an indication to also/not scrape bids
+    # and optionally an indication to also/not scrape image urls
 # returns an Item object
-def get_item_with_ids(browser, item_id, auction_id, get_bid_history = 'true'):
+def get_item_with_ids(browser, item_id, auction_id, get_bid_history = 'true', get_images = 'true'):
     response = browser.request('GET', 'https://www.bidrl.com/') # make GET request to get cookies
 
     # submit requests to API and get JSON response
@@ -310,6 +311,17 @@ def get_item_with_ids(browser, item_id, auction_id, get_bid_history = 'true'):
             }))
             #bids[len(bids)-1].display()
 
+    # if get_images is set to true, then get the a list of Image objects for the item
+    images = []
+    if get_images == 'true':
+        for image_json in item_json['images']:
+            images.append(Image(**{
+                'item_id': item_json['id']
+                , 'image_url': image_json['image_url']
+                , 'image_height': int(image_json['image_height'])
+                , 'image_width': int(image_json['image_width'])
+            }))
+
     # extract data from json into temp dictionary to create item with later
     temp_item_dict = {'id': item_json['id']
                             , 'auction_id': item_json['auction_id']
@@ -324,7 +336,9 @@ def get_item_with_ids(browser, item_id, auction_id, get_bid_history = 'true'):
                             , 'end_time_unix': int(item_json['end_time_unix']) - int(item_json['time_offset'])
                             , 'bids': bids
                             , 'bid_count': int(item_json['bid_count'])
-                            , 'viewed': int(item_json['viewed'])}
+                            , 'viewed': int(item_json['viewed'])
+                            , 'images': images
+                        }
     
     # can only see is_favorite key if logged in. check if it exists before attempting to add to dict
     if 'is_favorite' in item_json:
@@ -715,6 +729,22 @@ def insert_invoice_to_sql_db(conn, invoice):
         sql = ''' INSERT INTO invoices(invoice_id, date, link, total_cost, expense_input_form_link)
                   VALUES(?, ?, ?, ?, ?) '''
         cur.execute(sql, (invoice.id, invoice.date, invoice.link, invoice.total_cost, invoice.expense_input_form_link))
+    
+
+# inserts image URLs associated with an item into the images table in the SQL database
+# requires sqlite database connection object and an Item object with a list of image URLs and item_id
+def insert_image_to_sql_db(conn, image):
+    cursor = conn.cursor()
+    # Check if item_id + image_url combo already exists
+    cursor.execute("SELECT item_id, image_url FROM images WHERE item_id = ? AND image_url = ?", (image.item_id, image.image_url))
+    if cursor.fetchone():
+        print(f"item_id {image.item_id} + image_url {image.image_url} already found in database. Skipping insert of image.")
+        return
+    else:
+        sql = ''' INSERT INTO images(item_id, image_url, image_height, image_width)
+                  VALUES(?, ?, ?, ?) '''
+        cursor.execute(sql, (image.item_id, image.image_url, image.image_height, image.image_width))
+
 
 # requires a sqlite connection object and an Auction object full of items, each full of bids
 # inserts the auction, all items, and all items' bids into the sql database
@@ -728,6 +758,8 @@ def insert_entire_auction_to_sql_db(conn, auction_obj):
             insert_item_to_sql_db(conn, item)
             for bid in item.bids:
                 insert_bid_to_sql_db(conn, bid)
+            for image in item.images:
+                insert_image_to_sql_db(conn, image)
         
         conn.commit() # commit the transaction if everything is successful
         return 0

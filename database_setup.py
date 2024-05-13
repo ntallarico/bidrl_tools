@@ -23,90 +23,100 @@ def sql_database_setup():
     # create affiliates table
     bf.create_table(conn, 'affiliates', '''
         CREATE TABLE IF NOT EXISTS affiliates (
-            affiliate_id TEXT PRIMARY KEY,
-            logo TEXT,
-            do_not_display_tab INTEGER,
-            company_name TEXT,
-            firstname TEXT,
-            lastname TEXT,
-            auc_count INTEGER
+            affiliate_id TEXT PRIMARY KEY
+            , logo TEXT
+            , do_not_display_tab INTEGER
+            , company_name TEXT
+            , firstname TEXT
+            , lastname TEXT
+            , auc_count INTEGER
         );
     ''')
 
     # create auctions table
     bf.create_table(conn, 'auctions', '''
         CREATE TABLE IF NOT EXISTS auctions (
-            auction_id TEXT PRIMARY KEY,
-            url TEXT,
-            title TEXT,
-            item_count INTEGER,
-            start_datetime TEXT,
-            status TEXT,
-            affiliate_id TEXT,
-            aff_company_name TEXT,
-            state_abbreviation TEXT,
-            city TEXT,
-            zip TEXT,
-            address TEXT
+            auction_id TEXT PRIMARY KEY
+            , url TEXT
+            , title TEXT
+            , item_count INTEGER
+            , start_datetime TEXT
+            , status TEXT
+            , affiliate_id TEXT
+            , aff_company_name TEXT
+            , state_abbreviation TEXT
+            , city TEXT
+            , zip TEXT
+            , address TEXT
         );
     ''')
 
     # create items table
     bf.create_table(conn, 'items', '''
         CREATE TABLE IF NOT EXISTS items (
-                item_id TEXT PRIMARY KEY,
-                auction_id TEXT,
-                description TEXT,
-                current_bid REAL,
-                highbidder_username TEXT,
-                url TEXT,
-                tax_rate REAL,
-                buyer_premium REAL,
-                lot_number TEXT,
-                bidding_status TEXT,
-                end_time_unix INTEGER,
-                bid_count INTEGER,
-                viewed INTEGER,
-                is_favorite INTEGER,
-                total_cost REAL,
-                cost_split TEXT,
-                max_desired_bid REAL
+            item_id TEXT PRIMARY KEY
+            , auction_id TEXT
+            , description TEXT
+            , current_bid REAL
+            , highbidder_username TEXT
+            , url TEXT
+            , tax_rate REAL
+            , buyer_premium REAL
+            , lot_number TEXT
+            , bidding_status TEXT
+            , end_time_unix INTEGER
+            , bid_count INTEGER
+            , viewed INTEGER
+            , is_favorite INTEGER
+            , total_cost REAL
+            , cost_split TEXT
+            , max_desired_bid REAL
         );
     ''')
 
     # create bids table
     bf.create_table(conn, 'bids', '''
         CREATE TABLE IF NOT EXISTS bids (
-                bid_id TEXT PRIMARY KEY,
-                item_id TEXT,
-                username TEXT,
-                bid REAL,
-                bid_time TEXT,
-                time_of_bid TEXT,
-                time_of_bid_unix INTEGER,
-                buyer_number TEXT,
-                description TEXT
+            bid_id TEXT PRIMARY KEY
+            , item_id TEXT
+            , username TEXT
+            , bid REAL
+            , bid_time TEXT
+            , time_of_bid TEXT
+            , time_of_bid_unix INTEGER
+            , buyer_number TEXT
+            , description TEXT
         );
     ''')
 
     # create invoices table
     bf.create_table(conn, 'invoices', '''
         CREATE TABLE IF NOT EXISTS invoices (
-                invoice_id TEXT PRIMARY KEY,
-                date TEXT,
-                link TEXT,
-                total_cost REAL,
-                expense_input_form_link TEXT
-        );
+            invoice_id TEXT PRIMARY KEY
+            , date TEXT
+            , link TEXT
+            , total_cost REAL
+            , expense_input_form_link TEXT
+    );
     ''')
 
     # create users table
     bf.create_table(conn, 'users', '''
         CREATE TABLE IF NOT EXISTS users (
-            username TEXT PRIMARY KEY,
-            user_id INTEGER
+            username TEXT PRIMARY KEY
+            , user_id INTEGER
         );
-    ''') 
+    ''')
+
+    #create images table
+    bf.create_table(conn, 'images', '''
+        CREATE TABLE IF NOT EXISTS images (
+            item_id TEXT
+            , image_url TEXT
+            , image_height INTEGER
+            , image_width INTEGER
+        );
+    ''')
     
 
     conn.commit()

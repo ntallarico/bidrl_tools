@@ -113,7 +113,7 @@ def verify_auction_object_complete(auction_obj, items_removed = 0):
     return True
 
 
-# gigascrape. this function will scrape all affiliates, auctions, items, and bids and inserts them into the database.
+# gigascrape. this function will scrape all affiliates, auctions, items, bids, and images and inserts them into the database.
 # we add an entire scraped aution with full data and all items at once. there will never be a partial auction added.
 # plan:
 #   1. get list of affiliates.

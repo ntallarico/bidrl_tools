@@ -260,6 +260,21 @@ def test_scrape_affiliates():
 
 
 
+def insert_image_to_sql_db():
+    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+    item_obj = bf.get_item_with_ids(browser, '14838053', '104503')
+    conn = bf.init_sqlite_connection()
+    cursor = conn.cursor()
+    bf.insert_image_to_sql_db(conn, item_obj.images[1])
+    conn.commit()
+
+    cursor.execute("SELECT * FROM images")
+    images = cursor.fetchall()
+    for image in images:
+        print(image['image_url'])
+
+insert_image_to_sql_db()
+
 
 
 

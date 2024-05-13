@@ -56,7 +56,6 @@ class Bid:
         print(f"Buyer Number: {self.buyer_number}")
         print(f"Description: {self.description}")
         
-
 # define Item class to hold all of our information about a given item
 # Item class will contain a list of Bid classes
 class Item:
@@ -72,10 +71,11 @@ class Item:
                  , lot_number: str = None
                  , bidding_status: str = None
                  , end_time_unix: int = None
-                 , bids: list = None
+                 , bids: list = None # holds a list of Bid objects
                  , is_favorite: int = None
                  , bid_count: int = None
                  , viewed: int = None
+                 , images: list = None # holds a list of Image objects
                  , total_cost: float = None
                  , cost_split: str = None
                  , max_desired_bid: float = None):
@@ -109,6 +109,8 @@ class Item:
             raise TypeError(f"Expected bid_count to be int, got {type(bid_count).__name__}")
         if viewed is not None and not isinstance(viewed, int):
             raise TypeError(f"Expected viewed to be int, got {type(viewed).__name__}")
+        if images is not None and not all(isinstance(image, Image) for image in images):
+            raise TypeError("All elements in images must be instances of Image")
         if total_cost is not None and not isinstance(total_cost, float):
             raise TypeError(f"Expected total_cost to be float, got {type(total_cost).__name__}")
         if cost_split is not None and not isinstance(cost_split, str):
@@ -131,6 +133,7 @@ class Item:
         self.is_favorite = is_favorite
         self.bid_count = bid_count
         self.viewed = viewed
+        self.images = images if images is not None else []
         self.total_cost = total_cost # calculated total cost based on current_bid, tax rate, and buyer_premium
         self.cost_split = cost_split
         self.max_desired_bid = max_desired_bid
@@ -157,6 +160,10 @@ class Item:
     def display_bids(self):
         for bid in self.bids:
             bid.display()
+    
+    def display_images(self):
+        for image in self.images:
+            image.display()
 
 
 # define Affiliate class to hold all of our information about a given affiliate
@@ -322,3 +329,27 @@ class Invoice:
         for item in self.items:
             item.display()
 
+
+# define Image class to hold all of our information about a given image
+class Image:
+    def __init__(self
+                 , item_id: str = None
+                 , image_url: str = None
+                 , image_height: int = None
+                 , image_width: int = None):
+        if item_id is not None and not isinstance(item_id, str):
+            raise TypeError(f"Expected item_id to be str, got {type(item_id).__name__}")
+        if image_url is not None and not isinstance(image_url, str):
+            raise TypeError(f"Expected image_url to be str, got {type(image_url).__name__}")
+        if image_height is not None and not isinstance(image_height, int):
+            raise TypeError(f"Expected image_height to be int, got {type(image_height).__name__}")
+        if image_width is not None and not isinstance(image_width, int):
+            raise TypeError(f"Expected image_width to be int, got {type(image_width).__name__}")
+
+        self.item_id = item_id
+        self.image_url = image_url
+        self.image_height = image_height
+        self.image_width = image_width
+
+    def display(self):
+        print(f"Image ID: {self.item_id}, URL: {self.image_url}, Height: {self.image_height}, Width: {self.image_width}")
