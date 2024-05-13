@@ -154,10 +154,12 @@ def gigascrape():
                 if auction.id in auction_ids_in_db:
                     auctions.remove(auction)
                     auctions_already_scraped += 1
-            print(f"\n{auctions_already_scraped} auctions already scraped. {len(auctions)} auctions remaining.")
+            print(f"\n{auctions_already_scraped} auctions already scraped.")
 
+            auctions_scraped_this_run = 0
             for auction in auctions:
                 print('')
+                print(f"{affiliate.company_name} auctions remaining: {len(auctions) - auctions_scraped_this_run}")
                 start_time = time.time()
                 auction.items = bf.scrape_items(browser, auction.id)
                 end_time = time.time()
@@ -173,6 +175,7 @@ def gigascrape():
                     else:
                         print("Failed to add to database. Exiting.")
                         quit()
+                auctions_scraped_this_run += 1
     finally:
         browser.quit()
 
@@ -192,18 +195,4 @@ questions I'd like to answer in reporting once I have full database:
 - what bidding strategy / timing works best? bidding one single time at 2mins out? 10 seconds out? is there a difference on average at all?
     - need to analyze full population's bid history
 
-'''
-
-
-
-
-
-'''
-surveillance project
-
-- I'll need a list of all auction ids
-    - brute force?? need to be careful not to DDOS lol
-- then from each auction id I'll need a list of all item ids in those auctions
-    - possibly an API call for this? like a GetItems or something
-- then I'll just need to loop through all auctions, then all items under each auction, then I'll have all the data! easy as that
 '''
