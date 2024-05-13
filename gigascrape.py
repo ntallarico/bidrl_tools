@@ -160,7 +160,7 @@ def gigascrape():
             for auction in auctions:
                 print('')
                 print(f"{affiliate.company_name} auctions complete: {auctions_already_scraped + auctions_scraped_this_run}."
-                      " Remaining: {len(auctions) - auctions_scraped_this_run}")
+                      f" Remaining: {len(auctions) - auctions_scraped_this_run}")
                 start_time = time.time()
                 auction.items = bf.scrape_items(browser, auction.id)
                 end_time = time.time()
