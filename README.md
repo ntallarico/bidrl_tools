@@ -13,3 +13,5 @@ Setup:
 2. Set up a folder local_files in repo.
 
 3. pip install -r requirements.txt
+
+4. To scrape all of bidrl's data into a relational database: run database_setup.py, then run gigascrape.py. You can view the sqlite database using a tool like https://sqlitebrowser.org/dl/
