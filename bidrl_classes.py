@@ -162,15 +162,15 @@ class Item:
 # define Affiliate class to hold all of our information about a given affiliate
 class Affiliate:
     def __init__(self
-                 , id: int = None
+                 , id: str = None
                  , logo: str = None
                  , do_not_display_tab: int = None
                  , company_name: str = None
                  , firstname: str = None
                  , lastname: str = None
                  , auc_count: int = None):
-        if id is not None and not isinstance(id, int):
-            raise TypeError(f"Expected id to be int, got {type(id).__name__}")
+        if id is not None and not isinstance(id, str):
+            raise TypeError(f"Expected id to be str, got {type(id).__name__}")
         if logo is not None and not isinstance(logo, str):
             raise TypeError(f"Expected logo to be str, got {type(logo).__name__}")
         if do_not_display_tab is not None and not isinstance(do_not_display_tab, int):

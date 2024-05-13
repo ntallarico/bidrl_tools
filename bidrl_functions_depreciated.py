@@ -169,3 +169,119 @@ def scrape_invoices(browser, invoice_link_list, start_date):
         invoices.append(new_invoice)
     
     return invoices
+
+
+'''def gigascrape_old():
+    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+    conn = bf.init_sqlite_connection()
+    cursor = conn.cursor()
+
+    # send browser to bidrl.com. this gets us the cookies we need to send the POST requests properly next
+    browser.get('https://www.bidrl.com')
+
+    post_url = "https://www.bidrl.com/api/auctions"
+
+    # get list of date intervals to pull auctions from
+    # can only pull a max of 1 year at a time
+    dates = bf.generate_date_intervals_for_auction_scrape()
+    for date in dates:
+        start_date = date['start_date'].strftime("%Y-%m-%d")
+        end_date = date['end_date'].strftime("%Y-%m-%d")
+        print(f"\nAuction pull date range: {start_date} to {end_date}")
+
+        post_data = {
+            "filters[startDate]": start_date
+            , "filters[endDate]": end_date
+            , "filters[perpage]": 10000
+            , "past_sales": "true"
+            , "filters[affiliates]": 47
+        }
+
+        print("Attempting to get response from POST request to https://www.bidrl.com/api/auctions")
+        start_time = time.time()
+        response = browser.request('POST', post_url, data=post_data) # send the POST request with the session that contains the cookies
+        end_time = time.time()
+        response.raise_for_status() # ensure the request was successful
+        print("Response recieved! Time taken: " + str(end_time - start_time))
+        auction_json = response.json()
+
+        # only execute the rest of the contents of this loop if result == 'success'
+        # meaning we recieved auction json properly
+        if auction_json['result'] == 'success':
+            auction_data_json = auction_json['data']
+            print("Number of auctions recieved: " + str(len(auction_data_json)))
+        elif auction_json['code'] == 'NO_AUCTION_LIST':
+            print("No auctions found for this date range.")
+            continue
+        else:
+            print("\n\nRecieved response that wasn't 'success'. Add it to the if/else ladder in gigascrape():\n\n")
+            print(auction_json)
+            quit()
+
+        # get auction_ids from sql so we can skip scraping auctions that have already been scraped
+        cursor.execute("SELECT auction_id FROM auctions")
+        auctions_in_db = cursor.fetchall()
+        # extract auction_id from each row and store in a list
+        auctions_in_db_list = [auction['auction_id'] for auction in auctions_in_db]
+
+        for auction in auction_data_json:
+            # check if auction_id we are about to scrape has already been scraped. skip if so
+            if auction['id'] in auctions_in_db_list:
+                print(f"Auction {auction['id']} already exists in the database. Skipping.")
+                continue
+
+            # skip if auction is not a real auction
+            if auction['item_count'] == '0':
+                print(f"Auction item_count = 0. Concluding not a real auction and skipping.")
+                continue
+
+            auction_url = "https://www.bidrl.com/auction/" + auction['auction_id_slug'] + "/bidgallery/"
+
+            print("\nScraping item urls from: " + auction_url)
+            item_urls = bf.get_auction_item_urls(auction_url)
+            print(str(len(item_urls)) + " items found")
+
+            # remove any item urls that end with '/i/'
+            # track items_removed so that verification function doesn't get tripped up
+            # ex: the "I <3 ZACH T-Shirt 2XL" item in this auction:
+                # https://www.bidrl.com/auction/high-end-auction-161-johns-rd-unit-a-south-carolina-december-10-143518/bidgallery/perpage_NjA/page_Mg
+            items_removed = 0
+            for url in item_urls[:]:  # Use a slice copy to iterate over while modifying the original list
+                if url.endswith("/i/"):
+                    item_urls.remove(url)
+                    items_removed += 1
+                    print(f"Removed URL ending with '/i/': {url}")
+
+            print("Scraping item info")
+            items = bf.get_items(item_urls, browser)
+
+
+            # auction object to hold all of our auction data before we insert it into the sql database
+            auction_obj = Auction(
+                id=auction['id'],
+                url=auction_url,
+                items=items,
+                title=auction['title'],
+                item_count=int(auction['item_count']),
+                start_datetime=auction['starts'],
+                status=auction['status'],
+                affiliate_id=auction['affiliate_id'],
+                aff_company_name=auction['aff_company_name'],
+                state_abbreviation=auction['state_abbreviation'].strip(),
+                city=auction['city'],
+                zip=auction['zip'],
+                address=auction['address']
+            )
+
+            if verify_auction_object_complete(auction_obj, items_removed) == False:
+                print("Auction did not pass verification! Not adding to sql database. Exiting program.")
+                quit()
+            else:
+                print("Auction object passed verification. Attempting to add to sql database.")
+                if bf.insert_entire_auction_to_sql_db(conn, auction_obj) == 0:
+                    print("Successfully added to database.")
+                else:
+                    print("Failed to add to database. Exiting.")
+                    quit()
+    
+    browser.quit()'''

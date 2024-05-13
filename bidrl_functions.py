@@ -619,7 +619,7 @@ def scrape_affiliates():
         for affiliate_data_item in affiliates_data['data'].items():
             affiliate = affiliate_data_item[1]
             affiliate = Affiliate(
-                    id = int(affiliate['id']),
+                    id = affiliate['id'],
                     logo = affiliate['logo'],
                     do_not_display_tab = int(affiliate['do_not_display_tab']),
                     company_name=affiliate['company_name'],
