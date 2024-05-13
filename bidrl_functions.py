@@ -9,7 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-from bidrl_classes import Item, Invoice, Auction, Bid
+from bidrl_classes import Item, Invoice, Auction, Bid, Affiliate
 from bs4 import BeautifulSoup
 import pyodbc
 import sqlite3
@@ -294,10 +294,6 @@ def get_auction_item_urls(auction_url):
     item_urls = [] # list for item urls to return
     for item in response.json()['items']:
         item_urls.append(item['item_url'])
-        '''if item['item_id_slug'] == 'i':
-            asdf
-        else:
-            item_urls.append(item['item_url'])'''
 
     return item_urls
 
@@ -473,6 +469,7 @@ def generate_date_intervals_for_auction_scrape():
     
     return yearly_date_ranges
 
+
 # requires webdriver object, affiliate_id, and optional auctions_to_scrape
 # in auctions_to_scrape, specify:
     # 'all' for all historical and currently open auctions
@@ -562,8 +559,84 @@ def scrape_auctions(browser
             )
 
             auctions.append(auction_obj)
-            
+
     return auctions
+
+# requires: auction_id of the auction from which we want to gather the item ids
+# returns: list of item ids given an auction id
+def scrape_item_id_list_from_auction(auction_id):
+    session = requests.Session() # create a session object to persist cookies
+    response = session.get('https://www.bidrl.com/') # make a GET request to get cookies
+    post_url = "https://www.bidrl.com/api/getitems"
+
+    # set items per page to 10k to ensure we capture all items in auction
+    post_data = {"auction_id": auction_id
+                 , "filters[perpage]": 10000
+                 , "show_closed": "closed"
+                 , "item_type": "itemlist"}
+    response = session.post(post_url, data=post_data)
+    response.raise_for_status() # ensure the request was successful
+
+    item_ids = []
+    for item in response.json()['items']:
+        item_ids.append(item['id'])
+    
+    return item_ids
+
+# requires: webdriver object, auction_id
+# returns: list of fully populated item objects for that auction
+def scrape_items(browser, auction_id):
+    item_ids = scrape_item_id_list_from_auction(auction_id)
+    items = []
+    for item_id in item_ids:
+        items.append(get_item_with_ids(browser, item_id, auction_id))
+    return items
+
+# scrapes list of affiliates from bidrl
+# returns: list of Affiliate objects
+def scrape_affiliates():
+    session = requests.Session() # create a session object to persist cookies
+    response = session.get("https://www.bidrl.com/api/affiliates") # make a GET request to get cookies
+    affiliates_data = response.json()
+
+    affiliates = []
+    if affiliates_data['result'] == 'success':
+        for affiliate_data_item in affiliates_data['data'].items():
+            affiliate = affiliate_data_item[1]
+            affiliate = Affiliate(
+                    id = int(affiliate['id']),
+                    logo = affiliate['logo'],
+                    do_not_display_tab = int(affiliate['do_not_display_tab']),
+                    company_name=affiliate['company_name'],
+                    firstname=affiliate['firstname'],
+                    lastname = affiliate['lastname'],
+                    auc_count = int(affiliate['auc_count'])
+                )
+            affiliates.append(affiliate)
+
+    return affiliates
+
+
+### next: create function that returns a list of item ids given an auction id. we'll ping getitems for this
+### then: scrape_items() which will use the list of item ids to ping itemdata for each and return a list of item objects
+### then: scrape_affiliates which will ping affiliates and return a list of affiliate objects
+# then, in whatever script. we can get all the data we need like this:
+
+
+'''
+browser = init browser adsfasdf
+
+affiliates = scrape_affiliates()
+for affiliate in affiliates:
+    auctions = scrape_auctions(browser, affiliate.id)
+    for auction in auctions:
+        items = scrape_items(browser, auction.id)
+        for item in items:
+            item.display()
+
+'''
+
+
     
 
 # parses the json response returned by bid_on_item() and performs next steps

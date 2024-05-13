@@ -164,7 +164,7 @@ class Affiliate:
     def __init__(self
                  , id: int = None
                  , logo: str = None
-                 , do_not_display_tab: bool = None
+                 , do_not_display_tab: int = None
                  , company_name: str = None
                  , firstname: str = None
                  , lastname: str = None
@@ -173,8 +173,8 @@ class Affiliate:
             raise TypeError(f"Expected id to be int, got {type(id).__name__}")
         if logo is not None and not isinstance(logo, str):
             raise TypeError(f"Expected logo to be str, got {type(logo).__name__}")
-        if do_not_display_tab is not None and not isinstance(do_not_display_tab, bool):
-            raise TypeError(f"Expected do_not_display_tab to be bool, got {type(do_not_display_tab).__name__}")
+        if do_not_display_tab is not None and not isinstance(do_not_display_tab, int):
+            raise TypeError(f"Expected do_not_display_tab to be int, got {type(do_not_display_tab).__name__}")
         if company_name is not None and not isinstance(company_name, str):
             raise TypeError(f"Expected company_name to be str, got {type(company_name).__name__}")
         if firstname is not None and not isinstance(firstname, str):
@@ -321,3 +321,4 @@ class Invoice:
         print("Items:")
         for item in self.items:
             item.display()
+
