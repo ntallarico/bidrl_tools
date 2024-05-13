@@ -27,7 +27,7 @@ import pyodbc
         # has no bid history, but bid_count = 1
     # https://www.bidrl.com/auction/118391/item/glory-season-decorative-throw-blanket-factory-sealed-16188241/
         # has no lot_number
-def verify_auction_object_complete(auction_obj, items_removed):
+def verify_auction_object_complete(auction_obj, items_removed = 0):
     # if anything is missing from the auction return False
     if auction_obj.id == None \
         or auction_obj.url == None \
@@ -113,19 +113,8 @@ def verify_auction_object_complete(auction_obj, items_removed):
     return True
 
 
-# we'll add an entire scraped aution with its full data and all items at once.
-    # so there will never be a partial auction added. instead of adding all auctions, then items, then history
-    # we'll go one auction at a time. Therefore, since its quick to get a list of auctions from the API for
-    # an affiliate, then we can just get a list of auction_ids from the sql and remove that from our list from
-    # the api. then just exclusively scrape the remaining list.
-    # plan:
-    #   1. only insert to the sql once we have absolutely all the data for an auction.
-    #   2. get list of auctions from the api
-    #   3. get list of auction_ids from the sql (this is the list of auctions that we've already scraped)
-    #   4. remove auction_ids from the api list that are in the sql list
-    #   5. loop through the remaining auctions in the api list, then get all the data for that auction
-    #   6. insert the data for that auction into the sql
-def gigascrape():
+
+'''def gigascrape_old():
     browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
     conn = bf.init_sqlite_connection()
     cursor = conn.cursor()
@@ -238,7 +227,60 @@ def gigascrape():
                     print("Failed to add to database. Exiting.")
                     quit()
     
-    browser.quit()
+    browser.quit()'''
+
+
+# we'll add an entire scraped aution with its full data and all items at once.
+    # so there will never be a partial auction added. instead of adding all auctions, then items, then history
+    # we'll go one auction at a time. Therefore, since its quick to get a list of auctions from the API for
+    # an affiliate, then we can just get a list of auction_ids from the sql and remove that from our list from
+    # the api. then just exclusively scrape the remaining list.
+    # plan:
+    #   1. only insert to the sql once we have absolutely all the data for an auction.
+    #   2. get list of auctions from the api
+    #   3. get list of auction_ids from the sql (this is the list of auctions that we've already scraped)
+    #   4. remove auction_ids from the api list that are in the sql list
+    #   5. loop through the remaining auctions in the api list, then get all the data for that auction
+    #   6. insert the data for that auction into the sql
+def gigascrape():
+    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+    conn = bf.init_sqlite_connection()
+    cursor = conn.cursor()
+
+    # get all auction_ids from sql database so we can skip scraping auctions that have already been scraped
+    cursor.execute("SELECT auction_id FROM auctions")
+    auctions_in_db = cursor.fetchall()
+    # extract auction_id from each row and store in a list
+    auction_ids_in_db = [auction['auction_id'] for auction in auctions_in_db]
+
+    affiliates = bf.scrape_affiliates()
+
+    # kill rest of list that isn't SC. just for now probably. remove this later to get all affiliates
+    affiliates = [next((aff for aff in affiliates if aff.id != '47'), None)]
+
+    try:
+        for affiliate in affiliates:
+            print("Scraping auctions for affiliate: " + affiliate.company_name)
+            auctions = bf.scrape_auctions(browser, affiliate.id)
+
+            # keep only auctions that are not already in the database
+            auctions = [auction for auction in auctions if auction.id not in auction_ids_in_db]
+
+            for auction in auctions:
+                auction.items = bf.scrape_items(browser, auction.id)
+                
+                if verify_auction_object_complete(auction) == False:
+                    print("Auction did not pass verification! Not adding to sql database. Exiting program.")
+                    quit()
+                else:
+                    print("Auction object passed verification. Attempting to add to sql database.")
+                    if bf.insert_entire_auction_to_sql_db(conn, auction) == 0:
+                        print("Successfully added to database.")
+                    else:
+                        print("Failed to add to database. Exiting.")
+                        quit()
+    finally:
+        browser.quit()
 
 
 gigascrape()

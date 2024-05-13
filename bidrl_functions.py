@@ -502,7 +502,7 @@ def scrape_auctions(browser
     for date in dates:
         start_date = date['start_date'].strftime("%Y-%m-%d")
         end_date = date['end_date'].strftime("%Y-%m-%d")
-        print(f"\nAuction pull date range: {start_date} to {end_date}")
+        print(f"\nPulling auctions for affiliate_id {affiliate_id} in date range: {start_date} to {end_date}")
 
         post_data = {
             "filters[startDate]": start_date
@@ -529,7 +529,7 @@ def scrape_auctions(browser
             print("No auctions found for this date range.")
             continue
         else:
-            print("\n\nRecieved response that wasn't 'success'. Add it to the if/else ladder in gigascrape():\n\n")
+            print("\n\nRecieved response that wasn't 'success'. Add it to the if/else ladder in scrape_auctions():\n\n")
             print(auction_json)
             quit()
 
@@ -540,6 +540,17 @@ def scrape_auctions(browser
                 continue
 
             auction_url = "https://www.bidrl.com/auction/" + auction['auction_id_slug'] + "/bidgallery/"
+
+            '''# remove any item urls that end with '/i/'
+            # track items_removed so that verification function doesn't get tripped up
+            # ex: the "I <3 ZACH T-Shirt 2XL" item in this auction:
+                # https://www.bidrl.com/auction/high-end-auction-161-johns-rd-unit-a-south-carolina-december-10-143518/bidgallery/perpage_NjA/page_Mg
+            items_removed = 0
+            for url in item_urls[:]:  # Use a slice copy to iterate over while modifying the original list
+                if url.endswith("/i/"):
+                    item_urls.remove(url)
+                    items_removed += 1
+                    print(f"Removed URL ending with '/i/': {url}")'''
 
             # auction object to hold all of our auction data before we insert it into the sql database
             auction_obj = Auction(
@@ -562,6 +573,7 @@ def scrape_auctions(browser
 
     return auctions
 
+
 # requires: auction_id of the auction from which we want to gather the item ids
 # returns: list of item ids given an auction id
 def scrape_item_id_list_from_auction(auction_id):
@@ -583,14 +595,17 @@ def scrape_item_id_list_from_auction(auction_id):
     
     return item_ids
 
+
 # requires: webdriver object, auction_id
 # returns: list of fully populated item objects for that auction
 def scrape_items(browser, auction_id):
     item_ids = scrape_item_id_list_from_auction(auction_id)
+    print(f"Scraping items from auction with id {auction_id}.")
     items = []
     for item_id in item_ids:
         items.append(get_item_with_ids(browser, item_id, auction_id))
     return items
+
 
 # scrapes list of affiliates from bidrl
 # returns: list of Affiliate objects
@@ -616,28 +631,6 @@ def scrape_affiliates():
 
     return affiliates
 
-
-### next: create function that returns a list of item ids given an auction id. we'll ping getitems for this
-### then: scrape_items() which will use the list of item ids to ping itemdata for each and return a list of item objects
-### then: scrape_affiliates which will ping affiliates and return a list of affiliate objects
-# then, in whatever script. we can get all the data we need like this:
-
-
-'''
-browser = init browser adsfasdf
-
-affiliates = scrape_affiliates()
-for affiliate in affiliates:
-    auctions = scrape_auctions(browser, affiliate.id)
-    for auction in auctions:
-        items = scrape_items(browser, auction.id)
-        for item in items:
-            item.display()
-
-'''
-
-
-    
 
 # parses the json response returned by bid_on_item() and performs next steps
 # just prints result for right now but could do something else in the future maybe, like send a notification, post something to a database, etc.
