@@ -9,24 +9,6 @@ import bidrl_functions as bf
 from bidrl_classes import Item, Invoice, Auction
 
 
-def get_open_auction_items():
-    # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
-    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
-
-    open_auctions = bf.get_open_auctions(browser)
-
-    for auction in open_auctions:
-        print(f"\n\nAuction: {auction.title}")
-        for item in auction.items:
-            if item.is_favorite == '1':
-                print(f"Item (Favorite): {item.description}")
-            else:
-                print(f"Item: {item.description}")
-    
-    browser.quit()
-    return open_auctions
-
-
 def write_items_to_csv(auctions, filename, fieldnames):
     with open(filename, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
@@ -39,7 +21,13 @@ def write_items_to_csv(auctions, filename, fieldnames):
                 writer.writerow([auction.title, auction.id, item.id, item.description, item.is_favorite, item.url, item.end_time_unix])
 
 
-open_auctions = get_open_auction_items()
+ # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
+browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+
+open_auctions = bf.get_open_auctions(browser)
+
+browser.quit()
+
 filename='local_files/items.csv'
 fieldnames = ['auction_title', 'auction_id', 'item_id', 'description', 'is_favorite', 'url', 'end_time_unix']
 
