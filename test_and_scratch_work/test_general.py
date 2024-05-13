@@ -273,7 +273,7 @@ def insert_image_to_sql_db():
     for image in images:
         print(image['image_url'])
 
-insert_image_to_sql_db()
+#insert_image_to_sql_db()
 
 
 
