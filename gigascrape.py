@@ -113,18 +113,15 @@ def verify_auction_object_complete(auction_obj, items_removed = 0):
     return True
 
 
-# we'll add an entire scraped aution with its full data and all items at once.
-# so there will never be a partial auction added. instead of adding all auctions, then items, then history
-# we'll go one auction at a time. Therefore, since its quick to get a list of auctions from the API for
-# an affiliate, then we can just get a list of auction_ids from the sql and remove that from our list from
-# the api. then just exclusively scrape the remaining list.
+# gigascrape. this function will scrape all affiliates, auctions, items, and bids and inserts them into the database.
+# we add an entire scraped aution with full data and all items at once. there will never be a partial auction added.
 # plan:
-#   1. only insert to the sql once we have absolutely all the data for an auction.
-#   2. get list of auctions from the api
-#   3. get list of auction_ids from the sql (this is the list of auctions that we've already scraped)
-#   4. remove auction_ids from the api list that are in the sql list
-#   5. loop through the remaining auctions in the api list, then get all the data for that auction
-#   6. insert the data for that auction into the sql
+#   1. get list of affiliates.
+#   2. for each affiliate, get list of auctions.
+#   3. get list of auction_ids from the sql database and remove any that appear from the list of auctions.
+#       this ensures we are not spending time scraping auction/item data that has already been scraped.
+#   3. for each auction, get list of items.
+#   4. every time we scrape an auction and its items, verify the auction object is complete, then add to the database.
 def gigascrape():
     browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
     conn = bf.init_sqlite_connection()
@@ -165,7 +162,6 @@ def gigascrape():
                 auction.items = bf.scrape_items(browser, auction.id)
                 end_time = time.time()
                 print("Auction items scraped. Time taken: {:.4f} seconds".format(end_time - start_time))
-
 
                 if verify_auction_object_complete(auction) == False:
                     print("Auction did not pass verification! Not adding to sql database. Exiting program.")
