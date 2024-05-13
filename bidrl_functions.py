@@ -90,6 +90,7 @@ def get_logged_in_webdriver(login_name, login_password, headless = ''):
             print('Login succeeded!')
             return browser
     print(f'Gave up attempt to log in after {attempts} attempts. Exiting program.')
+    browser.quit()
     quit() # exit current python script
 
 
