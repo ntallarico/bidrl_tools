@@ -394,3 +394,21 @@ def get_auction_item_urls(auction_url):
         item_urls.append(item['item_url'])
 
     return item_urls
+
+
+'''def create_item_objects_from_rows(item_rows_list):
+    item_list = [] # list for item objects to return at the end
+    for item_row in item_rows_list:
+        # check if max_desired_bid is not empty. if it isn't, then convert to float. if it is, then set to None
+        max_desired_bid = float(item_row['max_desired_bid']) if item_row['max_desired_bid'] != '' else None
+
+        # extract data from json into temp dictionary to create item with later
+        temp_item_dict = {'id': item_row['item_id']
+                                , 'auction_id': item_row['auction_id']
+                                , 'description': item_row['description']
+                                , 'url': item_row['url']
+                                , 'end_time_unix': int(item_row['end_time_unix'])
+                                , 'max_desired_bid': max_desired_bid}
+        
+        item_list.append(Item(**temp_item_dict))
+    return item_list'''

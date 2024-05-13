@@ -289,6 +289,7 @@ def get_item_with_ids(browser, item_id, auction_id, get_bid_history = 'true'):
         print(f"Error in get_item_with_ids(): {err}")
         print(f"post_url: {post_url}")
         print(f"post_data: {post_data}")
+        browser.quit()
         quit()
     item_json = response.json()
 
@@ -734,3 +735,10 @@ def insert_entire_auction_to_sql_db(conn, auction_obj):
         print(f"An unexpected error occurred: {e}")
         conn.rollback() # roll back any changes since start of transaction if an error occurs
         return 1
+
+
+# tear down program gracefully. close webdriver object and exit python scripts
+def tear_down(browser):
+    print("Tearing down web object and exiting.")
+    browser.quit()
+    quit()
