@@ -161,18 +161,18 @@ def gigascrape():
                 print('')
                 print(f"{affiliate.company_name} auctions complete: {auctions_already_scraped + auctions_scraped_this_run}."
                       f" Remaining: {len(auctions) - auctions_scraped_this_run}")
-                start_time = time.time()
+                start_time_scrape_auction_items = time.time()
                 auction.items = bf.scrape_items(browser, auction.id)
-                end_time = time.time()
-                print("Auction items scraped. Time taken: {:.4f} seconds".format(end_time - start_time))
+                print(str(len(auction.items)) + " auction items scraped. Time taken: {:.4f} seconds".format(time.time() - start_time_scrape_auction_items))
 
                 if verify_auction_object_complete(auction) == False:
                     print("Auction did not pass verification! Not adding to sql database. Exiting program.")
                     quit()
                 else:
                     print("Auction object passed verification. Attempting to add to sql database.")
+                    start_time_insert_auction_to_sql = time.time()
                     if bf.insert_entire_auction_to_sql_db(conn, auction) == 0:
-                        print("Successfully added to database.")
+                        print("Successfully added to database. Time taken: {:.4f} seconds.".format(time.time() - start_time_insert_auction_to_sql))
                     else:
                         print("Failed to add to database. Exiting.")
                         quit()
