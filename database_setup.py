@@ -115,6 +115,7 @@ def sql_database_setup():
             , image_url TEXT
             , image_height INTEGER
             , image_width INTEGER
+            , PRIMARY KEY (item_id, image_url)
         );
     ''')
     

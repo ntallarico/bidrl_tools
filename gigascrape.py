@@ -163,7 +163,7 @@ def gigascrape():
                       f" Remaining: {len(auctions) - auctions_scraped_this_run}")
                 start_time_scrape_auction_items = time.time()
                 auction.items = bf.scrape_items(browser, auction.id)
-                print(str(len(auction.items)) + " auction items scraped. Time taken: {:.4f} seconds".format(time.time() - start_time_scrape_auction_items))
+                print(f"Auction items scraped: {len(auction.items)}" + ". Time taken: {:.4f} seconds".format(time.time() - start_time_scrape_auction_items))
 
                 if verify_auction_object_complete(auction) == False:
                     print("Auction did not pass verification! Not adding to sql database. Exiting program.")
@@ -181,6 +181,7 @@ def gigascrape():
             print(f"\nCompleted full scrape of affiliate {affiliate.company_name}!")
 
         print("\ngigacrape complete! everything is now yours. have fun :)")
+        browser.quit()
     finally:
         browser.quit()
 
