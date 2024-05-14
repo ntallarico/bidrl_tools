@@ -138,7 +138,7 @@ def gigascrape():
 
     # FOR DEGUBBING / TESTING
     # kill rest of list that isn't SC. just for now probably. remove this later to get all affiliates
-    #affiliates = [next((aff for aff in affiliates if aff.id == '47'), None)]
+    affiliates = [next((aff for aff in affiliates if aff.id == '47'), None)]
 
 
     try:
