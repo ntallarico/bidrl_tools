@@ -135,13 +135,15 @@ if __name__ == "__main__":
 
 '''
 Database plans:
-so if I want to do postgres or sqlserver, I will have to have the user install them and sping them up first.
+my options for databased implementation are sql server, postgres, or sqlite.
+postgres or sql server would be more robust, but sqlite would be more lightweight.
+
+if I want to do postgres or sql server, I will have to have the user install them and sping them up first.
 but if I want to do sqlite, I can do that purely in script.
+I am more familiar with sql server, so if am getting a user to install stuff, then I'd do sqlsever.
+lets now compare sql server to sqlite
 
-so if I have to get user to install something either way, I'd do sql server over postgresql.
-however, lets compare sqlite to sql server and see if I actually need sql server
-
-pros and cons on sqlserver vs sqlite:
+pros and cons on sql server vs sqlite:
 - sqlite requires no user configuration or other setup other than running my script
 - sqlite is much less resource intensive
 - sqlite stores its data in a single file, making it super portable
@@ -149,10 +151,11 @@ pros and cons on sqlserver vs sqlite:
 - sqlite cannot have multiple users access it at once, but that's ok for this
 - sqlite I have read works with "moderate" database size. which I think is good for this project
 
+Conclusion:
 I will use sqlite for now. It will allow me to have the user simply run a script to set it all up
 and will store the entire database in a single file, making it more portable.
 If I ever have a need for some massive scale increase or multiple users writing/reading to it at once,
-then I'll shift to postgres or sql server.
+then I'll shift to sql server (or may postgres).
 
 '''
 
