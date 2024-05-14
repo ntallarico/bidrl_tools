@@ -735,7 +735,6 @@ def insert_invoice_to_sql_db(conn, invoice):
 # requires sqlite database connection object and an Item object with a list of image URLs and item_id
 def insert_image_to_sql_db(conn, image):
     cursor = conn.cursor()
-
     sql = ''' INSERT INTO images(item_id, image_url, image_height, image_width)
                   VALUES(?, ?, ?, ?) '''
     cursor.execute(sql, (image.item_id, image.image_url, image.image_height, image.image_width))
