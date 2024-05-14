@@ -521,7 +521,7 @@ def scrape_item_id_list_from_auction(auction_id):
 # returns: list of fully populated item objects for that auction
 def scrape_items(browser, auction_id):
     item_ids = scrape_item_id_list_from_auction(auction_id)
-    print(f"Scraping items from auction with id {auction_id}.")
+    print(f"Scraping items from auction with id: {auction_id}.")
     items = []
     for item_id in item_ids:
         items.append(get_item_with_ids(browser, item_id, auction_id))
