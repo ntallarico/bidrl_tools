@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/Nick/Stuff/Projects/BidRL/bidrl_tools/local_files/bidrl.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="125"/><column_width id="3" width="2175"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="3" parent="0"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,6:mainimages"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="affiliates" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="76"/><column index="2" value="40"/><column index="3" value="137"/><column index="4" value="109"/><column index="5" value="70"/><column index="6" value="67"/><column index="7" value="76"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="auctions" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="1" mode="1"/></sort><column_widths><column index="1" value="125"/><column index="2" value="40"/><column index="3" value="40"/><column index="4" value="81"/><column index="5" value="169"/><column index="6" value="50"/><column index="7" value="76"/><column index="8" value="135"/><column index="9" value="133"/><column index="10" value="40"/><column index="11" value="40"/><column index="12" value="60"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="images" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="63"/><column index="2" value="692"/><column index="3" value="95"/><column index="4" value="90"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="items" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="63"/><column index="2" value="75"/><column index="3" value="300"/><column index="4" value="84"/><column index="5" value="148"/><column index="6" value="300"/><column index="7" value="65"/><column index="8" value="109"/><column index="9" value="82"/><column index="10" value="104"/><column index="11" value="102"/><column index="12" value="72"/><column index="13" value="54"/><column index="14" value="78"/><column index="15" value="75"/><column index="16" value="71"/><column index="17" value="117"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">SELECT
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/Nick/Stuff/Projects/BidRL/bidrl_tools/local_files/bidrl.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="125"/><column_width id="3" width="2175"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,5:mainitems"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="affiliates" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="76"/><column index="2" value="40"/><column index="3" value="137"/><column index="4" value="109"/><column index="5" value="70"/><column index="6" value="67"/><column index="7" value="76"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="auctions" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="1" mode="1"/></sort><column_widths><column index="1" value="125"/><column index="2" value="40"/><column index="3" value="40"/><column index="4" value="81"/><column index="5" value="169"/><column index="6" value="50"/><column index="7" value="76"/><column index="8" value="135"/><column index="9" value="133"/><column index="10" value="40"/><column index="11" value="40"/><column index="12" value="60"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="images" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="63"/><column index="2" value="692"/><column index="3" value="95"/><column index="4" value="90"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="invoices" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="72"/><column index="2" value="40"/><column index="3" value="40"/><column index="4" value="75"/><column index="5" value="170"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="items" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="63"/><column index="2" value="75"/><column index="3" value="300"/><column index="4" value="84"/><column index="5" value="148"/><column index="6" value="300"/><column index="7" value="65"/><column index="8" value="109"/><column index="9" value="82"/><column index="10" value="104"/><column index="11" value="102"/><column index="12" value="72"/><column index="13" value="54"/><column index="14" value="78"/><column index="15" value="75"/><column index="16" value="71"/><column index="17" value="117"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">SELECT
 	(SELECT count(*) FROM auctions) as auctions
 	, (SELECT count(*) FROM items) as items
 	, (SELECT count(*) FROM bids) as bids
@@ -14,32 +14,16 @@ where i.item_id = '14830715'*/</sql><sql name="SQL 11">select b.*, it.descriptio
 from auctions a
 	left join items it on it.auction_id = a.auction_id
 	left join bids b on b.item_id = it.item_id
-where it.item_id = '14830715'</sql><sql name="SQL 15">drop TABLE if exists new_images;
+where it.item_id = '14830715'</sql><sql name="SQL 17">select * from items where highbidder_username = '1H, 48M, 25S' and bidding_status = 'Closed'
 
--- Step 1: Create a new table with the desired structure
-CREATE TABLE IF NOT EXISTS new_images (
-    item_id TEXT,
-    image_url TEXT,
-    image_height INTEGER,
-    image_width INTEGER,
-    PRIMARY KEY (item_id, image_url)
-);
+select * from items where highbidder_username = 'ndt' and bidding_status = 'Closed'
 
--- Step 2: Copy data from the old table to the new table
-INSERT INTO new_images (item_id, image_url, image_height, image_width)
-SELECT item_id, image_url, image_height, image_width FROM images;
+select * from items where highbidder_username = 'ndt' and bidding_status = 'Closed' and is_favorite = 0
 
-select * from images
-select * from new_images
-
-
-select item_id, image_url
-, count(*) from images
-group by item_id, image_url
-order by count(*) desc
-
--- Step 3: Drop the old table
-DROP TABLE images;
-
--- Step 4: Rename the new table to the original name
-ALTER TABLE new_images RENAME TO images;</sql><current_tab id="2"/></tab_sql></sqlb_project>
+-- show me items I bid on, showing the maximum I ended up bidding on that item, who actually won it, and how much they paid for it
+select i.item_id, i.auction_id, i.description, max(b.bid), i.highbidder_username, i.current_bid
+from items i
+inner join bids b on b.item_id = i.item_id
+where b.username = 'ndt'  and bidding_status = 'Closed'
+group by i.item_id, i.auction_id, i.description, i.highbidder_username, i.current_bid
+order by i.highbidder_username</sql><current_tab id="3"/></tab_sql></sqlb_project>
