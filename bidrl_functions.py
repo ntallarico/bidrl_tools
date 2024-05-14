@@ -739,21 +739,6 @@ def insert_image_to_sql_db(conn, image):
                   VALUES(?, ?, ?, ?) '''
     cursor.execute(sql, (image.item_id, image.image_url, image.image_height, image.image_width))
 
-    """# Check if item_id + image_url combo already exists
-    start_time_query_images = time.time()
-    cursor.execute("SELECT item_id, image_url FROM images WHERE item_id = ? AND image_url = ?", (image.item_id, image.image_url))
-    print("Queried images table. Time taken: {:.4f} seconds.".format(time.time() - start_time_query_images))
-
-    if cursor.fetchone():
-        print(f"item_id {image.item_id} + image_url {image.image_url} already found in database. Skipping insert of image.")
-        return
-    else:
-        #start_time_insert_images = time.time()
-        sql = ''' INSERT INTO images(item_id, image_url, image_height, image_width)
-                  VALUES(?, ?, ?, ?) '''
-        cursor.execute(sql, (image.item_id, image.image_url, image.image_height, image.image_width))
-        #print("Inserted into images table. Time taken: {:.4f} seconds.".format(time.time() - start_time_insert_images))"""
-
 
 # requires a sqlite connection object and an Auction object full of items, each full of bids
 # inserts the auction, all items, and all items' bids into the sql database
