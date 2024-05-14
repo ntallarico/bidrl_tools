@@ -210,5 +210,20 @@ plan for ultimate scrape script
 questions I'd like to answer in reporting once I have full database:
 - what bidding strategy / timing works best? bidding one single time at 2mins out? 10 seconds out? is there a difference on average at all?
     - need to analyze full population's bid history
+- lets get a report on 2 minute nightmare. does he live up to the name?
+- who has spent the most money?
+- can we identify people as "quick bid button pushers".
+    - how often do they do it? when?
+    - I'd like to see a breakdown of quick bid spam bids by dimensions
+- ratio of bids to wins for people
+- can I analyze the bid history to determine certain scenarios?
+    - someone gave their max amount, was outbid, then later upped it to try to win
+        - then, how far above their original max amount did they end up paying?
+
+stuff to do with reporting stuff:
+- item reporting table
+    - show actual paid price for item (including premium and tax)
+- users reporting table
+    - total bids, total wins, total losses, ratio
 
 '''
