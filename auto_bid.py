@@ -261,6 +261,7 @@ what we need to to:
 - create a second function auto_bid_item_group that works on item groups
     - this will call update_item_info and update our wins and times and whatever
     - this will call get_user_session (need to implement) to get username, for seeing if item has been won by current user
+        - https://www.bidrl.com/api/getsession
 - set up item group shit in csv creation
 - have scrape_open_auctions_to_csv.py scrape to sql database instead of csv
 - update create_user_input_csv.py to read from sql database
