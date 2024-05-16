@@ -200,8 +200,6 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
     # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
     browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
 
-    # TODO get user session and set variable username (so we can later check if highbidder_username = username)
-
     last_login_time_string = time_formatted()
     last_login_time_unix = time_unix()
 
@@ -257,10 +255,12 @@ if __name__ == "__main__":
 
 '''
 what we need to to:
+- add field to item object and database: item_bid_group_id
 - after reading in csv, parse out two lists, Items, and Item Groups
 - print out how many items and item groups we have
 - create a second function auto_bid_item_group that works on item groups
-    - this will call scrape_items_fast and update our wins and times and whatever
+    - this will call update_item_info and update our wins and times and whatever
+    - this will call get_user_session (need to implement) to get username, for seeing if item has been won by current user
 - set up item group shit in csv creation
 - have scrape_open_auctions_to_csv.py scrape to sql database instead of csv
 - update create_user_input_csv.py to read from sql database
