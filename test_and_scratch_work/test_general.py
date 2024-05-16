@@ -275,7 +275,66 @@ def insert_image_to_sql_db():
 
 #insert_image_to_sql_db()
 
+def test_scrape_items_fast():
+    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+    start_time = time.time()
+    items = bf.scrape_items_fast(browser, '154038')
+    end_time = time.time()
+    for item in items:
+        item.display()
+        #print(item.description)
+    print("\nscrape_items_fast() completed in {:.4f} seconds.".format(end_time - start_time))
+    browser.quit()
 
+#test_scrape_items_fast()
+
+def test_user_login_urls():
+    session = requests.Session() # create a session object to persist cookies
+    response = session.get('https://www.bidrl.com/') # make a GET request to get cookies
+
+    #post_url = "https://www.bidrl.com/api/users?authenticate=true"
+    #post_data = {"username": user_email, "password": user_password}
+    #response = session.post(post_url, data=post_data)
+    #response_json = response.json()
+    #print(response_json)
+
+    urls = [
+        "https://www.bidrl.com/api/users?authenticate=true"
+        , "https://www.bidrl.com/api/users?authenticate=false"
+        , "https://www.bidrl.com/api/users?authenticate"
+        , "https://www.bidrl.com/api/users?"
+        , "https://www.bidrl.com/api/users"
+        #, "https://www.bidrl.com/"
+        #, "https://www.bidrl.com/api/user"
+        #, "https://www.bidrl.com/api/types/user"
+        #, "https://www.bidrl.com/api/userdata"
+        #, "https://www.bidrl.com/api/login"
+        #, "https://www.bidrl.com/api/getusers"
+    ]
+
+    usernames = [user_email, user_email[0:3]]
+    
+    # GET
+    for username in usernames:
+        print(username)
+        for url in urls:
+            print("\t"+ url)
+            post_data = {"username": username, "password": user_password}
+            response = session.get(url, data=post_data)
+            response_json = response.json()
+            print("\t\t"+ str(response_json))
+
+    # POST
+    for username in usernames:
+        print(username)
+        for url in urls:
+            print("\t"+ url)
+            post_data = {"username": username, "password": user_password}
+            response = session.post(url, data=post_data)
+            response_json = response.json()
+            print("\t\t"+ str(response_json))
+
+test_user_login_urls()
 
 
 '''
@@ -292,6 +351,8 @@ other api reference i've seen to explore:
 - https://www.bidrl.com/api/initdata
 - https://www.bidrl.com/api/affiliatesforhomepage
 - https://www.bidrl.com/api/getsession
+- https://www.bidrl.com/api/types/user
+- https://www.bidrl.com/api/getitems/liveview
 - 
 '''
 

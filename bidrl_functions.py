@@ -344,7 +344,7 @@ def get_item_with_ids(browser, item_id, auction_id, get_bid_history = 'true', ge
     if 'is_favorite' in item_json:
         temp_item_dict['is_favorite'] = int(item_json['is_favorite'])
 
-    # instantiate Item object with info from temp_auction_dict, print message, and return item object
+    # instantiate Item object with info from temp_item_dict, print message, and return item object
     item_obj = Item(**temp_item_dict)
     #print(f"get_item_with_ids() scraped: {item_obj.description} (with {len(bids)} bids)")
     return item_obj
@@ -515,6 +515,64 @@ def scrape_item_id_list_from_auction(auction_id):
         item_ids.append(item['id'])
     
     return item_ids
+
+
+# scrapes list of items given an auction_id.
+# uses auction's page with /api/getitems. does not gather all item info but works incredibly faster.
+# the item info loads all at once, as opposed to sending a request to each item's page
+# so we do not get all the information about an item but we do get the list back almost instantly, comparatively (~1s vs ~1m).
+# this is useful for getting item ids for full item scraping, and for more efficient grabbing of some item data.
+# requires: webdriver object, auction_id of the auction from which we want to gather the item ids,
+    # optional indiator to do/skip scraping of images list
+# returns: list of item objects
+def scrape_items_fast(browser, auction_id, get_images = 'true'):
+    response = browser.request('GET', 'https://www.bidrl.com/') # make GET request to get cookies
+
+    post_url = "https://www.bidrl.com/api/getitems"
+
+    # set items per page to 10k to ensure we capture all items in auction
+    post_data = {"auction_id": auction_id
+                 , "filters[perpage]": 10000
+                 , "show_closed": "closed"
+                 , "item_type": "itemlist"}
+    response = browser.request('POST', post_url, data=post_data)
+    response.raise_for_status() # ensure the request was successful
+
+    items = []
+    for item_json in response.json()['items']:
+        # if get_images is set to true, then get the a list of Image objects for the item
+        images = []
+        if get_images == 'true':
+            for image_json in item_json['images']:
+                images.append(Image(**{
+                    'item_id': item_json['id']
+                    , 'image_url': image_json['image_url']
+                    , 'image_height': int(image_json['image_height'])
+                    , 'image_width': int(image_json['image_width'])
+                }))
+
+        # extract data from json into temp dictionary to create item with later
+        temp_item_dict = {'id': item_json['id']
+                                , 'auction_id': item_json['auction_id']
+                                , 'description': item_json['title']
+                                , 'buyer_premium': round(float(item_json['buyer_premium']) * 0.01, 4)
+                                , 'current_bid': float(item_json['current_bid'])
+                                , 'highbidder_username': item_json['winner']
+                                , 'url': item_json['item_url']
+                                , 'lot_number': item_json['lot_number']
+                                , 'end_time_unix': int(item_json['end_time']) - int(item_json['time_offset'])
+                                , 'bid_count': int(item_json['bid_count'])
+                                , 'images': images
+                            }
+        
+        # can only see is_favorite key if logged in. check if it exists before attempting to add to dict
+        if 'is_favorite' in item_json:
+            temp_item_dict['is_favorite'] = int(item_json['is_favorite'])
+
+        # instantiate Item object with info from temp_item_dict and append to list
+        items.append(Item(**temp_item_dict))
+        
+    return items
 
 
 # requires: webdriver object, auction_id
