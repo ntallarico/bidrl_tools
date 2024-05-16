@@ -396,22 +396,77 @@ def get_auction_item_urls(auction_url):
     return item_urls
 
 
-'''def create_item_objects_from_rows(item_rows_list):
-    item_list = [] # list for item objects to return at the end
-    for item_row in item_rows_list:
-        # check if max_desired_bid is not empty. if it isn't, then convert to float. if it is, then set to None
-        max_desired_bid = float(item_row['max_desired_bid']) if item_row['max_desired_bid'] != '' else None
 
-        # extract data from json into temp dictionary to create item with later
-        temp_item_dict = {'id': item_row['item_id']
-                                , 'auction_id': item_row['auction_id']
-                                , 'description': item_row['description']
-                                , 'url': item_row['url']
-                                , 'end_time_unix': int(item_row['end_time_unix'])
-                                , 'max_desired_bid': max_desired_bid}
-        
-        item_list.append(Item(**temp_item_dict))
-    return item_list'''
+'''# scrape item objects from bidrl based on list of item_id/auction_id read in from csv.
+# we do this because we want the most up-to-date information for these items, like end_time_unix
+def scrape_item_objects_from_rows(browser, item_rows_list):
+    print("Scraping item objects based on item_id and auction_id read from csv.")
+    try:
+      item_list = [] # list for item objects to return at the end
+      for item_num, item_row in enumerate(item_rows_list):
+          item_obj = bf.get_item_with_ids(browser, item_row['item_id'], item_row['auction_id'], get_bid_history = 'false')
+
+          # check if max_desired_bid is not empty. if it isn't, then convert to float. if it is, then set to None
+          item_obj.max_desired_bid = float(item_row['max_desired_bid']) if item_row['max_desired_bid'] != '' else None
+
+          print(f"Item object scraped ({item_num + 1}/{len(item_rows_list)}): {item_obj.description}")
+          item_list.append(item_obj)
+      return item_list
+    except Exception as e:
+        print(f"scrape_item_objects_from_rows() failed with exception: {e}")
+        print("Tearing down web object.")
+        browser.quit()
+        return 1'''
+
+
+'''# read favorite_items_to_input_max_bid.csv and return list of item objects for items where max_desired_bid > 0
+def read_user_input_csv(browser):
+    try:
+        filename = 'favorite_items_to_input_max_bid.csv'
+        path_to_file = 'local_files/'
+
+        file_path = path_to_file + filename
+
+        fieldnames = ['end_time_unix', 'auction_id', 'item_id', 'description', 'max_desired_bid', 'url']
+
+        read_rows = bf.read_items_from_csv(file_path, fieldnames)
+
+        #item_list = scrape_item_objects_from_rows(browser, read_rows)
+        item_list = create_item_objects_from_rows(read_rows)
+
+        items_to_bid_on = []
+        item_count_with_desired_bid = 0
+        item_count_zero_desired_bid = 0
+        item_count_no_desired_bid = 0
+        item_count_already_closed = 0
+        for item in item_list:
+            if item.max_desired_bid == 0:
+                item_count_zero_desired_bid += 1
+            elif item.max_desired_bid == None:
+                item_count_no_desired_bid += 1
+            else:
+                item_count_with_desired_bid += 1
+                if item.bidding_status == 'Closed':
+                    item_count_already_closed += 1
+                else:
+                    items_to_bid_on.append(item)
+
+        print(f"\nRead file: {filename}.")
+        print(f"Items with max_desired_bid: {item_count_with_desired_bid}")
+        print(f"Items with max_desired_bid that already closed: {item_count_already_closed}")
+        print(f"Items without max_desired_bid: {item_count_no_desired_bid}")
+        print(f"Items with 0 max_desired_bid: {item_count_zero_desired_bid}\n")
+
+        # sort list of items in descending order based on their end time
+        items_to_bid_on.sort(key=lambda x: x.end_time_unix, reverse=True)
+
+        return items_to_bid_on
+    except Exception as e:
+        print(f"read_user_input_csv() failed with exception: {e}")
+        print("Tearing down web object.")
+        browser.quit()
+        return 1'''
+    
 
 
 # requires: auction_id of the auction from which we want to gather the item ids
