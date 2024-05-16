@@ -313,7 +313,7 @@ def test_user_login_urls():
     ]
 
     usernames = [user_email, user_email[0:3]]
-    
+
     # GET
     for username in usernames:
         print(username)
@@ -334,7 +334,7 @@ def test_user_login_urls():
             response_json = response.json()
             print("\t\t"+ str(response_json))
 
-test_user_login_urls()
+#test_user_login_urls()
 
 
 '''

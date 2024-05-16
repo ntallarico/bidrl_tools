@@ -412,3 +412,36 @@ def get_auction_item_urls(auction_url):
         
         item_list.append(Item(**temp_item_dict))
     return item_list'''
+
+
+# requires: auction_id of the auction from which we want to gather the item ids
+# returns: list of item ids given an auction id
+def scrape_item_id_list_from_auction(auction_id):
+    session = requests.Session() # create a session object to persist cookies
+    response = session.get('https://www.bidrl.com/') # make a GET request to get cookies
+    post_url = "https://www.bidrl.com/api/getitems"
+
+    # set items per page to 10k to ensure we capture all items in auction
+    post_data = {"auction_id": auction_id
+                 , "filters[perpage]": 10000
+                 , "show_closed": "closed"
+                 , "item_type": "itemlist"}
+    response = session.post(post_url, data=post_data)
+    response.raise_for_status() # ensure the request was successful
+
+    item_ids = []
+    for item in response.json()['items']:
+        item_ids.append(item['id'])
+    
+    return item_ids
+
+
+# requires: webdriver object, auction_id
+# returns: list of fully populated item objects for that auction
+def scrape_items_old(browser, auction_id):
+    item_ids = scrape_item_id_list_from_auction(auction_id)
+    print(f"Scraping items from auction with id: {auction_id}.")
+    items = []
+    for item_id in item_ids:
+        items.append(get_item_with_ids(browser, item_id, auction_id))
+    return items
