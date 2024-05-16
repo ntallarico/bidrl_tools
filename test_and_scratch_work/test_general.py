@@ -288,6 +288,7 @@ def test_scrape_items_fast():
 
 #test_scrape_items_fast()
 
+
 def test_user_login_urls():
     session = requests.Session() # create a session object to persist cookies
     response = session.get('https://www.bidrl.com/') # make a GET request to get cookies
@@ -335,6 +336,8 @@ def test_user_login_urls():
             print("\t\t"+ str(response_json))
 
 #test_user_login_urls()
+
+
 
 
 '''
