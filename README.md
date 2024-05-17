@@ -14,10 +14,10 @@ Setup:
 		google_form_link_base = 'google form link for expense input'
 
 2. Create folder called local_files in repo.
-3. pip install -r requirements.txt
+3. Run: `pip install -r requirements.txt`
 4. To scrape all of bidrl's data into a relational database:
-	1. run database_setup.py
-	2. run gigascrape.py
+	1. Run database_setup.py
+	2. Run gigascrape.py
 	3. Optional: you can view the sqlite database using a tool like https://sqlitebrowser.org/dl/
 5. To use auto bid:
 	1. Log in to bidrl.com and favorite items.
