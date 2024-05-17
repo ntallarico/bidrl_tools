@@ -186,7 +186,8 @@ def gigascrape():
         browser.quit()
 
 
-gigascrape()
+if __name__ == "__main__":
+    gigascrape()
 
 
 
