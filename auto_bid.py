@@ -103,7 +103,7 @@ def read_user_input_csv_to_item_objects(browser):
 
         file_path = path_to_file + filename
 
-        fieldnames = ['end_time_unix', 'auction_id', 'item_id', 'description', 'max_desired_bid', 'url']
+        fieldnames = ['end_time_unix', 'auction_id', 'item_id', 'item_bid_group_id', 'description', 'max_desired_bid', 'url']
 
         read_rows = bf.read_items_from_csv(file_path, fieldnames)
 
