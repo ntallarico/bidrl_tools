@@ -360,6 +360,18 @@ def get_open_auctions(browser, affiliate_id = '47'):
     for auction in auctions:
         auction.items = scrape_items(browser, auction.id)
     return auctions
+
+
+# get auctions list, using scrape_items_fast (returns less info but in massively shorter time. uses /api/getitems/ on an auction_id)
+# requires:
+    # id of affiliate "company". ex: '47' for SC
+    # webdriver object. if webdriver object has been logged in as a user, then the attribute is_favorite will be filled in for items
+# returns: list of Auction objects
+def get_open_auctions_fast(browser, affiliate_id = '47'):
+    auctions = scrape_auctions(browser, affiliate_id, auctions_to_scrape = 'open')
+    for auction in auctions:
+        auction.items = scrape_items_fast(browser, auction.id)
+    return auctions
     
 
 # generates a list of dicts with start_date and end_date to use as intervals for auction scraping.
