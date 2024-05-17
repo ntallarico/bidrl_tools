@@ -24,7 +24,7 @@ def write_items_to_csv(auctions, filename, fieldnames):
  # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
 browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
 
-open_auctions = bf.get_open_auctions(browser)
+open_auctions = bf.get_open_auctions_fast(browser)
 
 browser.quit()
 
