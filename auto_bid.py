@@ -7,7 +7,7 @@ import time
 from config import user_email, user_password, google_form_link_base
 from datetime import datetime
 import bidrl_functions as bf
-from bidrl_classes import Item, Invoice, Auction
+from bidrl_classes import Item, Invoice, Auction, ItemBidGroup
 
 
 def convert_seconds_to_time_string(seconds):
@@ -90,12 +90,47 @@ def create_item_objects_from_rows(item_rows_list):
                                 , 'description': item_row['description']
                                 , 'url': item_row['url']
                                 , 'end_time_unix': int(item_row['end_time_unix'])
-                                , 'max_desired_bid': max_desired_bid}
+                                , 'max_desired_bid': max_desired_bid
+                                , 'item_bid_group_id': item_row['item_bid_group_id']}
         
         item_list.append(Item(**temp_item_dict))
     return item_list
+
+
+'''def create_itembidgroups_from_items(items):
+    itembidgroup_list = [] # list for item objects to return at the end
+
+    for item in items:
+        # check and see if the ItemBidGroup that this item should be in has already been made
+        itembidgroup_already_exists = 0
+        for ibg in itembidgroup_list:
+            if item.item_bid_group_id == ibg.item_bid_group_id:
+                itembidgroup_already_exists = 1
+
+        # if an ItemBidGroup doesn't already exist for this item to go in, create it and add the item
+        # if it does, then add the item to that ItemBidGroup's item list
+        if itembidgroup_already_exists == 0:
+            itembidgroup_obj = ItemBidGroup (
+                item_bid_group_id = item.item_bid_group_id
+                , items = [item]
+                , quantity_desired = 1
+            )
+            itembidgroup_list.append(itembidgroup_obj)
+        else:
+            # search through itembidgroup_list and find the ItemBidGroup that has the same item_bid_group_id of the item, then add the item
+            for ibg in itembidgroup_list:
+                if ibg.item_bid_group_id == item.item_bid_group_id:
+                    ibg.items.append(item)
+
+    for ibg in itembidgroup_list:
+        print("\nItemBidGroup:")
+        print(f"item_bid_group_id: {ibg.item_bid_group_id}")
+        for item in ibg.items:
+            print(f"item in group: {item.description}")
+      
+    return itembidgroup_list'''
         
-        
+
 # read favorite_items_to_input_max_bid.csv and return list of item objects for items where max_desired_bid > 0
 def read_user_input_csv_to_item_objects(browser):
     try:
@@ -207,6 +242,16 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
     # read favorite_items_to_input_max_bid.csv and return list of item objects we intend to bid on
     items_to_bid_on = read_user_input_csv_to_item_objects(browser)
 
+    # take items that made it through the pruning in csv read-in process and create ItemBidGroups from them
+    #itembidgroups = create_itembidgroups_from_items(items_to_bid_on)
+
+    # new plan:
+    # in auto_bid, when we see that it is time for an item to be bid on, do the following:
+        # check if that item is part of a group with more than one item. if it is not, then straight up just bid on the item
+            # run a for loop for this to get all bid group ids that share that item's bidgroupid
+        # if it is, then we now have a list of the other items with that item's bidgroupid. run an item data update real quick and do our thing from there
+    # no itemgroup class needed for this. easy peasy. can go back and delete the itemclass bit.
+
     update_item_info(browser, items_to_bid_on)
 
     remove_closed_items(items_to_bid_on)
@@ -269,94 +314,6 @@ what we need to to:
 - update auto_bid.py to read from google sheet, re-reading every hour or whatever
 
 '''
-
-
-
-
-
-r"""
-1/16 Wire Rope Kit Factory Sealed
-        10m, 53s remaining. Intending to bid $3.
-----------------------------------------------------------------------------------------------------
-Checking login status.
-Traceback (most recent call last):
-  File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py", line 467, in _make_request
-    self._validate_conn(conn)
-  File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py", line 1099, in _validate_conn
-    conn.connect()
-  File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connection.py", line 653, in connect
-    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
-                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connection.py", line 806, in _ssl_wrap_socket_and_match_hostname
-    ssl_sock = ssl_wrap_socket(
-               ^^^^^^^^^^^^^^^^
-  File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\util\ssl_.py", line 465, in ssl_wrap_socket
-    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\util\ssl_.py", line 509, in _ssl_wrap_socket_impl
-    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\ssl.py", line 517, in wrap_socket
-    return self.sslsocket_class._create(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\ssl.py", line 1108, in _create
-    self.do_handshake()
-  File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\ssl.py", line 1379, in do_handshake
-    self._sslobj.do_handshake()
-TimeoutError: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed 
-because connected host has failed to respond
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\site-packages\requests\adapters.py", line 486, in send
-    resp = conn.urlopen(
-           ^^^^^^^^^^^^^
-  File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py", line 847, in urlopen
-    retries = retries.increment(
-              ^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\util\retry.py", line 470, in increment
-    raise reraise(type(error), error, _stacktrace)
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\util\util.py", line 39, in reraise
-    raise value
-  File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py", line 793, in urlopen
-    response = self._make_request(
-               ^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py", line 491, in _make_request
-    raise new_e
-  File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py", line 469, in _make_request
-    self._raise_timeout(err=e, url=url, timeout_value=conn.timeout)
-  File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py", line 370, in _raise_timeout
-    raise ReadTimeoutError(
-urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='www.bidrl.com', port=443): Read timed out. (read timeout=None)
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "c:\Users\Nick\Stuff\Projects\BidRL\bidrl_tools\auto_bid.py", line 178, in <module>
-    main(seconds_before_closing_to_bid = 120 + 5
-  File "c:\Users\Nick\Stuff\Projects\BidRL\bidrl_tools\auto_bid.py", line 168, in main
-    login_refresh(browser, last_login_time_string, last_login_time_unix)
-  File "c:\Users\Nick\Stuff\Projects\BidRL\bidrl_tools\auto_bid.py", line 125, in login_refresh
-    if bf.check_if_login_success(browser) != 0:
-       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "c:\Users\Nick\Stuff\Projects\BidRL\bidrl_tools\bidrl_functions.py", line 59, in check_if_login_success
-    response = browser.request('GET', 'https://www.bidrl.com/myaccount/myitems')
-    response = self.requests_session.request(method, url, **kwargs)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\site-packages\requests\sessions.py", line 589, in request
-    resp = self.send(prep, **send_kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\site-packages\requests\sessions.py", line 703, in send
-    r = adapter.send(request, **kwargs)
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Nick\AppData\Local\Programs\Python\Python311\Lib\site-packages\requests\adapters.py", line 532, in send
-    raise ReadTimeout(e, request=request)
-requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='www.bidrl.com', port=443): Read timed out. (read timeout=None)
-"""
-
-
 
 
 

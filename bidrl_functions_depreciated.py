@@ -466,6 +466,49 @@ def read_user_input_csv(browser):
         print("Tearing down web object.")
         browser.quit()
         return 1'''
+
+
+'''# read favorite_items_to_input_max_bid.csv and return list of item objects for items where max_desired_bid > 0
+def read_user_input_csv_to_item_objects(browser):
+    try:
+        filename = 'favorite_items_to_input_max_bid.csv'
+        path_to_file = 'local_files/'
+
+        file_path = path_to_file + filename
+
+        fieldnames = ['end_time_unix', 'auction_id', 'item_id', 'item_bid_group_id', 'description', 'max_desired_bid', 'url']
+
+        read_rows = bf.read_items_from_csv(file_path, fieldnames)
+
+        item_list = create_item_objects_from_rows(read_rows)
+
+        items_to_bid_on = []
+        item_count_with_desired_bid = 0
+        item_count_zero_desired_bid = 0
+        item_count_no_desired_bid = 0
+        for item in item_list:
+            if item.max_desired_bid == 0:
+                item_count_zero_desired_bid += 1
+            elif item.max_desired_bid == None:
+                item_count_no_desired_bid += 1
+            else:
+                item_count_with_desired_bid += 1
+                items_to_bid_on.append(item)
+
+        print(f"\nRead file: {filename}.")
+        print(f"Items with max_desired_bid: {item_count_with_desired_bid}")
+        print(f"Items without max_desired_bid: {item_count_no_desired_bid}")
+        print(f"Items with 0 max_desired_bid: {item_count_zero_desired_bid}\n")
+
+        # sort list of items in descending order based on their end time
+        items_to_bid_on.sort(key=lambda x: x.end_time_unix, reverse=True)
+
+        return items_to_bid_on
+    except Exception as e:
+        print(f"read_user_input_csv() failed with exception: {e}")
+        print("Tearing down web object.")
+        browser.quit()
+        return 1'''
     
 
 
