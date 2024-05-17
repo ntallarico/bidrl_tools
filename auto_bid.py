@@ -242,16 +242,6 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
     # read favorite_items_to_input_max_bid.csv and return list of item objects we intend to bid on
     items_to_bid_on = read_user_input_csv_to_item_objects(browser)
 
-    # take items that made it through the pruning in csv read-in process and create ItemBidGroups from them
-    #itembidgroups = create_itembidgroups_from_items(items_to_bid_on)
-
-    # new plan:
-    # in auto_bid, when we see that it is time for an item to be bid on, do the following:
-        # check if that item is part of a group with more than one item. if it is not, then straight up just bid on the item
-            # run a for loop for this to get all bid group ids that share that item's bidgroupid
-        # if it is, then we now have a list of the other items with that item's bidgroupid. run an item data update real quick and do our thing from there
-    # no itemgroup class needed for this. easy peasy. can go back and delete the itemclass bit.
-
     update_item_info(browser, items_to_bid_on)
 
     remove_closed_items(items_to_bid_on)
@@ -297,6 +287,17 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
 
 if __name__ == "__main__":
   auto_bid_main()
+
+
+
+
+# new plan:
+# in auto_bid, when we see that it is time for an item to be bid on, do the following:
+    # check if that item is part of a group with more than one item. if it is not, then straight up just bid on the item
+        # run a for loop for this to get all bid group ids that share that item's bidgroupid
+    # if it is, then we now have a list of the other items with that item's bidgroupid. run an item data update real quick and do our thing from there
+# no itemgroup class needed for this. easy peasy. can go back and delete the itemclass bit.
+
 
 
 '''
