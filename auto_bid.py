@@ -302,13 +302,7 @@ if __name__ == "__main__":
 
 '''
 what we need to to:
-- after reading in csv, parse out two lists, Items, and Item Groups
-- print out how many items and item groups we have
-- create a second function auto_bid_item_group that works on item groups
-    - this will call update_item_info and update our wins and times and whatever
-    - this will call get_user_session (need to implement) to get username, for seeing if item has been won by current user
-        - https://www.bidrl.com/api/getsession
-- set up item group shit in csv creation
+- follow above plan. we tried doing a bit with a class for groups and separate group handling and it kinda sucked ass and was a pain. just do it this way
 - have scrape_open_auctions_to_csv.py scrape to sql database instead of csv
 - update create_user_input_csv.py to read from sql database
 - update create_user_input_csv.py to output to google sheet (leave option in code for using csv still? - in case anyone wants to use git repo)
