@@ -47,5 +47,5 @@ with open(filename_to_write, mode='w', newline='', encoding='utf-8') as file:
 
     # write item data
     for row in rows_to_write:
-        writer.writerow([row['end_time_unix'], row['auction_id'], row['item_id'], '', row['description'], '', row['url']])
+        writer.writerow([row['end_time_unix'], row['auction_id'], row['item_id'], row['item_id'], row['description'], '', row['url']])
 
