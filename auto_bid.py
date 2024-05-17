@@ -95,6 +95,7 @@ def create_item_objects_from_rows(item_rows_list):
         item_list.append(Item(**temp_item_dict))
     return item_list
         
+        
 # read favorite_items_to_input_max_bid.csv and return list of item objects for items where max_desired_bid > 0
 def read_user_input_csv_to_item_objects(browser):
     try:
@@ -255,7 +256,6 @@ if __name__ == "__main__":
 
 '''
 what we need to to:
-- add field to item object and database: item_bid_group_id
 - after reading in csv, parse out two lists, Items, and Item Groups
 - print out how many items and item groups we have
 - create a second function auto_bid_item_group that works on item groups
