@@ -43,9 +43,15 @@ class Item_AutoBid(Item):
             #raise TypeError(f"Expected item_bid_group_id to be str, got {type(item_bid_group_id).__name__}")
         
         self.has_autobid_been_placed = has_autobid_been_placed
+        self.items_in_bid_group = items_in_bid_group
+        self.items_in_bid_group_won = items_in_bid_group_won
+        self.items_in_bid_group_to_win = items_in_bid_group_to_win
     
-    def display(self):
+    def display_newfields(self):
         print(f"Still need to bid?: {self.has_autobid_been_placed}")
+        print(f"items_in_bid_group: {self.items_in_bid_group}")
+        print(f"items_in_bid_group_won: {self.items_in_bid_group}")
+        print(f"items_in_bid_group_to_win: {self.items_in_bid_group}")
         #print(f"Max Desired Bid: {self.max_desired_bid}")
         #print(f"Item Bid Group ID: {self.item_bid_group_id}")
 
@@ -135,6 +141,7 @@ def update_item_group_info(browser, items, username):
                 # check and see if we already won this other item that is in the same bid group
                 if item_search.highbidder_username == username:
                     item.items_in_bid_group_won += 1
+    print("Success.")
     return 0
 
 
@@ -202,34 +209,55 @@ def read_user_input_csv_to_item_objects(browser):
         browser.quit()
         return 1
 
+
 # need to finish implementing this using getsession from api but for now this works with my particular username while I work on this
 def get_username(browser):
     return user_email[0:3]
+
 
 def print_items_status(items_to_bid_on):
     print('\n----------------------------------------------------------------------------------------------------')
     current_time_unix = time_unix()
     for item in items_to_bid_on:
-        if item.bidding_status != 'Closed' and item.has_autobid_been_placed == 0 and item.items_in_bid_group_won < item.items_in_bid_group_to_win:
+        if is_item_eligible_for_bidding(item):
             remaining_seconds = item.end_time_unix - current_time_unix
             remaining_time_string = convert_seconds_to_time_string(remaining_seconds)
-            print(f"{remaining_time_string} remaining. Intending to bid ${item.max_desired_bid}: {item.description}")
-            #print(item.description)
-            #print(f"\t{remaining_time_string} remaining. Intending to bid ${item.max_desired_bid}.")
+            length_formatted_remaining_time_string = f"{remaining_time_string:<18}"
+            length_formatted_max_desired_bid = f"{str(item.max_desired_bid):<6}"
+            if len(item.description) > 80:
+                length_formatted_description = item.description[0:77] + '...'
+            else:
+                length_formatted_description = f"{str(item.description):<80}"
+            print(f"{length_formatted_remaining_time_string} | ${length_formatted_max_desired_bid} | {length_formatted_description}")
     print('----------------------------------------------------------------------------------------------------')
 
-# loop through each item and bid on it if we determine we should
-# checks to see if:
-    # time remaining on the item is <= our set seconds_before_closing_to_bid time
+
+# returns True if item is eligible for bidding. checks if:
     # item is not already closed
+    # max_desired_bid is not None
+    # max_desired_bid is not 0
     # auto_bid() has not already placed a bid on this item
     # if the item is in a bid group, that more than [item.items_in_bid_group_to_win] have not already been won
+def is_item_eligible_for_bidding(item):
+    if item.bidding_status != 'Closed' \
+        and item.max_desired_bid != None \
+        and item.max_desired_bid != 0 \
+        and item.has_autobid_been_placed == 0:
+        return True
+    else:
+        return False
+
+
+# loop through each item and attempt to place a bid on it if we determine that we should
+# checks to see if time remaining on the item is <= our set seconds_before_closing_to_bid time and is_item_eligible_for_bidding(item) == True
+# if it is eligible and time to bid, then update the item/group info
+    # and check if more than [item.items_in_bid_group_to_win] items in its bid group have not already been won
 def auto_bid(browser, items_to_bid_on, seconds_before_closing_to_bid, username):
     current_time_unix = time_unix()
     # loop through each item and bid on it if the time remaining on the item is <= our set seconds_before_closing_to_bid time
     for item in items_to_bid_on:
         remaining_seconds = item.end_time_unix - current_time_unix
-        if remaining_seconds <= seconds_before_closing_to_bid and item.bidding_status != 'Closed' and item.has_autobid_been_placed == 0:
+        if remaining_seconds <= seconds_before_closing_to_bid and is_item_eligible_for_bidding(item):
             print(f"{remaining_seconds} seconds remaining. Time to pace bid on: {item.description}.")
             update_item_group_info(browser, items_to_bid_on, username)
             if item.items_in_bid_group_won < item.items_in_bid_group_to_win:
@@ -272,7 +300,6 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
 
     update_item_group_info(browser, items_to_bid_on, username)
 
-    #remove_closed_items(items_to_bid_on)
     closed_item_count = 0
     for item in items_to_bid_on:
         if item.bidding_status == 'Closed':
