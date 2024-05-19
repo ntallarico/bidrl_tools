@@ -543,3 +543,49 @@ def scrape_items_old(browser, auction_id):
     for item_id in item_ids:
         items.append(get_item_with_ids(browser, item_id, auction_id))
     return items
+
+
+'''# deleted any item object from items_to_bid_on that has already passed its close time
+def remove_closed_items(items_to_bid_on):
+    print("\nRemoving items that are already closed.")
+    closed_items = 0
+    current_time_unix = time_unix()
+    # loop through each item and bid on it if the time remaining on the item is <= our set seconds_before_closing_to_bid time
+    for item in items_to_bid_on[:]:
+        remaining_seconds = item.end_time_unix - current_time_unix
+        if remaining_seconds < 0:
+            closed_items += 1
+            items_to_bid_on.remove(item)
+    print(f"Closed items removed: {closed_items}")
+    return 0'''
+
+
+
+# define ItemBidGroup class to hold all of our information about an ItemBidGroup
+# this is used to store and handle a list of items from which we only intend to acutally win [x amount] of
+# for example: if there are 4 copies of an item listed on an auction, but we only actually want to win 1, this class is used
+    # in the handling of that scenario. we'd put all 4 items into the items list, then set quantity_desired to 1.
+class ItemBidGroup:
+    def __init__(self
+                 , item_bid_group_id: str = None # this will be set to the first item in the lists' item_id
+                 , items: list = None # list of item objects in the bid group
+                 , quantity_desired: int = None): # number of items in the list we desire to end up winning
+        if item_bid_group_id is not None and not isinstance(item_bid_group_id, str):
+            raise TypeError(f"Expected item_bid_group_id to be str, got {type(item_bid_group_id).__name__}")
+        if items is not None and not all(isinstance(item, Item) for item in items):
+            raise TypeError("All elements in items must be instances of Item")
+        if quantity_desired is not None and not isinstance(quantity_desired, int):
+            raise TypeError(f"Expected quantity_desired to be int, got {type(quantity_desired).__name__}")
+
+        self.item_bid_group_id = item_bid_group_id
+        self.items = items if items is not None else []
+        self.quantity_desired = quantity_desired
+
+    def display(self):
+        print(f"Item Bid Group ID: {self.item_bid_group_id}"
+              f", Quantity Desired: {self.quantity_desired}")
+
+    def display_items(self):
+        print("Items in this group:")
+        for item in self.items:
+            item.display()
