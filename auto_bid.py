@@ -349,20 +349,8 @@ if __name__ == "__main__":
   auto_bid_main()
 
 
-
-
-# new plan:
-# in auto_bid, when we see that it is time for an item to be bid on, do the following:
-    # check if that item is part of a group with more than one item. if it is not, then straight up just bid on the item
-        # run a for loop for this to get all bid group ids that share that item's bidgroupid
-    # if it is, then we now have a list of the other items with that item's bidgroupid. run an item data update real quick and do our thing from there
-# no itemgroup class needed for this. easy peasy. can go back and delete the itemclass bit.
-
-
-
 '''
 what we need to to:
-- follow above plan. we tried doing a bit with a class for groups and separate group handling and it kinda sucked ass and was a pain. just do it this way
 - have scrape_open_auctions_to_csv.py scrape to sql database instead of csv
 - update create_user_input_csv.py to read from sql database
 - update create_user_input_csv.py to output to google sheet (leave option in code for using csv still? - in case anyone wants to use git repo)
