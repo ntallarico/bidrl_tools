@@ -559,6 +559,12 @@ def scrape_items_fast(browser, auction_id, get_images = 'true'):
         if 'is_favorite' in item_json:
             temp_item_dict['is_favorite'] = int(item_json['is_favorite'])
 
+        # infer what bidding_status should be based on end_time_unix and current system time
+        if temp_item_dict['end_time_unix'] <= int(time.time()):
+            temp_item_dict['bidding_status'] = 'Closed'
+        else:
+            temp_item_dict['bidding_status'] = 'Open'
+
         # instantiate Item object with info from temp_item_dict and append to list
         items.append(Item(**temp_item_dict))
         
