@@ -124,6 +124,7 @@ def update_item_info(browser, items):
 # if search item is in the same bid group as our item and we're winning it, then iterate items_in_bid_group_won
 def update_item_group_info(browser, items, username):
     update_item_info(browser, items)
+    print("Updating item group info.")
     for item in items:
         item.items_in_bid_group_won = 0
         item.items_in_bid_group = 0
@@ -228,9 +229,8 @@ def auto_bid(browser, items_to_bid_on, seconds_before_closing_to_bid, username):
     # loop through each item and bid on it if the time remaining on the item is <= our set seconds_before_closing_to_bid time
     for item in items_to_bid_on:
         remaining_seconds = item.end_time_unix - current_time_unix
-        # check to see if 
         if remaining_seconds <= seconds_before_closing_to_bid and item.bidding_status != 'Closed' and item.has_autobid_been_placed == 0:
-            print(f"Time to bid on: {item.description}. Updating all item info including bid group data.")
+            print(f"{remaining_seconds} seconds remaining. Time to pace bid on: {item.description}.")
             update_item_group_info(browser, items_to_bid_on, username)
             if item.items_in_bid_group_won < item.items_in_bid_group_to_win:
                 bf.bid_on_item(item, item.max_desired_bid, browser)
