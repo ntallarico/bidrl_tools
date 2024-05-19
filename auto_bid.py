@@ -210,7 +210,7 @@ def print_items_status(items_to_bid_on):
     print('\n----------------------------------------------------------------------------------------------------')
     current_time_unix = time_unix()
     for item in items_to_bid_on:
-        if item.bidding_status != 'Closed' and item.has_autobid_been_placed == 0:
+        if item.bidding_status != 'Closed' and item.has_autobid_been_placed == 0 and item.items_in_bid_group_won < item.items_in_bid_group_to_win:
             remaining_seconds = item.end_time_unix - current_time_unix
             remaining_time_string = convert_seconds_to_time_string(remaining_seconds)
             print(f"{remaining_time_string} remaining. Intending to bid ${item.max_desired_bid}: {item.description}")
