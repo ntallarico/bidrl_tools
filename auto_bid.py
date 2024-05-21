@@ -171,7 +171,7 @@ def create_item_objects_from_rows(item_rows_list):
 def read_user_input_csv_to_item_objects(browser):
     try:
         filename = 'favorite_items_to_input_max_bid.csv'
-        path_to_file = 'local_files/'
+        path_to_file = 'local_files/auto_bid/'
 
         file_path = path_to_file + filename
 

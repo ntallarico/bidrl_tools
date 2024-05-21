@@ -28,7 +28,7 @@ open_auctions = bf.get_open_auctions_fast(browser)
 
 browser.quit()
 
-filename='local_files/items.csv'
+filename='local_files/auto_bid/items.csv'
 fieldnames = ['auction_title', 'auction_id', 'item_id', 'description', 'is_favorite', 'url', 'end_time_unix']
 
 write_items_to_csv(open_auctions, filename, fieldnames)
