@@ -836,3 +836,10 @@ def tear_down(browser):
     print("Tearing down web object and exiting.")
     browser.quit()
     quit()
+
+
+# requires: logged in webdriver object
+# returns: dict of session info
+def get_session(browser):
+    response = browser.request('GET', 'https://www.bidrl.com/api/getsession')
+    return response.json()

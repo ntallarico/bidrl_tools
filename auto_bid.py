@@ -47,7 +47,7 @@ class Item_AutoBid(Item):
         self.items_in_bid_group_won = items_in_bid_group_won
         self.items_in_bid_group_to_win = items_in_bid_group_to_win
     
-    def display_newfields(self):
+    def display_new_fields(self):
         print(f"Still need to bid?: {self.has_autobid_been_placed}")
         print(f"items_in_bid_group: {self.items_in_bid_group}")
         print(f"items_in_bid_group_won: {self.items_in_bid_group}")
@@ -133,14 +133,17 @@ def update_item_group_info(browser, items, username):
     print("Updating item group info.")
     for item in items:
         item.items_in_bid_group_won = 0
-        item.items_in_bid_group = 0
+        if item.highbidder_username == username:
+            item.items_in_bid_group_won = 1
+        item.items_in_bid_group = 1
         for item_search in items:
             # check if this other item is in the same bid group
-            if item.item_bid_group_id == item_search.item_bid_group_id and item.id != item_search.id:
+            if item.item_bid_group_id == item_search.item_bid_group_id and item.id != item_search.id and item.item_bid_group_id != None and item.item_bid_group_id != '':
                 item.items_in_bid_group += 1
                 # check and see if we already won this other item that is in the same bid group
                 if item_search.highbidder_username == username:
                     item.items_in_bid_group_won += 1
+        #print(f"{item.description} | {item.items_in_bid_group} | {item.items_in_bid_group_won}")
     print("Success.")
     return 0
 
@@ -210,9 +213,9 @@ def read_user_input_csv_to_item_objects(browser):
         return 1
 
 
-# need to finish implementing this using getsession from api but for now this works with my particular username while I work on this
 def get_username(browser):
-    return user_email[0:3]
+    username = bf.get_session(browser)['user_name']
+    return username
 
 
 def print_items_status(items_to_bid_on):
@@ -238,6 +241,7 @@ def print_items_status(items_to_bid_on):
     # max_desired_bid is not 0
     # auto_bid() has not already placed a bid on this item
     # if the item is in a bid group, that more than [item.items_in_bid_group_to_win] have not already been won
+# keep this function just referencing local stuff (no calls to bidrl). we run this rapidly and often
 def is_item_eligible_for_bidding(item):
     if item.bidding_status != 'Closed' \
         and item.max_desired_bid != None \
@@ -293,7 +297,6 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
     last_login_time_unix = time_unix()
     username = get_username(browser)
     print(f"Username: {username}")
-
 
     # read favorite_items_to_input_max_bid.csv and return list of item objects we intend to bid on
     items_to_bid_on = read_user_input_csv_to_item_objects(browser)
