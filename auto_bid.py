@@ -290,6 +290,8 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
          , login_refresh__interval = 60 # keep this reasonable - actually submits a request to bidrl
          , update_item_info__interval = 60 * 60 # keep this reasonable - actually submits a request to bidrl
          ):
+
+    bf.ensure_directory_exists('local_files/auto_bid/')
     
     # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
     browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')

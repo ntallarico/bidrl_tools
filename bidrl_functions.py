@@ -843,3 +843,14 @@ def tear_down(browser):
 def get_session(browser):
     response = browser.request('GET', 'https://www.bidrl.com/api/getsession')
     return response.json()
+
+
+# checks if a directory_path exists, and create it if it does not
+# ex: 'local_files/auto_bid/'
+def ensure_directory_exists(directory_path):
+    print(f"\nChecking if directory path exists: {directory_path}")
+    if not os.path.exists(directory_path):
+        print(f"Directory does not exist. Creating.")
+        os.makedirs(directory_path)
+    else:
+        print(f"Directory exists!")
