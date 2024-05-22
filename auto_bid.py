@@ -116,6 +116,7 @@ def update_item_info(browser, items):
                     item.end_time_unix = new_item.end_time_unix
                     item.highbidder_username = new_item.highbidder_username
                     item.bidding_status = new_item.bidding_status
+                    item.current_bid = new_item.current_bid
 
         print("Success.")
         return 0
@@ -164,6 +165,7 @@ def create_item_objects_from_rows(item_rows_list):
                                 , 'item_bid_group_id': item_row['item_bid_group_id']
                                 , 'has_autobid_been_placed': 0
                                 , 'items_in_bid_group_to_win': 1
+                                , 'current_bid': float(0) # set current_bid to 0 so that any checks pass before updating item info, if we were to make any
                                 }
         
         item_list.append(Item_AutoBid(**temp_item_dict))
@@ -226,12 +228,16 @@ def print_items_status(items_to_bid_on):
             remaining_seconds = item.end_time_unix - current_time_unix
             remaining_time_string = convert_seconds_to_time_string(remaining_seconds)
             length_formatted_remaining_time_string = f"{remaining_time_string:<18}"
-            length_formatted_max_desired_bid = f"{str(item.max_desired_bid):<6}"
+            if item.max_desired_bid <= item.current_bid:
+                length_formatted_max_desired_bid = 'LOST   '
+            else:
+                length_formatted_max_desired_bid = f"${str(item.max_desired_bid):<6}"
+
             if len(item.description) > 80:
                 length_formatted_description = item.description[0:77] + '...'
             else:
                 length_formatted_description = f"{str(item.description):<80}"
-            print(f"{length_formatted_remaining_time_string} | ${length_formatted_max_desired_bid} | {length_formatted_description}")
+            print(f"{length_formatted_remaining_time_string} | {length_formatted_max_desired_bid} | {length_formatted_description}")
     print('----------------------------------------------------------------------------------------------------')
 
 
@@ -239,8 +245,8 @@ def print_items_status(items_to_bid_on):
     # item is not already closed
     # max_desired_bid is not None
     # max_desired_bid is not 0
+    # max_desired_bid > current highest bid on the item
     # auto_bid() has not already placed a bid on this item
-    # if the item is in a bid group, that more than [item.items_in_bid_group_to_win] have not already been won
 # keep this function just referencing local stuff (no calls to bidrl). we run this rapidly and often
 def is_item_eligible_for_bidding(item):
     if item.bidding_status != 'Closed' \
