@@ -9,6 +9,8 @@ import bidrl_functions as bf
 from bidrl_classes import Item, Invoice, Auction
 
 
+bf.ensure_directory_exists('local_files/auto_bid/')
+
 
 fieldnames_to_read = ['auction_title', 'auction_id', 'item_id', 'description', 'is_favorite', 'url', 'end_time_unix']
 filename_to_read = 'local_files/auto_bid/items.csv'

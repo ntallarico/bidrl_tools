@@ -9,6 +9,8 @@ import bidrl_functions as bf
 from bidrl_classes import Item, Invoice, Auction
 
 
+bf.ensure_directory_exists('local_files/auto_bid/')
+
 def write_items_to_csv(auctions, filename, fieldnames):
     with open(filename, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
