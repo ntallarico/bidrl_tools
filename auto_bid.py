@@ -4,7 +4,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 import time
-from config import user_email, user_password, google_form_link_base
+from config import user_email, user_password, auto_bid_folder_path
 from datetime import datetime
 import bidrl_functions as bf
 from bidrl_classes import Item, Invoice, Auction
@@ -176,9 +176,8 @@ def create_item_objects_from_rows(item_rows_list):
 def read_user_input_csv_to_item_objects(browser):
     try:
         filename = 'favorite_items_to_input_max_bid.csv'
-        path_to_file = 'local_files/auto_bid/'
 
-        file_path = path_to_file + filename
+        file_path = auto_bid_folder_path + filename
 
         fieldnames = ['end_time_unix', 'auction_id', 'item_id', 'item_bid_group_id', 'description', 'max_desired_bid', 'url']
 
@@ -301,7 +300,7 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
          , update_item_info__interval = 60 * 60 # keep this reasonable - actually submits a request to bidrl
          ):
 
-    bf.ensure_directory_exists('local_files/auto_bid/')
+    bf.ensure_directory_exists(auto_bid_folder_path)
     
     # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
     browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
