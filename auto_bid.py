@@ -228,7 +228,9 @@ def print_items_status(items_to_bid_on):
             remaining_seconds = item.end_time_unix - current_time_unix
             remaining_time_string = convert_seconds_to_time_string(remaining_seconds)
             length_formatted_remaining_time_string = f"{remaining_time_string:<18}"
-            if item.max_desired_bid <= item.current_bid:
+            if item.items_in_bid_group_won >= item.items_in_bid_group_to_win:
+                length_formatted_max_desired_bid = 'BG_Done' # display indication that we have already won the # of items desired from the bid group
+            elif item.max_desired_bid <= item.current_bid:
                 length_formatted_max_desired_bid = 'LOST   '
             else:
                 length_formatted_max_desired_bid = f"${str(item.max_desired_bid):<6}"
@@ -267,13 +269,15 @@ def auto_bid(browser, items_to_bid_on, seconds_before_closing_to_bid, username):
     # loop through each item and bid on it if the time remaining on the item is <= our set seconds_before_closing_to_bid time
     for item in items_to_bid_on:
         remaining_seconds = item.end_time_unix - current_time_unix
-        if remaining_seconds <= seconds_before_closing_to_bid and is_item_eligible_for_bidding(item):
+        if remaining_seconds <= seconds_before_closing_to_bid and is_item_eligible_for_bidding(item) and item.items_in_bid_group_won < item.items_in_bid_group_to_win:
             print(f"{remaining_seconds} seconds remaining. Time to pace bid on: {item.description}.")
             update_item_group_info(browser, items_to_bid_on, username)
             if item.items_in_bid_group_won < item.items_in_bid_group_to_win:
                 bf.bid_on_item(item, item.max_desired_bid, browser)
                 print('')
                 item.has_autobid_been_placed = 1
+            else:
+                print(f"Already won {item.items_in_bid_group_won} items in bid group!")
 
 
 def login_refresh(browser, last_login_time, last_login_time_unix):
