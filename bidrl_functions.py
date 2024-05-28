@@ -853,4 +853,4 @@ def ensure_directory_exists(directory_path):
         print(f"Directory does not exist. Creating.")
         os.makedirs(directory_path)
     else:
-        print(f"Directory exists!")
+        print(f"Directory exists.")
