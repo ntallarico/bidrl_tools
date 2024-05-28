@@ -173,7 +173,7 @@ def create_item_objects_from_rows(item_rows_list):
 
 
 # read favorite_items_to_input_max_bid.csv and return list of item objects for items where max_desired_bid > 0
-def read_user_input_csv_to_item_objects(browser):
+def read_user_input_csv_to_item_objects(browser, auto_bid_folder_path):
     try:
         filename = 'favorite_items_to_input_max_bid.csv'
 
@@ -311,7 +311,7 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
     print(f"Username: {username}")
 
     # read favorite_items_to_input_max_bid.csv and return list of item objects we intend to bid on
-    items_to_bid_on = read_user_input_csv_to_item_objects(browser)
+    items_to_bid_on = read_user_input_csv_to_item_objects(browser, auto_bid_folder_path)
 
     update_item_group_info(browser, items_to_bid_on, username)
 
