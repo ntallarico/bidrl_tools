@@ -4,7 +4,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 import time
-from config import user_email, user_password, auto_bid_folder_path
+from config import user_email, user_password
 from datetime import datetime
 import bidrl_functions as bf
 from bidrl_classes import Item, Invoice, Auction
@@ -300,6 +300,7 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
          , update_item_info__interval = 60 * 60 # keep this reasonable - actually submits a request to bidrl
          ):
 
+    auto_bid_folder_path = 'local_files/auto_bid/'
     bf.ensure_directory_exists(auto_bid_folder_path)
     
     # get an initialized web driver that has logged in to bidrl with credentials stored in config.py

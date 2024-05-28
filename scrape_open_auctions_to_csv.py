@@ -3,13 +3,14 @@ from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-from config import user_email, user_password, auto_bid_folder_path
+from config import user_email, user_password
 from datetime import datetime
 import bidrl_functions as bf
 from bidrl_classes import Item, Invoice, Auction
 
 
-bf.ensure_directory_exists('local_files/auto_bid/')
+auto_bid_folder_path = 'local_files/auto_bid/'
+bf.ensure_directory_exists(auto_bid_folder_path)
 
 def write_items_to_csv(auctions, filename, fieldnames):
     with open(filename, mode='w', newline='', encoding='utf-8') as file:
