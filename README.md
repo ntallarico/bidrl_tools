@@ -6,19 +6,19 @@ Set of tools for usage of BidRL. Scraping, processing of invoices, etc.
 
 Setup:
 1. Ensure that python is installed.
-2. Create file config.py in repo. Populate it as such:
+2. Create file `config.py` in repo. Populate it as such:
 
 	    user_email = 'your email'
 	    user_password = 'your password'
 	    google_form_link_base = 'google form link for expense input'
 
-4. Run setup.py
+4. Run `setup.py`
 
 
 Auto Bid
 -
 
-1. Log in to bidrl.com and favorite items.
+1. Log in to https://www.bidrl.com/ and favorite items.
 2. Run scrape_open_auctions_to_csv.py
 3. Run create_user_input.csv
 4. Open favorite_items_to_input_max_bid.csv and do the following:
