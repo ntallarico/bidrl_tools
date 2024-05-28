@@ -7,15 +7,15 @@ Set of tools for usage of BidRL. Scraping, processing of invoices, etc.
 
 Setup:
 
-1. Create file config.py in repo. Populate it as such:
+1. Ensure that python is installed.
+2. Create file config.py in repo. Populate it as such:
 
 		user_email = 'your email'
 		user_password = 'your password'
 		google_form_link_base = 'google form link for expense input'
 		auto_bid_folder_path = 'path to folder where you want to store files used to interface with auto_bid.py script'
 
-2. Create folder called local_files in repo.
-3. Run: `pip install -r requirements.txt`
+3. Run setup.py
 4. To scrape all of bidrl's data into a relational database:
 	1. Run database_setup.py
 	2. Run gigascrape.py
