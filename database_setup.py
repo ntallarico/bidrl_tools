@@ -124,10 +124,16 @@ def sql_database_setup():
     conn.commit()
     conn.close()
 
-
+def database_setup_main():
+    try:
+        sql_database_setup()
+        print("\nDatabase setup complete.")
+    except:
+        print("\nDatabase setup failed.")
+        return 1
 
 if __name__ == "__main__":
-    sql_database_setup()
+    database_setup_main()
 
 
 
