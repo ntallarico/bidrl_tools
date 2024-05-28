@@ -119,10 +119,10 @@ def sql_database_setup():
             , PRIMARY KEY (item_id, image_url)
         );
     ''')
-    
 
     conn.commit()
     conn.close()
+
 
 def database_setup_main():
     try:
@@ -131,6 +131,7 @@ def database_setup_main():
     except:
         print("\nDatabase setup failed.")
         return 1
+
 
 if __name__ == "__main__":
     database_setup_main()
