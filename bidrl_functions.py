@@ -116,8 +116,6 @@ def parse_invoice_page(browser, invoice_url, earliest_invoice_date):
     invoice_content = soup.find('div', id="invoice-content")
     #print(invoice_content)
 
-    items = [] # list for Item objects to add to the Invoice object
-
     invoice = Invoice(**{
                         'id': None,
                         'date': None,
