@@ -182,26 +182,10 @@ def read_user_input_csv_to_item_objects(browser, auto_bid_folder_path):
         fieldnames = ['end_time_unix', 'auction_id', 'item_id', 'item_bid_group_id', 'description', 'max_desired_bid', 'url']
 
         read_rows = bf.read_items_from_csv(file_path, fieldnames)
+        print(f"\nRead {len(read_rows)} rows from file: {filename}.")
 
         item_list = create_item_objects_from_rows(read_rows)
-
-        #items_to_bid_on = []
-        item_count_with_desired_bid = 0
-        item_count_zero_desired_bid = 0
-        item_count_no_desired_bid = 0
-        for item in item_list:
-            if item.max_desired_bid == 0:
-                item_count_zero_desired_bid += 1
-            elif item.max_desired_bid == None:
-                item_count_no_desired_bid += 1
-            else:
-                item_count_with_desired_bid += 1
-                #items_to_bid_on.append(item)
-
-        print(f"\nRead file: {filename}.")
-        print(f"Items with max_desired_bid: {item_count_with_desired_bid}")
-        print(f"Items without max_desired_bid: {item_count_no_desired_bid}")
-        print(f"Items with 0 max_desired_bid: {item_count_zero_desired_bid}\n")
+        print(f"Created {len(item_list)} item objects from read rows.")
 
         # sort list of items in descending order based on their end time
         item_list.sort(key=lambda x: x.end_time_unix, reverse=True)
@@ -219,10 +203,10 @@ def get_username(browser):
     return username
 
 
-def print_items_status(items_to_bid_on):
+def print_items_status(item_list):
     print('\n----------------------------------------------------------------------------------------------------')
     current_time_unix = time_unix()
-    for item in items_to_bid_on:
+    for item in item_list:
         if is_item_eligible_for_bidding(item):
             remaining_seconds = item.end_time_unix - current_time_unix
             remaining_time_string = convert_seconds_to_time_string(remaining_seconds)
@@ -263,14 +247,14 @@ def is_item_eligible_for_bidding(item):
 # checks to see if time remaining on the item is <= our set seconds_before_closing_to_bid time and is_item_eligible_for_bidding(item) == True
 # if it is eligible and time to bid, then update the item/group info
     # and check if more than [item.items_in_bid_group_to_win] items in its bid group have not already been won
-def auto_bid(browser, items_to_bid_on, seconds_before_closing_to_bid, username):
+def auto_bid(browser, item_list, seconds_before_closing_to_bid, username):
     current_time_unix = time_unix()
     # loop through each item and bid on it if the time remaining on the item is <= our set seconds_before_closing_to_bid time
-    for item in items_to_bid_on:
+    for item in item_list:
         remaining_seconds = item.end_time_unix - current_time_unix
         if remaining_seconds <= seconds_before_closing_to_bid and is_item_eligible_for_bidding(item) and item.items_in_bid_group_won < item.items_in_bid_group_to_win:
             print(f"{remaining_seconds} seconds remaining. Time to pace bid on: {item.description}.")
-            update_item_group_info(browser, items_to_bid_on, username)
+            update_item_group_info(browser, item_list, username)
             if item.items_in_bid_group_won < item.items_in_bid_group_to_win:
                 bf.bid_on_item(item, item.max_desired_bid, browser)
                 print('')
@@ -311,18 +295,33 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
     print(f"Username: {username}")
 
     # read favorite_items_to_input_max_bid.csv and return list of item objects we intend to bid on
-    items_to_bid_on = read_user_input_csv_to_item_objects(browser, auto_bid_folder_path)
+    item_list = read_user_input_csv_to_item_objects(browser, auto_bid_folder_path)
 
-    update_item_group_info(browser, items_to_bid_on, username)
+    update_item_group_info(browser, item_list, username)
 
-    closed_item_count = 0
-    for item in items_to_bid_on:
-        if item.bidding_status == 'Closed':
-            closed_item_count += 1
-    print(f"\nItems already closed: {closed_item_count}")
+    item_count_with_desired_bid = 0
+    item_count_zero_desired_bid = 0
+    item_count_no_desired_bid = 0
+    item_count_closed = 0
+    item_count_actually_intend_to_bid = 0
+    for item in item_list:
+        if item.max_desired_bid == None:
+            item_count_zero_desired_bid += 1
+        elif item.max_desired_bid == 0:
+            item_count_no_desired_bid += 1
+        else: # item has a max_desired_bid
+            item_count_with_desired_bid += 1
+            if item.bidding_status == 'Closed':
+                item_count_closed += 1
+            else:
+                item_count_actually_intend_to_bid += 1
 
-    print(f"\nWe intend to bid on {len(items_to_bid_on) - closed_item_count} items, {seconds_before_closing_to_bid} seconds before they close, checking every {auto_bid__interval} seconds.\n")
-    
+    print(f"\nItems without max_desired_bid: {item_count_no_desired_bid}")
+    print(f"Items with 0 max_desired_bid: {item_count_zero_desired_bid}")
+    print(f"Items with max_desired_bid: {item_count_with_desired_bid}")
+    print(f"Items with max_desired_bid that already closed: {item_count_closed}")
+    print(f"\nWe intend to bid on {item_count_actually_intend_to_bid} items, {seconds_before_closing_to_bid} seconds before they close, checking every {auto_bid__interval} seconds.\n")
+
     # set x__last_run_time to 0 to run immediately when loop processes
     # set to time_unix() to wait x__interval amount of seconds first
     auto_bid__last_run_time = 0
@@ -336,7 +335,7 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
         while True:
             # update_item_info()
             if time_unix() - update_item_info__last_run_time >= update_item_info__interval:
-                update_item_info(browser, items_to_bid_on)
+                update_item_info(browser, item_list)
                 update_item_info__last_run_time = time_unix()
 
             # login_refresh()
@@ -346,12 +345,12 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
 
             # print_items_status()
             if time_unix() - print_items_status__last_run_time >= print_items_status__interval:
-                print_items_status(items_to_bid_on)
+                print_items_status(item_list)
                 print_items_status__last_run_time = time_unix()
 
             # auto_bid()
             if time_unix() - auto_bid__last_run_time >= auto_bid__interval:
-                auto_bid(browser, items_to_bid_on, seconds_before_closing_to_bid, username)
+                auto_bid(browser, item_list, seconds_before_closing_to_bid, username)
                 auto_bid__last_run_time = time_unix()
 
             time.sleep(1)
