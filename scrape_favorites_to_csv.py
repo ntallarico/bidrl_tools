@@ -1,12 +1,7 @@
-import os, sys, getpass, time, re, json, csv
-from selenium import webdriver
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
+import os, csv
 from config import user_email, user_password
 from datetime import datetime
 import bidrl_functions as bf
-from bidrl_classes import Item, Invoice, Auction
 
 
 auto_bid_folder_path = 'local_files/auto_bid/'
@@ -34,7 +29,7 @@ browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
 # use get_open_auctions_fast() to get abridged version of all open auction/item data for our chosen affiliate
 open_auctions = bf.get_open_auctions_fast(browser, affiliate_id = '47')
 
-
+print(f"\nFinding favorites from {len(open_auctions)} auctions.")
 rows_to_write = []
 for auction in open_auctions:
     for item in auction.items:
@@ -54,6 +49,7 @@ for auction in open_auctions:
                 print(f"Failed on item: {item.description}")
                 print(f"Exception: {e}")
                 bf.tear_down(browser)
+print(f"\nFound {len(rows_to_write)} favorites.")
 
 try:
     with open(filename_to_write, mode='w', newline='', encoding='utf-8') as file:
