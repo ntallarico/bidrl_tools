@@ -832,7 +832,7 @@ def insert_entire_auction_to_sql_db(conn, auction_obj):
 
 # tear down program gracefully. close webdriver object and exit python scripts
 def tear_down(browser):
-    print("\nTearing down web object and exiting.")
+    print("\nTearing down webdriver object and exiting.")
     browser.quit()
     quit()
 
