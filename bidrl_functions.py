@@ -21,10 +21,10 @@ def init_webdriver(headless = ''):
         firefox_options = Options()
         firefox_options.add_argument("--headless")
         browser = Firefox(options=firefox_options) # initialize Firefox browser webdriver using seleniumrequests library using headless Firefox options
-        print('Firefox webdriver initialized in headless mode')
+        print('\nFirefox webdriver initialized in headless mode')
     else:
         browser = Firefox() # initialize Firefox browser webdriver using seleniumrequests library
-        print('Firefox webdriver initialized')
+        print('\nFirefox webdriver initialized')
         browser.set_window_position(0, 0)
         browser.maximize_window()
     return browser
