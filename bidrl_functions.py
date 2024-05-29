@@ -17,14 +17,15 @@ import sqlite3
 
 
 def init_webdriver(headless = ''):
+    print("\nAttempting to initialize webdriver")
     if headless == 'headless':
         firefox_options = Options()
         firefox_options.add_argument("--headless")
         browser = Firefox(options=firefox_options) # initialize Firefox browser webdriver using seleniumrequests library using headless Firefox options
-        print('\nFirefox webdriver initialized in headless mode')
+        print('Firefox webdriver initialized in headless mode')
     else:
         browser = Firefox() # initialize Firefox browser webdriver using seleniumrequests library
-        print('\nFirefox webdriver initialized')
+        print('Firefox webdriver initialized')
         browser.set_window_position(0, 0)
         browser.maximize_window()
     return browser
@@ -831,7 +832,7 @@ def insert_entire_auction_to_sql_db(conn, auction_obj):
 
 # tear down program gracefully. close webdriver object and exit python scripts
 def tear_down(browser):
-    print("Tearing down web object and exiting.")
+    print("\nTearing down web object and exiting.")
     browser.quit()
     quit()
 
