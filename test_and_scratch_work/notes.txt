@@ -1,0 +1,95 @@
+
+'''
+API references I've seen to explore:
+- https://www.bidrl.com/api/types/auctions
+- https://www.bidrl.com/api/types/errors
+- https://www.bidrl.com/api/types/items
+- https://www.bidrl.com/api/relations/auction_item
+- https://www.bidrl.com/api/auctions
+    - https://www.bidrl.com/api/auctions/114048
+    - used by https://www.bidrl.com/pastauctions/
+    - seems to gather all past auctions (possibly up to a certain point), which is incredible
+- https://www.bidrl.com/api/auctionfields
+- https://www.bidrl.com/api/initdata
+- https://www.bidrl.com/api/affiliatesforhomepage
+- https://www.bidrl.com/api/getsession
+- https://www.bidrl.com/api/types/user
+- https://www.bidrl.com/api/getitems/liveview
+- 
+'''
+
+
+
+
+
+
+'''
+thought dump on determining optimal time to bid:
+
+- definitively, less than 5 mins
+- maybe just before 2 mins?
+    - let's go with this for now
+- I feel that if we bid at say 15 seconds, then the person that was 'winning' it from 2 mins to 15 secs would feel in their heart like it was theirs.
+    You get that spike at < 30 secs where it's like "oh nobody is going to snipe this at this point, this is mine"
+    I feel bidding past that point would lead to us getting outbid by people that are now suddenly more attached to the item
+- however maybe if someone is going to outbid to win it, they are going to anyway
+- maybe there are several kinds of bidders. lets list a few we can think of, and then determine how we can out-bid each
+    - bidder that bids way ahead of time and leaves it
+        - this kind of bidder loses most of the time
+        - doing this just sets the table for the "oo what's it going for" kind of bidder, and ultimately just gets serge more money
+    - bidder that puts in their max bid 5 mins out
+    - bidders that are not firm on their max bid and keep inching it up
+        - bidder that is emotionally attached to their item
+            they've thought about where they want to put it in their house and pictured it there
+            they started thinking about this when the price was at $1.25 and that thought was just part of their decision making process,
+            but now it's night-of, and it's at $7, and they've been picturing holding it in their hands for a while...
+            I am unsure what pattern of bidding this would result in. possibly a "keeps increasing max bid" pattern.
+        - bidders with simply no self control and want to win for the high of it. impulsive people.
+            "oh just $0.25 more and I could see the Green Message(tm)"
+            this bidder says the word 'win' a lot. probably also likes mac bid
+    - bidders that ask "oo what's it going for" before determining their max price
+        - they have trouble coming up with an appropriate price for the item and want to take in the current high bid to influence their decision
+        - if I told the bidder that the current price was $1, they'd say 'max $3'. if I had said it was $4, they'd have said $6.
+'''
+
+
+
+
+
+
+
+'''
+bidding notes
+
+https://www.bidrl.com/auction/personal-care-health-beauty-auction-161-johns-rd-unit-a-south-carolina-april-24-152767/item/one-two-lash-magnetic-lashes-factory-sealed-19776588/
+
+
+when submitting a bid on the above url with a bid of $1.50, and accepting the terms at the same time, I got the following in Network inspect element:
+
+bid
+    https://www.bidrl.com/api/auctions/152767/items/19776588/bid
+    POST
+
+    payload:
+        bid: 1.5
+        accept_terms: 1
+        buyer_number: 
+        shipping_method: pickup
+
+auctionterms
+    https://www.bidrl.com/api/auctionterms
+    POST
+
+    payload:
+        id: 152767
+
+
+I then submitted a bid after already having accepted the terms on an earlier item, and I got the same exact result
+
+I tried to submit a bid without accepting the terms and got blocked on client side. no network activity present
+
+I'm wondering if I can just submit the bid straight up with "accept_terms: 1" in the payload, or if I need to POST auctionterms first
+
+update 4.25.24:
+this turned out to be true! no auctionterms POST needed. only need to POST bid with "bid" and "accept_terms" pieces in payload
+'''
