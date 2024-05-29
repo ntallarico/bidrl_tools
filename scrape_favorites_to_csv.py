@@ -42,7 +42,8 @@ for auction in open_auctions:
                     'item_bid_group_id': item.id,
                     'description': item.description,
                     'max_desired_bid': '',  # placeholder for user input
-                    'url': item.url
+                    'url': f"=HYPERLINK(\"{item.url}\")" # fit url into formula for excel to recognize it as a clickable hyperlink
+                    #'url': item.url
                 })
                 print(f"Found favorite: {item.description}")
             except Exception as e:
