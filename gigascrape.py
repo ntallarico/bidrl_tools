@@ -127,6 +127,10 @@ def gigascrape():
     conn = bf.init_sqlite_connection()
     cursor = conn.cursor()
 
+    # attempt to scrape and insert all affiliate information to database
+    bf.scrape_and_insert_all_affiliates_to_sql_db(conn)
+    conn.commit()
+
     # get all auction_ids from sql database so we can skip scraping auctions that have already been scraped
     cursor.execute("SELECT auction_id FROM auctions")
     auctions_in_db = cursor.fetchall()
