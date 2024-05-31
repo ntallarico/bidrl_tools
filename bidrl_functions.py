@@ -13,7 +13,7 @@ from bidrl_classes import Item, Invoice, Auction, Bid, Affiliate, Image
 from bs4 import BeautifulSoup
 import pyodbc
 import sqlite3
-from config import home_affiliates#, user_email, user_password, google_form_link_base, sql_server_name, sql_database_name, sql_admin_username, sql_admin_password
+from config import home_affiliates#, user_email, user_password, sql_server_name, sql_database_name, sql_admin_username, sql_admin_password
 
 
 def init_webdriver(headless = ''):
