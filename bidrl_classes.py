@@ -207,7 +207,7 @@ class Affiliate:
     def display(self):
         print(f"ID: {self.id}, Company: {self.company_name}, "
                 f"First Name: {self.firstname}, Last Name: {self.lastname}, "
-                f"Auction Count: {self.auc_count})")
+                f"Auction Count: {self.auc_count}")
 
 
 # define Auction class to hold all of our information about a given auction
