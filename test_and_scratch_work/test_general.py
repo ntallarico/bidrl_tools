@@ -259,6 +259,16 @@ def test_scrape_affiliates():
 #test_scrape_affiliates()
 
 
+def test_scrape_affiliates():
+    conn = bf.init_sqlite_connection()
+    bf.scrape_and_insert_all_affiliates_to_sql_db(conn)
+    conn.commit()
+
+#test_scrape_affiliates()
+
+
+
+
 
 def insert_image_to_sql_db():
     browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')

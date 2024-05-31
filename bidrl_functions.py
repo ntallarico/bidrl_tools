@@ -795,6 +795,39 @@ def insert_image_to_sql_db(conn, image):
     cursor.execute(sql, (image.item_id, image.image_url, image.image_height, image.image_width))
 
 
+# inserts an affiliate object into the affiliates table in the SQL database
+# requires SQLite database connection object and an Affiliate object
+# returns string 'ID_ALREADY_EXISTS' if the affiliate_id already exists in the database
+def insert_affiliate_to_sql_db(conn, affiliate):
+    cur = conn.cursor()
+    # check if affiliate_id already exists
+    cur.execute("SELECT affiliate_id FROM affiliates WHERE affiliate_id = ?", (affiliate.id,))
+    if cur.fetchone():
+        #print(f"affiliate_id {affiliate.id} already found in database. Skipping insert.")
+        return 'ID_ALREADY_EXISTS'
+    else:
+        sql = ''' INSERT INTO affiliates(affiliate_id, logo, do_not_display_tab, company_name, firstname, lastname, auc_count)
+                  VALUES(?, ?, ?, ?, ?, ?, ?) '''
+        cur.execute(sql, (affiliate.id, affiliate.logo, affiliate.do_not_display_tab, affiliate.company_name, affiliate.firstname, affiliate.lastname, affiliate.auc_count))
+
+
+# scrapes all affiliates and inserts them into the SQL database
+def scrape_and_insert_all_affiliates_to_sql_db(conn):
+    print("Scraping all affiliates and inserting into the sql database")
+    # Scrape all affiliates using the existing function
+    affiliates = scrape_affiliates()
+    
+    affiliates_inserted = 0
+    affiliates_already_present = 0
+    # Insert each affiliate into the SQL database
+    for affiliate in affiliates:
+        if insert_affiliate_to_sql_db(conn, affiliate) == 'ID_ALREADY_EXISTS':
+            affiliates_already_present += 1
+        else:
+            affiliates_inserted += 1
+    print(f"{affiliates_already_present} affiliates already present. Inserted {affiliates_inserted} affiliates into the database.")
+
+
 # requires a sqlite connection object and an Auction object full of items, each full of bids
 # inserts the auction, all items, and all items' bids into the sql database
 # rolls back the transaction if any error occurs, so either all the data gets inserted or none of it does
