@@ -256,15 +256,15 @@ def test_scrape_affiliates():
     for affiliate in affiliates:
         affiliate.display()
 
-#test_scrape_affiliates()
+test_scrape_affiliates()
 
 
-def test_scrape_affiliates():
+def test_scrape_and_insert_all_affiliates_to_sql_db():
     conn = bf.init_sqlite_connection()
     bf.scrape_and_insert_all_affiliates_to_sql_db(conn)
     conn.commit()
 
-#test_scrape_affiliates()
+#test_scrape_and_insert_all_affiliates_to_sql_db()
 
 
 
