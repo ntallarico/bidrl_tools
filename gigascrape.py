@@ -1,3 +1,8 @@
+'''
+This script scrapes all everything (affiliate info, acution info, item info, etc) from
+all affiliates listed by ID in home_affiliates list in config.py
+'''
+
 import os, sys, getpass, time, re, json, csv, requests
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
@@ -7,7 +12,7 @@ from selenium.webdriver.firefox.options import Options
 from seleniumrequests import Firefox
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from config import user_email, user_password#, sql_server_name, sql_database_name, sql_admin_username, sql_admin_password
+from config import user_email, user_password, home_affiliates#, sql_server_name, sql_database_name, sql_admin_username, sql_admin_password
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from bidrl_classes import Item, Invoice, Auction, Bid
@@ -140,9 +145,11 @@ def gigascrape():
     affiliates = bf.scrape_affiliates()
 
 
-    # FOR DEGUBBING / TESTING
-    # kill rest of list that isn't SC. just for now probably. remove this later to get all affiliates
-    # affiliates = [next((aff for aff in affiliates if aff.id == '47'), None)]
+    # filter affiliates to include only those in the home_affiliates list
+    affiliates = [affiliate for affiliate in affiliates if affiliate.id in home_affiliates]
+    print("\nBased on IDs in home_affiliates list, auctions will be scraped from:")
+    for affiliate in affiliates:
+        print(f"{affiliate.company_name}")
 
 
     try:
@@ -193,42 +200,3 @@ def gigascrape():
 if __name__ == "__main__":
     gigascrape()
 
-
-
-''''
-plan for ultimate scrape script
-
-1. check if everything is installed from requirements.txt?
-2. run database_setup.py
-3. scrape and insert all affiliates
-4. present user with affiliate names and ids and option for 'all', and ask user to input an id for what to scrape
-5. run gigascrape() from gigascrape.py()
-
-
-'''
-
-
-
-
-
-'''
-questions I'd like to answer in reporting once I have full database:
-- what bidding strategy / timing works best? bidding one single time at 2mins out? 10 seconds out? is there a difference on average at all?
-    - need to analyze full population's bid history
-- lets get a report on 2 minute nightmare. does he live up to the name?
-- who has spent the most money?
-- can we identify people as "quick bid button pushers".
-    - how often do they do it? when?
-    - I'd like to see a breakdown of quick bid spam bids by dimensions
-- ratio of bids to wins for people
-- can I analyze the bid history to determine certain scenarios?
-    - someone gave their max amount, was outbid, then later upped it to try to win
-        - then, how far above their original max amount did they end up paying?
-
-stuff to do with reporting stuff:
-- item reporting table
-    - show actual paid price for item (including premium and tax)
-- users reporting table
-    - total bids, total wins, total losses, ratio
-
-'''
