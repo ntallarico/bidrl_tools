@@ -8,9 +8,18 @@ Setup:
 1. Ensure that python is installed.
 2. Create file `config.py` in repo. Populate it as such:
 
-	    user_email = 'your email'
-	    user_password = 'your password'
-	    google_form_link_base = 'google form link for expense input'
+	Details:
+		user_email: your email used for logging into bidrl
+	    user_password: your password used for logging into bidrl
+	    google_form_link_base = don't worry about this unless you're the creator of this repo
+	    home_affiliates = list of IDs for affiliates you care about, each in single quotes and separated by commas, and the whole list surrounded by brackets. run list_affiliates.py for name/ID list. for example, if you live in Indiana, you would likely input: `home_affiliates = ['56', '60', '44']`
+
+	Example:
+	
+	    user_email = 'email@example.com'
+	    user_password = 'exampleP@ssw0rd'
+	    google_form_link_base = 'https://docs.google.com/forms/d/e/1AAIpBoR6skDA0HHh-2oDtTA6D_1PmsMQIfG7pWtG8g/viewform?usp=pp_url'
+	    home_affiliates = ['56', '60', '44']
 
 4. Run `setup.py`
 
