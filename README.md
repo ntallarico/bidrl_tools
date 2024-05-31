@@ -6,7 +6,7 @@ Set of tools for usage of BidRL. Scraping, processing of invoices, etc.
 
 Setup:
 1. Ensure that python is installed.
-2. Create file `config.py` in repo. Populate it as such:
+2. Create file `config.py` in repo. Populate it according to the below details/example:
 
 	Details:
 		user_email: your email used for logging into bidrl
