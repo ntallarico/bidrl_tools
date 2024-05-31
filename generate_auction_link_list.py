@@ -5,11 +5,16 @@ This script generates a list of auction links, each set to show the maximum item
 import time
 from datetime import datetime
 import bidrl_functions as bf
+from config import home_affiliates
 
 
 def generate_auction_link_list():
     browser = bf.init_webdriver('headless')
-    auctions = bf.scrape_auctions(browser, affiliate_id = '47', auctions_to_scrape = 'open')
+    
+    auctions = []
+    for aff in home_affiliates:
+        auctions.extend(bf.scrape_auctions(browser, affiliate_id = aff, auctions_to_scrape = 'open'))
+
     auction_urls = []
     for auction in auctions:
         auction_urls.append(auction.url + 'perpage_NjA')
