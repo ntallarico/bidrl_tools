@@ -13,7 +13,7 @@ from bidrl_classes import Item, Invoice, Auction, Bid, Affiliate, Image
 from bs4 import BeautifulSoup
 import pyodbc
 import sqlite3
-#from config import user_email, user_password, google_form_link_base, sql_server_name, sql_database_name, sql_admin_username, sql_admin_password
+from config import home_affiliates#, user_email, user_password, google_form_link_base, sql_server_name, sql_database_name, sql_admin_username, sql_admin_password
 
 
 def init_webdriver(headless = ''):
@@ -351,10 +351,10 @@ def get_item_with_ids(browser, item_id, auction_id, get_bid_history = 'true', ge
 
 # get auctions list
 # requires:
-    # id of affiliate "company". ex: '47' for SC
+    # id of affiliate "company". ex: '47' for South Carolina. defaults to first value in home_affiliates list if none specified
     # webdriver object. if webdriver object has been logged in as a user, then the attribute is_favorite will be filled in for items
 # returns: list of Auction objects
-def get_open_auctions(browser, affiliate_id = '47'):
+def get_open_auctions(browser, affiliate_id = home_affiliates[0]):
     auctions = scrape_auctions(browser, affiliate_id, auctions_to_scrape = 'open')
     for auction in auctions:
         auction.items = scrape_items(browser, auction.id)
@@ -363,10 +363,10 @@ def get_open_auctions(browser, affiliate_id = '47'):
 
 # get auctions list, using scrape_items_fast (returns less info but in massively shorter time. uses /api/getitems/ on an auction_id)
 # requires:
-    # id of affiliate "company". ex: '47' for SC
+    # id of affiliate "company". ex: '47' for South Carolina. defaults to first value in home_affiliates list if none specified
     # webdriver object. if webdriver object has been logged in as a user, then the attribute is_favorite will be filled in for items
 # returns: list of Auction objects
-def get_open_auctions_fast(browser, affiliate_id = '47'):
+def get_open_auctions_fast(browser, affiliate_id = home_affiliates[0]):
     auctions = scrape_auctions(browser, affiliate_id, auctions_to_scrape = 'open')
     for auction in auctions:
         auction.items = scrape_items_fast(browser, auction.id)
@@ -406,7 +406,7 @@ def generate_date_intervals_for_auction_scrape():
     # 'one' for just a single auction (used for debugging)
 # returns list of all Auction objects 
 def scrape_auctions(browser
-                , affiliate_id = '47' # default to SC
+                , affiliate_id = home_affiliates[0] # default to first value in home_affiliates list if none specified
                 , auctions_to_scrape = 'all' # all, open, or one (for debugging)
                  ):
     
