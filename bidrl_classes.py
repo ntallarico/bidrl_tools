@@ -205,7 +205,7 @@ class Affiliate:
         self.auc_count = auc_count
 
     def display(self):
-        print(f"Affiliate(ID: {self.id}, Company: {self.company_name}, "
+        print(f"ID: {self.id}, Company: {self.company_name}, "
                 f"First Name: {self.firstname}, Last Name: {self.lastname}, "
                 f"Auction Count: {self.auc_count})")
 
