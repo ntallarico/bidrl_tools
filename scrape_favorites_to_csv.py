@@ -7,7 +7,7 @@ import bidrl_functions as bf
 auto_bid_folder_path = 'local_files/auto_bid/'
 bf.ensure_directory_exists(auto_bid_folder_path)
 
-filename_to_write = auto_bid_folder_path + 'favorite_items_to_input_max_bid111.csv'
+filename_to_write = auto_bid_folder_path + 'favorite_items_to_input_max_bid.csv'
 
 # check if the file already exists and ask for user input to confirm overwriting it if it does
 if os.path.exists(filename_to_write):
