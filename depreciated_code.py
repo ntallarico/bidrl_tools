@@ -287,7 +287,7 @@ def scrape_invoices(browser, invoice_link_list, start_date):
     browser.quit()'''
 
 
-# get auctions list
+'''# get auctions list
 # requires:
     # name of affiliate "company". ex: 'south-carolina'. defaults to sc
     # webdriver object. if webdriver object has been logged in as a user, then the attribute is_favorite will be filled in for items
@@ -347,9 +347,11 @@ def get_open_auctions(browser, affiliate_company_name = 'south-carolina', debug 
         return auctions
     else:
         print(f"Failed to retrieve data: {response.status_code}")
-        return 1
+        return 1'''
     
-# get item data from a list of item URLS
+
+    
+'''# get item data from a list of item URLS
 # requires: list of item URLs, webdriver object, and an optional specification to get bid history or not
 # returns: list of Item objects
 def get_items(item_urls, browser, get_bid_history = 'true'):
@@ -364,10 +366,10 @@ def get_items(item_urls, browser, get_bid_history = 'true'):
         items.append(item_obj)
 
         print(f"get_items() scraped: {item_obj.description} (with {len(item_obj.bids)} bids)")
-    return items
+    return items'''
 
 
-# get list of item urls from an auction
+'''# get list of item urls from an auction
 # requires URL in this format:
 # https://www.bidrl.com/auction/outdoor-sports-auction-161-johns-rd-unit-a-south-carolina-april-25-152770/bidgallery/
 # returns: list of urls, one for each item in the auction provided
@@ -393,7 +395,7 @@ def get_auction_item_urls(auction_url):
     for item in response.json()['items']:
         item_urls.append(item['item_url'])
 
-    return item_urls
+    return item_urls'''
 
 
 
@@ -534,7 +536,7 @@ def scrape_item_id_list_from_auction(auction_id):
     return item_ids
 
 
-# requires: webdriver object, auction_id
+'''# requires: webdriver object, auction_id
 # returns: list of fully populated item objects for that auction
 def scrape_items_old(browser, auction_id):
     item_ids = scrape_item_id_list_from_auction(auction_id)
@@ -542,7 +544,7 @@ def scrape_items_old(browser, auction_id):
     items = []
     for item_id in item_ids:
         items.append(get_item_with_ids(browser, item_id, auction_id))
-    return items
+    return items'''
 
 
 '''# deleted any item object from items_to_bid_on that has already passed its close time
