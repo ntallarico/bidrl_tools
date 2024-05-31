@@ -1,5 +1,5 @@
 import os, csv
-from config import user_email, user_password
+from config import user_email, user_password, home_affiliates
 from datetime import datetime
 import bidrl_functions as bf
 
@@ -7,7 +7,7 @@ import bidrl_functions as bf
 auto_bid_folder_path = 'local_files/auto_bid/'
 bf.ensure_directory_exists(auto_bid_folder_path)
 
-filename_to_write = auto_bid_folder_path + 'favorite_items_to_input_max_bid.csv'
+filename_to_write = auto_bid_folder_path + 'favorite_items_to_input_max_bid111.csv'
 
 # check if the file already exists and ask for user input to confirm overwriting it if it does
 if os.path.exists(filename_to_write):
@@ -26,8 +26,11 @@ else:
 browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
 
 
-# use get_open_auctions_fast() to get abridged version of all open auction/item data for our chosen affiliate
-open_auctions = bf.get_open_auctions_fast(browser, affiliate_id = '47')
+# use get_open_auctions_fast() to get abridged version of all open auction/item data for our home affiliates
+open_auctions = []
+for aff in home_affiliates:
+    open_auctions.extend(bf.get_open_auctions_fast(browser, affiliate_id = aff))
+
 
 print(f"\nFinding favorites from {len(open_auctions)} auctions.")
 rows_to_write = []
