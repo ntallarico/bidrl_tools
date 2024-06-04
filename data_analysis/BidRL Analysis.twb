@@ -1,0 +1,2650 @@
+<?xml version='1.0' encoding='utf-8' ?>
+
+<!-- build 20241.24.0425.1340                               -->
+<workbook original-version='18.1' source-build='2024.1.2 (20241.24.0425.1340)' source-platform='win' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
+  <document-format-change-manifest>
+    <_.fcp.AnimationOnByDefault.true...AnimationOnByDefault />
+    <_.fcp.MarkAnimation.true...MarkAnimation />
+    <_.fcp.ObjectModelEncapsulateLegacy.true...ObjectModelEncapsulateLegacy />
+    <_.fcp.ObjectModelExtractV2.true...ObjectModelExtractV2 />
+    <_.fcp.ObjectModelTableType.true...ObjectModelTableType />
+    <_.fcp.SchemaViewerObjectModel.true...SchemaViewerObjectModel />
+    <SheetIdentifierTracking />
+    <_.fcp.VConnDownstreamExtractsWithWarnings.true...VConnDownstreamExtractsWithWarnings />
+    <WindowsPersistSimpleIdentifiers />
+  </document-format-change-manifest>
+  <preferences>
+    <preference name='ui.encoding.shelf.height' value='24' />
+    <preference name='ui.shelf.height' value='26' />
+  </preferences>
+  <_.fcp.AnimationOnByDefault.false...style>
+    <_.fcp.AnimationOnByDefault.false..._.fcp.MarkAnimation.true...style-rule element='animation'>
+      <_.fcp.AnimationOnByDefault.false...format attr='animation-on' value='ao-on' />
+    </_.fcp.AnimationOnByDefault.false..._.fcp.MarkAnimation.true...style-rule>
+  </_.fcp.AnimationOnByDefault.false...style>
+  <datasources>
+    <datasource caption='bidrl' inline='true' name='federated.04ie6gw1vrznht19ek2ik03cy0ek' version='18.1'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='affiliates' name='textscan.1cbqllq0z933i313wg60m1wjh1hi'>
+            <connection class='textscan' directory='C:/Users/Nick/Stuff/Projects/BidRL/bidrl_tools/local_files/data_analysis' filename='affiliates.csv' password='' server='' />
+          </named-connection>
+        </named-connections>
+        <_.fcp.ObjectModelEncapsulateLegacy.false...relation connection='textscan.1cbqllq0z933i313wg60m1wjh1hi' name='affiliates.csv' table='[affiliates#csv]' type='table'>
+          <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+            <column datatype='integer' name='affiliate_id' ordinal='0' />
+            <column datatype='string' name='logo' ordinal='1' />
+            <column datatype='integer' name='do_not_display_tab' ordinal='2' />
+            <column datatype='string' name='company_name' ordinal='3' />
+            <column datatype='string' name='firstname' ordinal='4' />
+            <column datatype='string' name='lastname' ordinal='5' />
+            <column datatype='integer' name='auc_count' ordinal='6' />
+          </columns>
+        </_.fcp.ObjectModelEncapsulateLegacy.false...relation>
+        <_.fcp.ObjectModelEncapsulateLegacy.true...relation type='collection'>
+          <relation connection='textscan.1cbqllq0z933i313wg60m1wjh1hi' name='affiliates.csv' table='[affiliates#csv]' type='table'>
+            <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+              <column datatype='integer' name='affiliate_id' ordinal='0' />
+              <column datatype='string' name='logo' ordinal='1' />
+              <column datatype='integer' name='do_not_display_tab' ordinal='2' />
+              <column datatype='string' name='company_name' ordinal='3' />
+              <column datatype='string' name='firstname' ordinal='4' />
+              <column datatype='string' name='lastname' ordinal='5' />
+              <column datatype='integer' name='auc_count' ordinal='6' />
+            </columns>
+          </relation>
+          <relation connection='textscan.1cbqllq0z933i313wg60m1wjh1hi' name='auctions.csv' table='[auctions#csv]' type='table'>
+            <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+              <column datatype='integer' name='auction_id' ordinal='0' />
+              <column datatype='string' name='url' ordinal='1' />
+              <column datatype='string' name='title' ordinal='2' />
+              <column datatype='integer' name='item_count' ordinal='3' />
+              <column datatype='string' name='start_datetime' ordinal='4' />
+              <column datatype='string' name='status' ordinal='5' />
+              <column datatype='integer' name='affiliate_id' ordinal='6' />
+              <column datatype='string' name='aff_company_name' ordinal='7' />
+              <column datatype='string' name='state_abbreviation' ordinal='8' />
+              <column datatype='string' name='city' ordinal='9' />
+              <column datatype='integer' name='zip' ordinal='10' />
+              <column datatype='string' name='address' ordinal='11' />
+            </columns>
+          </relation>
+          <relation connection='textscan.1cbqllq0z933i313wg60m1wjh1hi' name='items.csv' table='[items#csv]' type='table'>
+            <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+              <column datatype='integer' name='item_id' ordinal='0' />
+              <column datatype='integer' name='auction_id' ordinal='1' />
+              <column datatype='string' name='description' ordinal='2' />
+              <column datatype='real' name='current_bid' ordinal='3' />
+              <column datatype='string' name='highbidder_username' ordinal='4' />
+              <column datatype='string' name='url' ordinal='5' />
+              <column datatype='real' name='tax_rate' ordinal='6' />
+              <column datatype='real' name='buyer_premium' ordinal='7' />
+              <column datatype='string' name='lot_number' ordinal='8' />
+              <column datatype='string' name='bidding_status' ordinal='9' />
+              <column datatype='integer' name='end_time_unix' ordinal='10' />
+              <column datatype='integer' name='bid_count' ordinal='11' />
+              <column datatype='integer' name='viewed' ordinal='12' />
+              <column datatype='integer' name='is_favorite' ordinal='13' />
+              <column datatype='string' name='total_cost' ordinal='14' />
+              <column datatype='string' name='cost_split' ordinal='15' />
+              <column datatype='string' name='max_desired_bid' ordinal='16' />
+              <column datatype='string' name='item_bid_group_id' ordinal='17' />
+            </columns>
+          </relation>
+          <relation connection='textscan.1cbqllq0z933i313wg60m1wjh1hi' name='bids.csv' table='[bids#csv]' type='table'>
+            <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+              <column datatype='integer' name='bid_id' ordinal='0' />
+              <column datatype='integer' name='item_id' ordinal='1' />
+              <column datatype='string' name='username' ordinal='2' />
+              <column datatype='real' name='bid' ordinal='3' />
+              <column datatype='string' name='bid_time' ordinal='4' />
+              <column datatype='string' name='time_of_bid' ordinal='5' />
+              <column datatype='integer' name='time_of_bid_unix' ordinal='6' />
+              <column datatype='string' name='buyer_number' ordinal='7' />
+              <column datatype='string' name='description' ordinal='8' />
+            </columns>
+          </relation>
+          <relation connection='textscan.1cbqllq0z933i313wg60m1wjh1hi' name='images.csv' table='[images#csv]' type='table'>
+            <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+              <column datatype='integer' name='item_id' ordinal='0' />
+              <column datatype='string' name='image_url' ordinal='1' />
+              <column datatype='integer' name='image_height' ordinal='2' />
+              <column datatype='integer' name='image_width' ordinal='3' />
+            </columns>
+          </relation>
+        </_.fcp.ObjectModelEncapsulateLegacy.true...relation>
+        <cols>
+          <map key='[address]' value='[auctions.csv].[address]' />
+          <map key='[aff_company_name]' value='[auctions.csv].[aff_company_name]' />
+          <map key='[affiliate_id (auctions.csv)]' value='[auctions.csv].[affiliate_id]' />
+          <map key='[affiliate_id]' value='[affiliates.csv].[affiliate_id]' />
+          <map key='[auc_count]' value='[affiliates.csv].[auc_count]' />
+          <map key='[auction_id (items.csv)]' value='[items.csv].[auction_id]' />
+          <map key='[auction_id]' value='[auctions.csv].[auction_id]' />
+          <map key='[bid]' value='[bids.csv].[bid]' />
+          <map key='[bid_count]' value='[items.csv].[bid_count]' />
+          <map key='[bid_id]' value='[bids.csv].[bid_id]' />
+          <map key='[bid_time]' value='[bids.csv].[bid_time]' />
+          <map key='[bidding_status]' value='[items.csv].[bidding_status]' />
+          <map key='[buyer_number]' value='[bids.csv].[buyer_number]' />
+          <map key='[buyer_premium]' value='[items.csv].[buyer_premium]' />
+          <map key='[city]' value='[auctions.csv].[city]' />
+          <map key='[company_name]' value='[affiliates.csv].[company_name]' />
+          <map key='[cost_split]' value='[items.csv].[cost_split]' />
+          <map key='[current_bid]' value='[items.csv].[current_bid]' />
+          <map key='[description (bids.csv)]' value='[bids.csv].[description]' />
+          <map key='[description]' value='[items.csv].[description]' />
+          <map key='[do_not_display_tab]' value='[affiliates.csv].[do_not_display_tab]' />
+          <map key='[end_time_unix]' value='[items.csv].[end_time_unix]' />
+          <map key='[firstname]' value='[affiliates.csv].[firstname]' />
+          <map key='[highbidder_username]' value='[items.csv].[highbidder_username]' />
+          <map key='[image_height]' value='[images.csv].[image_height]' />
+          <map key='[image_url]' value='[images.csv].[image_url]' />
+          <map key='[image_width]' value='[images.csv].[image_width]' />
+          <map key='[is_favorite]' value='[items.csv].[is_favorite]' />
+          <map key='[item_bid_group_id]' value='[items.csv].[item_bid_group_id]' />
+          <map key='[item_count]' value='[auctions.csv].[item_count]' />
+          <map key='[item_id (bids.csv)]' value='[bids.csv].[item_id]' />
+          <map key='[item_id (images.csv)]' value='[images.csv].[item_id]' />
+          <map key='[item_id]' value='[items.csv].[item_id]' />
+          <map key='[lastname]' value='[affiliates.csv].[lastname]' />
+          <map key='[logo]' value='[affiliates.csv].[logo]' />
+          <map key='[lot_number]' value='[items.csv].[lot_number]' />
+          <map key='[max_desired_bid]' value='[items.csv].[max_desired_bid]' />
+          <map key='[start_datetime]' value='[auctions.csv].[start_datetime]' />
+          <map key='[state_abbreviation]' value='[auctions.csv].[state_abbreviation]' />
+          <map key='[status]' value='[auctions.csv].[status]' />
+          <map key='[tax_rate]' value='[items.csv].[tax_rate]' />
+          <map key='[time_of_bid]' value='[bids.csv].[time_of_bid]' />
+          <map key='[time_of_bid_unix]' value='[bids.csv].[time_of_bid_unix]' />
+          <map key='[title]' value='[auctions.csv].[title]' />
+          <map key='[total_cost]' value='[items.csv].[total_cost]' />
+          <map key='[url (items.csv)]' value='[items.csv].[url]' />
+          <map key='[url]' value='[auctions.csv].[url]' />
+          <map key='[username]' value='[bids.csv].[username]' />
+          <map key='[viewed]' value='[items.csv].[viewed]' />
+          <map key='[zip]' value='[auctions.csv].[zip]' />
+        </cols>
+        <metadata-records>
+          <metadata-record class='capability'>
+            <remote-name />
+            <remote-type>0</remote-type>
+            <parent-name>[affiliates.csv]</parent-name>
+            <remote-alias />
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='character-set'>&quot;UTF-8&quot;</attribute>
+              <attribute datatype='string' name='collation'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='field-delimiter'>&quot;,&quot;</attribute>
+              <attribute datatype='string' name='header-row'>&quot;true&quot;</attribute>
+              <attribute datatype='string' name='locale'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='single-char'>&quot;&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='capability'>
+            <remote-name />
+            <remote-type>0</remote-type>
+            <parent-name>[auctions.csv]</parent-name>
+            <remote-alias />
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='character-set'>&quot;UTF-8&quot;</attribute>
+              <attribute datatype='string' name='collation'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='field-delimiter'>&quot;,&quot;</attribute>
+              <attribute datatype='string' name='header-row'>&quot;true&quot;</attribute>
+              <attribute datatype='string' name='locale'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='single-char'>&quot;&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='capability'>
+            <remote-name />
+            <remote-type>0</remote-type>
+            <parent-name>[items.csv]</parent-name>
+            <remote-alias />
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='character-set'>&quot;UTF-8&quot;</attribute>
+              <attribute datatype='string' name='collation'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='field-delimiter'>&quot;,&quot;</attribute>
+              <attribute datatype='string' name='header-row'>&quot;true&quot;</attribute>
+              <attribute datatype='string' name='locale'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='single-char'>&quot;&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='capability'>
+            <remote-name />
+            <remote-type>0</remote-type>
+            <parent-name>[bids.csv]</parent-name>
+            <remote-alias />
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='character-set'>&quot;UTF-8&quot;</attribute>
+              <attribute datatype='string' name='collation'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='field-delimiter'>&quot;,&quot;</attribute>
+              <attribute datatype='string' name='header-row'>&quot;true&quot;</attribute>
+              <attribute datatype='string' name='locale'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='single-char'>&quot;&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='capability'>
+            <remote-name />
+            <remote-type>0</remote-type>
+            <parent-name>[images.csv]</parent-name>
+            <remote-alias />
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='character-set'>&quot;UTF-8&quot;</attribute>
+              <attribute datatype='string' name='collation'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='field-delimiter'>&quot;,&quot;</attribute>
+              <attribute datatype='string' name='header-row'>&quot;true&quot;</attribute>
+              <attribute datatype='string' name='locale'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='single-char'>&quot;&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>affiliate_id</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[affiliate_id]</local-name>
+            <parent-name>[affiliates.csv]</parent-name>
+            <remote-alias>affiliate_id</remote-alias>
+            <ordinal>0</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>logo</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[logo]</local-name>
+            <parent-name>[affiliates.csv]</parent-name>
+            <remote-alias>logo</remote-alias>
+            <ordinal>1</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>do_not_display_tab</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[do_not_display_tab]</local-name>
+            <parent-name>[affiliates.csv]</parent-name>
+            <remote-alias>do_not_display_tab</remote-alias>
+            <ordinal>2</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>company_name</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[company_name]</local-name>
+            <parent-name>[affiliates.csv]</parent-name>
+            <remote-alias>company_name</remote-alias>
+            <ordinal>3</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>firstname</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[firstname]</local-name>
+            <parent-name>[affiliates.csv]</parent-name>
+            <remote-alias>firstname</remote-alias>
+            <ordinal>4</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>lastname</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[lastname]</local-name>
+            <parent-name>[affiliates.csv]</parent-name>
+            <remote-alias>lastname</remote-alias>
+            <ordinal>5</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>auc_count</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[auc_count]</local-name>
+            <parent-name>[affiliates.csv]</parent-name>
+            <remote-alias>auc_count</remote-alias>
+            <ordinal>6</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>auction_id</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[auction_id]</local-name>
+            <parent-name>[auctions.csv]</parent-name>
+            <remote-alias>auction_id</remote-alias>
+            <ordinal>7</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>url</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[url]</local-name>
+            <parent-name>[auctions.csv]</parent-name>
+            <remote-alias>url</remote-alias>
+            <ordinal>8</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>title</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[title]</local-name>
+            <parent-name>[auctions.csv]</parent-name>
+            <remote-alias>title</remote-alias>
+            <ordinal>9</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>item_count</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[item_count]</local-name>
+            <parent-name>[auctions.csv]</parent-name>
+            <remote-alias>item_count</remote-alias>
+            <ordinal>10</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>start_datetime</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[start_datetime]</local-name>
+            <parent-name>[auctions.csv]</parent-name>
+            <remote-alias>start_datetime</remote-alias>
+            <ordinal>11</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>status</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[status]</local-name>
+            <parent-name>[auctions.csv]</parent-name>
+            <remote-alias>status</remote-alias>
+            <ordinal>12</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>affiliate_id</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[affiliate_id (auctions.csv)]</local-name>
+            <parent-name>[auctions.csv]</parent-name>
+            <remote-alias>affiliate_id</remote-alias>
+            <ordinal>13</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>aff_company_name</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[aff_company_name]</local-name>
+            <parent-name>[auctions.csv]</parent-name>
+            <remote-alias>aff_company_name</remote-alias>
+            <ordinal>14</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>state_abbreviation</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[state_abbreviation]</local-name>
+            <parent-name>[auctions.csv]</parent-name>
+            <remote-alias>state_abbreviation</remote-alias>
+            <ordinal>15</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>city</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[city]</local-name>
+            <parent-name>[auctions.csv]</parent-name>
+            <remote-alias>city</remote-alias>
+            <ordinal>16</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>zip</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[zip]</local-name>
+            <parent-name>[auctions.csv]</parent-name>
+            <remote-alias>zip</remote-alias>
+            <ordinal>17</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>address</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[address]</local-name>
+            <parent-name>[auctions.csv]</parent-name>
+            <remote-alias>address</remote-alias>
+            <ordinal>18</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>item_id</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[item_id]</local-name>
+            <parent-name>[items.csv]</parent-name>
+            <remote-alias>item_id</remote-alias>
+            <ordinal>19</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>auction_id</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[auction_id (items.csv)]</local-name>
+            <parent-name>[items.csv]</parent-name>
+            <remote-alias>auction_id</remote-alias>
+            <ordinal>20</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>description</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[description]</local-name>
+            <parent-name>[items.csv]</parent-name>
+            <remote-alias>description</remote-alias>
+            <ordinal>21</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>current_bid</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[current_bid]</local-name>
+            <parent-name>[items.csv]</parent-name>
+            <remote-alias>current_bid</remote-alias>
+            <ordinal>22</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>highbidder_username</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[highbidder_username]</local-name>
+            <parent-name>[items.csv]</parent-name>
+            <remote-alias>highbidder_username</remote-alias>
+            <ordinal>23</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>url</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[url (items.csv)]</local-name>
+            <parent-name>[items.csv]</parent-name>
+            <remote-alias>url</remote-alias>
+            <ordinal>24</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>tax_rate</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[tax_rate]</local-name>
+            <parent-name>[items.csv]</parent-name>
+            <remote-alias>tax_rate</remote-alias>
+            <ordinal>25</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>buyer_premium</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[buyer_premium]</local-name>
+            <parent-name>[items.csv]</parent-name>
+            <remote-alias>buyer_premium</remote-alias>
+            <ordinal>26</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>lot_number</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[lot_number]</local-name>
+            <parent-name>[items.csv]</parent-name>
+            <remote-alias>lot_number</remote-alias>
+            <ordinal>27</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>bidding_status</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[bidding_status]</local-name>
+            <parent-name>[items.csv]</parent-name>
+            <remote-alias>bidding_status</remote-alias>
+            <ordinal>28</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>end_time_unix</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[end_time_unix]</local-name>
+            <parent-name>[items.csv]</parent-name>
+            <remote-alias>end_time_unix</remote-alias>
+            <ordinal>29</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>bid_count</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[bid_count]</local-name>
+            <parent-name>[items.csv]</parent-name>
+            <remote-alias>bid_count</remote-alias>
+            <ordinal>30</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>viewed</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[viewed]</local-name>
+            <parent-name>[items.csv]</parent-name>
+            <remote-alias>viewed</remote-alias>
+            <ordinal>31</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>is_favorite</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[is_favorite]</local-name>
+            <parent-name>[items.csv]</parent-name>
+            <remote-alias>is_favorite</remote-alias>
+            <ordinal>32</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>total_cost</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[total_cost]</local-name>
+            <parent-name>[items.csv]</parent-name>
+            <remote-alias>total_cost</remote-alias>
+            <ordinal>33</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <approx-count>1</approx-count>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>cost_split</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[cost_split]</local-name>
+            <parent-name>[items.csv]</parent-name>
+            <remote-alias>cost_split</remote-alias>
+            <ordinal>34</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <approx-count>1</approx-count>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>max_desired_bid</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[max_desired_bid]</local-name>
+            <parent-name>[items.csv]</parent-name>
+            <remote-alias>max_desired_bid</remote-alias>
+            <ordinal>35</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <approx-count>1</approx-count>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>item_bid_group_id</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[item_bid_group_id]</local-name>
+            <parent-name>[items.csv]</parent-name>
+            <remote-alias>item_bid_group_id</remote-alias>
+            <ordinal>36</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <approx-count>1</approx-count>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>bid_id</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[bid_id]</local-name>
+            <parent-name>[bids.csv]</parent-name>
+            <remote-alias>bid_id</remote-alias>
+            <ordinal>37</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>item_id</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[item_id (bids.csv)]</local-name>
+            <parent-name>[bids.csv]</parent-name>
+            <remote-alias>item_id</remote-alias>
+            <ordinal>38</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>username</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[username]</local-name>
+            <parent-name>[bids.csv]</parent-name>
+            <remote-alias>username</remote-alias>
+            <ordinal>39</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>bid</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[bid]</local-name>
+            <parent-name>[bids.csv]</parent-name>
+            <remote-alias>bid</remote-alias>
+            <ordinal>40</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>bid_time</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[bid_time]</local-name>
+            <parent-name>[bids.csv]</parent-name>
+            <remote-alias>bid_time</remote-alias>
+            <ordinal>41</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>time_of_bid</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[time_of_bid]</local-name>
+            <parent-name>[bids.csv]</parent-name>
+            <remote-alias>time_of_bid</remote-alias>
+            <ordinal>42</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>time_of_bid_unix</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[time_of_bid_unix]</local-name>
+            <parent-name>[bids.csv]</parent-name>
+            <remote-alias>time_of_bid_unix</remote-alias>
+            <ordinal>43</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>buyer_number</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[buyer_number]</local-name>
+            <parent-name>[bids.csv]</parent-name>
+            <remote-alias>buyer_number</remote-alias>
+            <ordinal>44</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <approx-count>1</approx-count>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>description</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[description (bids.csv)]</local-name>
+            <parent-name>[bids.csv]</parent-name>
+            <remote-alias>description</remote-alias>
+            <ordinal>45</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>item_id</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[item_id (images.csv)]</local-name>
+            <parent-name>[images.csv]</parent-name>
+            <remote-alias>item_id</remote-alias>
+            <ordinal>46</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>image_url</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[image_url]</local-name>
+            <parent-name>[images.csv]</parent-name>
+            <remote-alias>image_url</remote-alias>
+            <ordinal>47</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>image_height</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[image_height]</local-name>
+            <parent-name>[images.csv]</parent-name>
+            <remote-alias>image_height</remote-alias>
+            <ordinal>48</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>image_width</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[image_width]</local-name>
+            <parent-name>[images.csv]</parent-name>
+            <remote-alias>image_width</remote-alias>
+            <ordinal>49</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled='yes' />
+      <_.fcp.ObjectModelTableType.true...column caption='affiliates.csv' datatype='table' name='[__tableau_internal_object_id__].[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]' role='measure' type='quantitative' />
+      <_.fcp.ObjectModelTableType.true...column caption='auctions.csv' datatype='table' name='[__tableau_internal_object_id__].[auctions.csv_6FEA281E47874629A2901108263316BB]' role='measure' type='quantitative' />
+      <_.fcp.ObjectModelTableType.true...column caption='bids.csv' datatype='table' name='[__tableau_internal_object_id__].[bids.csv_49519E358E8448B38B7073A19F333A7A]' role='measure' type='quantitative' />
+      <_.fcp.ObjectModelTableType.true...column caption='images.csv' datatype='table' name='[__tableau_internal_object_id__].[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB]' role='measure' type='quantitative' />
+      <_.fcp.ObjectModelTableType.true...column caption='items.csv' datatype='table' name='[__tableau_internal_object_id__].[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]' role='measure' type='quantitative' />
+      <column caption='Address' datatype='string' name='[address]' role='dimension' type='nominal' />
+      <column caption='Aff Company Name' datatype='string' name='[aff_company_name]' role='dimension' type='nominal' />
+      <column caption='Affiliate Id (Auctions.Csv)' datatype='integer' name='[affiliate_id (auctions.csv)]' role='dimension' type='ordinal' />
+      <column caption='Affiliate Id' datatype='integer' name='[affiliate_id]' role='dimension' type='ordinal' />
+      <column caption='Auc Count' datatype='integer' name='[auc_count]' role='measure' type='quantitative' />
+      <column caption='Auction Id (Items.Csv)' datatype='integer' name='[auction_id (items.csv)]' role='dimension' type='ordinal' />
+      <column caption='Auction Id' datatype='integer' name='[auction_id]' role='dimension' type='ordinal' />
+      <column caption='Bid' datatype='real' name='[bid]' role='measure' type='quantitative' />
+      <column caption='Bid Count' datatype='integer' name='[bid_count]' role='measure' type='quantitative' />
+      <column caption='Bid Id' datatype='integer' name='[bid_id]' role='dimension' type='ordinal' />
+      <column caption='Bid Time' datatype='string' name='[bid_time]' role='dimension' type='nominal' />
+      <column caption='Bidding Status' datatype='string' name='[bidding_status]' role='dimension' type='nominal' />
+      <column caption='Buyer Number' datatype='string' name='[buyer_number]' role='dimension' type='nominal' />
+      <column caption='Buyer Premium' datatype='real' name='[buyer_premium]' role='measure' type='quantitative' />
+      <column caption='City' datatype='string' name='[city]' role='dimension' semantic-role='[City].[Name]' type='nominal' />
+      <column caption='Company Name' datatype='string' name='[company_name]' role='dimension' type='nominal' />
+      <column caption='Cost Split' datatype='string' name='[cost_split]' role='dimension' type='nominal' />
+      <column caption='Current Bid' datatype='real' name='[current_bid]' role='measure' type='quantitative' />
+      <column caption='Description (Bids.Csv)' datatype='string' name='[description (bids.csv)]' role='dimension' type='nominal' />
+      <column caption='Description' datatype='string' name='[description]' role='dimension' type='nominal' />
+      <column caption='Do Not Display Tab' datatype='integer' name='[do_not_display_tab]' role='measure' type='quantitative' />
+      <column caption='End Time Unix' datatype='integer' name='[end_time_unix]' role='measure' type='quantitative' />
+      <column caption='Firstname' datatype='string' name='[firstname]' role='dimension' type='nominal' />
+      <column caption='Highbidder Username' datatype='string' name='[highbidder_username]' role='dimension' type='nominal' />
+      <column caption='Image Height' datatype='integer' name='[image_height]' role='measure' type='quantitative' />
+      <column caption='Image Url' datatype='string' name='[image_url]' role='dimension' type='nominal' />
+      <column caption='Image Width' datatype='integer' name='[image_width]' role='measure' type='quantitative' />
+      <column caption='Is Favorite' datatype='integer' name='[is_favorite]' role='measure' type='quantitative' />
+      <column caption='Item Bid Group Id' datatype='string' name='[item_bid_group_id]' role='dimension' type='nominal' />
+      <column caption='Item Count' datatype='integer' name='[item_count]' role='measure' type='quantitative' />
+      <column caption='Item Id (Bids.Csv)' datatype='integer' name='[item_id (bids.csv)]' role='dimension' type='ordinal' />
+      <column caption='Item Id (Images.Csv)' datatype='integer' name='[item_id (images.csv)]' role='dimension' type='ordinal' />
+      <column caption='Item Id' datatype='integer' name='[item_id]' role='dimension' type='ordinal' />
+      <column caption='Lastname' datatype='string' name='[lastname]' role='dimension' type='nominal' />
+      <column caption='Logo' datatype='string' name='[logo]' role='dimension' type='nominal' />
+      <column caption='Lot Number' datatype='string' name='[lot_number]' role='dimension' type='nominal' />
+      <column caption='Max Desired Bid' datatype='string' name='[max_desired_bid]' role='dimension' type='nominal' />
+      <column caption='Start Datetime' datatype='string' name='[start_datetime]' role='dimension' type='nominal' />
+      <column caption='State Abbreviation' datatype='string' name='[state_abbreviation]' role='dimension' semantic-role='[State].[Name]' type='nominal' />
+      <column caption='Status' datatype='string' name='[status]' role='dimension' type='nominal' />
+      <column caption='Tax Rate' datatype='real' name='[tax_rate]' role='measure' type='quantitative' />
+      <column caption='Time Of Bid' datatype='string' name='[time_of_bid]' role='dimension' type='nominal' />
+      <column caption='Time Of Bid Unix' datatype='integer' name='[time_of_bid_unix]' role='measure' type='quantitative' />
+      <column caption='Title' datatype='string' name='[title]' role='dimension' type='nominal' />
+      <column caption='Total Cost' datatype='string' name='[total_cost]' role='dimension' type='nominal' />
+      <column caption='Url (Items.Csv)' datatype='string' name='[url (items.csv)]' role='dimension' type='nominal' />
+      <column caption='Url' datatype='string' name='[url]' role='dimension' type='nominal' />
+      <column caption='Username' datatype='string' name='[username]' role='dimension' type='nominal' />
+      <column caption='Viewed' datatype='integer' name='[viewed]' role='measure' type='quantitative' />
+      <column aggregation='Sum' caption='Zip' datatype='integer' default-format='*00000' name='[zip]' role='dimension' semantic-role='[ZipCode].[Name]' type='ordinal' />
+      <extract _.fcp.ObjectModelExtractV2.true...object-id='' _.fcp.VConnDownstreamExtractsWithWarnings.true...user-specific='false' count='-1' enabled='true' units='records'>
+        <connection access_mode='readonly' author-locale='en_US' class='hyper' dbname='C:/Users/Nick/AppData/Local/Temp/TableauTemp/#TableauTemp_0a72vx215eo5zi1acuc6p0j5ayhr.hyper' default-settings='hyper' schema='Extract' sslmode='' tablename='Extract' update-time='06/04/2024 01:52:40 PM' username='tableau_internal_user'>
+          <_.fcp.ObjectModelEncapsulateLegacy.false...relation name='affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D' table='[Extract].[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]' type='table' />
+          <_.fcp.ObjectModelEncapsulateLegacy.true...relation type='collection'>
+            <relation name='affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D' table='[Extract].[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]' type='table' />
+            <relation name='auctions.csv_6FEA281E47874629A2901108263316BB' table='[Extract].[auctions.csv_6FEA281E47874629A2901108263316BB]' type='table' />
+            <relation name='items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7' table='[Extract].[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]' type='table' />
+            <relation name='bids.csv_49519E358E8448B38B7073A19F333A7A' table='[Extract].[bids.csv_49519E358E8448B38B7073A19F333A7A]' type='table' />
+            <relation name='images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB' table='[Extract].[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB]' type='table' />
+          </_.fcp.ObjectModelEncapsulateLegacy.true...relation>
+          <cols>
+            <map key='[address]' value='[auctions.csv_6FEA281E47874629A2901108263316BB].[address]' />
+            <map key='[aff_company_name]' value='[auctions.csv_6FEA281E47874629A2901108263316BB].[aff_company_name]' />
+            <map key='[affiliate_id (auctions.csv)]' value='[auctions.csv_6FEA281E47874629A2901108263316BB].[affiliate_id]' />
+            <map key='[affiliate_id]' value='[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D].[affiliate_id]' />
+            <map key='[auc_count]' value='[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D].[auc_count]' />
+            <map key='[auction_id (items.csv)]' value='[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7].[auction_id]' />
+            <map key='[auction_id]' value='[auctions.csv_6FEA281E47874629A2901108263316BB].[auction_id]' />
+            <map key='[bid]' value='[bids.csv_49519E358E8448B38B7073A19F333A7A].[bid]' />
+            <map key='[bid_count]' value='[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7].[bid_count]' />
+            <map key='[bid_id]' value='[bids.csv_49519E358E8448B38B7073A19F333A7A].[bid_id]' />
+            <map key='[bid_time]' value='[bids.csv_49519E358E8448B38B7073A19F333A7A].[bid_time]' />
+            <map key='[bidding_status]' value='[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7].[bidding_status]' />
+            <map key='[buyer_number]' value='[bids.csv_49519E358E8448B38B7073A19F333A7A].[buyer_number]' />
+            <map key='[buyer_premium]' value='[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7].[buyer_premium]' />
+            <map key='[city]' value='[auctions.csv_6FEA281E47874629A2901108263316BB].[city]' />
+            <map key='[company_name]' value='[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D].[company_name]' />
+            <map key='[cost_split]' value='[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7].[cost_split]' />
+            <map key='[current_bid]' value='[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7].[current_bid]' />
+            <map key='[description (bids.csv)]' value='[bids.csv_49519E358E8448B38B7073A19F333A7A].[description]' />
+            <map key='[description]' value='[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7].[description]' />
+            <map key='[do_not_display_tab]' value='[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D].[do_not_display_tab]' />
+            <map key='[end_time_unix]' value='[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7].[end_time_unix]' />
+            <map key='[firstname]' value='[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D].[firstname]' />
+            <map key='[highbidder_username]' value='[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7].[highbidder_username]' />
+            <map key='[image_height]' value='[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB].[image_height]' />
+            <map key='[image_url]' value='[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB].[image_url]' />
+            <map key='[image_width]' value='[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB].[image_width]' />
+            <map key='[is_favorite]' value='[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7].[is_favorite]' />
+            <map key='[item_bid_group_id]' value='[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7].[item_bid_group_id]' />
+            <map key='[item_count]' value='[auctions.csv_6FEA281E47874629A2901108263316BB].[item_count]' />
+            <map key='[item_id (bids.csv)]' value='[bids.csv_49519E358E8448B38B7073A19F333A7A].[item_id]' />
+            <map key='[item_id (images.csv)]' value='[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB].[item_id]' />
+            <map key='[item_id]' value='[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7].[item_id]' />
+            <map key='[lastname]' value='[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D].[lastname]' />
+            <map key='[logo]' value='[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D].[logo]' />
+            <map key='[lot_number]' value='[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7].[lot_number]' />
+            <map key='[max_desired_bid]' value='[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7].[max_desired_bid]' />
+            <map key='[start_datetime]' value='[auctions.csv_6FEA281E47874629A2901108263316BB].[start_datetime]' />
+            <map key='[state_abbreviation]' value='[auctions.csv_6FEA281E47874629A2901108263316BB].[state_abbreviation]' />
+            <map key='[status]' value='[auctions.csv_6FEA281E47874629A2901108263316BB].[status]' />
+            <map key='[tax_rate]' value='[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7].[tax_rate]' />
+            <map key='[time_of_bid]' value='[bids.csv_49519E358E8448B38B7073A19F333A7A].[time_of_bid]' />
+            <map key='[time_of_bid_unix]' value='[bids.csv_49519E358E8448B38B7073A19F333A7A].[time_of_bid_unix]' />
+            <map key='[title]' value='[auctions.csv_6FEA281E47874629A2901108263316BB].[title]' />
+            <map key='[total_cost]' value='[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7].[total_cost]' />
+            <map key='[url (items.csv)]' value='[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7].[url]' />
+            <map key='[url]' value='[auctions.csv_6FEA281E47874629A2901108263316BB].[url]' />
+            <map key='[username]' value='[bids.csv_49519E358E8448B38B7073A19F333A7A].[username]' />
+            <map key='[viewed]' value='[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7].[viewed]' />
+            <map key='[zip]' value='[auctions.csv_6FEA281E47874629A2901108263316BB].[zip]' />
+          </cols>
+          <metadata-records>
+            <metadata-record class='column'>
+              <remote-name>affiliate_id</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[affiliate_id]</local-name>
+              <parent-name>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</parent-name>
+              <remote-alias>affiliate_id</remote-alias>
+              <ordinal>0</ordinal>
+              <family>affiliates.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>34</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>logo</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[logo]</local-name>
+              <parent-name>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</parent-name>
+              <remote-alias>logo</remote-alias>
+              <ordinal>1</ordinal>
+              <family>affiliates.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>19</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>do_not_display_tab</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[do_not_display_tab]</local-name>
+              <parent-name>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</parent-name>
+              <remote-alias>do_not_display_tab</remote-alias>
+              <ordinal>2</ordinal>
+              <family>affiliates.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>1</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>company_name</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[company_name]</local-name>
+              <parent-name>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</parent-name>
+              <remote-alias>company_name</remote-alias>
+              <ordinal>3</ordinal>
+              <family>affiliates.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>34</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>firstname</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[firstname]</local-name>
+              <parent-name>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</parent-name>
+              <remote-alias>firstname</remote-alias>
+              <ordinal>4</ordinal>
+              <family>affiliates.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>34</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>lastname</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[lastname]</local-name>
+              <parent-name>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</parent-name>
+              <remote-alias>lastname</remote-alias>
+              <ordinal>5</ordinal>
+              <family>affiliates.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>8</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>auc_count</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[auc_count]</local-name>
+              <parent-name>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</parent-name>
+              <remote-alias>auc_count</remote-alias>
+              <ordinal>6</ordinal>
+              <family>affiliates.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>13</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>auction_id</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[auction_id]</local-name>
+              <parent-name>[auctions.csv_6FEA281E47874629A2901108263316BB]</parent-name>
+              <remote-alias>auction_id</remote-alias>
+              <ordinal>7</ordinal>
+              <family>auctions.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>2014</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>url</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[url]</local-name>
+              <parent-name>[auctions.csv_6FEA281E47874629A2901108263316BB]</parent-name>
+              <remote-alias>url</remote-alias>
+              <ordinal>8</ordinal>
+              <family>auctions.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>2014</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>title</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[title]</local-name>
+              <parent-name>[auctions.csv_6FEA281E47874629A2901108263316BB]</parent-name>
+              <remote-alias>title</remote-alias>
+              <ordinal>9</ordinal>
+              <family>auctions.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>1729</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>item_count</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[item_count]</local-name>
+              <parent-name>[auctions.csv_6FEA281E47874629A2901108263316BB]</parent-name>
+              <remote-alias>item_count</remote-alias>
+              <ordinal>10</ordinal>
+              <family>auctions.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>470</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>start_datetime</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[start_datetime]</local-name>
+              <parent-name>[auctions.csv_6FEA281E47874629A2901108263316BB]</parent-name>
+              <remote-alias>start_datetime</remote-alias>
+              <ordinal>11</ordinal>
+              <family>auctions.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>1380</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>status</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[status]</local-name>
+              <parent-name>[auctions.csv_6FEA281E47874629A2901108263316BB]</parent-name>
+              <remote-alias>status</remote-alias>
+              <ordinal>12</ordinal>
+              <family>auctions.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>2</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>affiliate_id</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[affiliate_id (auctions.csv)]</local-name>
+              <parent-name>[auctions.csv_6FEA281E47874629A2901108263316BB]</parent-name>
+              <remote-alias>affiliate_id</remote-alias>
+              <ordinal>13</ordinal>
+              <family>auctions.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>3</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>aff_company_name</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[aff_company_name]</local-name>
+              <parent-name>[auctions.csv_6FEA281E47874629A2901108263316BB]</parent-name>
+              <remote-alias>aff_company_name</remote-alias>
+              <ordinal>14</ordinal>
+              <family>auctions.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>3</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>state_abbreviation</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[state_abbreviation]</local-name>
+              <parent-name>[auctions.csv_6FEA281E47874629A2901108263316BB]</parent-name>
+              <remote-alias>state_abbreviation</remote-alias>
+              <ordinal>15</ordinal>
+              <family>auctions.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>3</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>city</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[city]</local-name>
+              <parent-name>[auctions.csv_6FEA281E47874629A2901108263316BB]</parent-name>
+              <remote-alias>city</remote-alias>
+              <ordinal>16</ordinal>
+              <family>auctions.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>5</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>zip</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[zip]</local-name>
+              <parent-name>[auctions.csv_6FEA281E47874629A2901108263316BB]</parent-name>
+              <remote-alias>zip</remote-alias>
+              <ordinal>17</ordinal>
+              <family>auctions.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>5</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>address</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[address]</local-name>
+              <parent-name>[auctions.csv_6FEA281E47874629A2901108263316BB]</parent-name>
+              <remote-alias>address</remote-alias>
+              <ordinal>18</ordinal>
+              <family>auctions.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>13</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>item_id</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[item_id]</local-name>
+              <parent-name>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</parent-name>
+              <remote-alias>item_id</remote-alias>
+              <ordinal>19</ordinal>
+              <family>items.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>396853</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>auction_id</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[auction_id (items.csv)]</local-name>
+              <parent-name>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</parent-name>
+              <remote-alias>auction_id</remote-alias>
+              <ordinal>20</ordinal>
+              <family>items.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>6758</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>description</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[description]</local-name>
+              <parent-name>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</parent-name>
+              <remote-alias>description</remote-alias>
+              <ordinal>21</ordinal>
+              <family>items.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>71614</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>current_bid</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[current_bid]</local-name>
+              <parent-name>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</parent-name>
+              <remote-alias>current_bid</remote-alias>
+              <ordinal>22</ordinal>
+              <family>items.csv</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>5085</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>highbidder_username</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[highbidder_username]</local-name>
+              <parent-name>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</parent-name>
+              <remote-alias>highbidder_username</remote-alias>
+              <ordinal>23</ordinal>
+              <family>items.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>12045</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>url</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[url (items.csv)]</local-name>
+              <parent-name>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</parent-name>
+              <remote-alias>url</remote-alias>
+              <ordinal>24</ordinal>
+              <family>items.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>396853</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>tax_rate</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[tax_rate]</local-name>
+              <parent-name>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</parent-name>
+              <remote-alias>tax_rate</remote-alias>
+              <ordinal>25</ordinal>
+              <family>items.csv</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>6</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>buyer_premium</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[buyer_premium]</local-name>
+              <parent-name>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</parent-name>
+              <remote-alias>buyer_premium</remote-alias>
+              <ordinal>26</ordinal>
+              <family>items.csv</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>2</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>lot_number</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[lot_number]</local-name>
+              <parent-name>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</parent-name>
+              <remote-alias>lot_number</remote-alias>
+              <ordinal>27</ordinal>
+              <family>items.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>75635</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>bidding_status</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[bidding_status]</local-name>
+              <parent-name>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</parent-name>
+              <remote-alias>bidding_status</remote-alias>
+              <ordinal>28</ordinal>
+              <family>items.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>2</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>end_time_unix</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[end_time_unix]</local-name>
+              <parent-name>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</parent-name>
+              <remote-alias>end_time_unix</remote-alias>
+              <ordinal>29</ordinal>
+              <family>items.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>396853</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>bid_count</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[bid_count]</local-name>
+              <parent-name>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</parent-name>
+              <remote-alias>bid_count</remote-alias>
+              <ordinal>30</ordinal>
+              <family>items.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>621</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>viewed</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[viewed]</local-name>
+              <parent-name>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</parent-name>
+              <remote-alias>viewed</remote-alias>
+              <ordinal>31</ordinal>
+              <family>items.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>757</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>is_favorite</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[is_favorite]</local-name>
+              <parent-name>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</parent-name>
+              <remote-alias>is_favorite</remote-alias>
+              <ordinal>32</ordinal>
+              <family>items.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>2</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>total_cost</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[total_cost]</local-name>
+              <parent-name>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</parent-name>
+              <remote-alias>total_cost</remote-alias>
+              <ordinal>33</ordinal>
+              <family>items.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>1</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>cost_split</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[cost_split]</local-name>
+              <parent-name>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</parent-name>
+              <remote-alias>cost_split</remote-alias>
+              <ordinal>34</ordinal>
+              <family>items.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>1</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>max_desired_bid</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[max_desired_bid]</local-name>
+              <parent-name>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</parent-name>
+              <remote-alias>max_desired_bid</remote-alias>
+              <ordinal>35</ordinal>
+              <family>items.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>1</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>item_bid_group_id</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[item_bid_group_id]</local-name>
+              <parent-name>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</parent-name>
+              <remote-alias>item_bid_group_id</remote-alias>
+              <ordinal>36</ordinal>
+              <family>items.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>1</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>bid_id</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[bid_id]</local-name>
+              <parent-name>[bids.csv_49519E358E8448B38B7073A19F333A7A]</parent-name>
+              <remote-alias>bid_id</remote-alias>
+              <ordinal>37</ordinal>
+              <family>bids.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>7333051</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>item_id</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[item_id (bids.csv)]</local-name>
+              <parent-name>[bids.csv_49519E358E8448B38B7073A19F333A7A]</parent-name>
+              <remote-alias>item_id</remote-alias>
+              <ordinal>38</ordinal>
+              <family>bids.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>833275</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>username</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[username]</local-name>
+              <parent-name>[bids.csv_49519E358E8448B38B7073A19F333A7A]</parent-name>
+              <remote-alias>username</remote-alias>
+              <ordinal>39</ordinal>
+              <family>bids.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>33096</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>bid</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[bid]</local-name>
+              <parent-name>[bids.csv_49519E358E8448B38B7073A19F333A7A]</parent-name>
+              <remote-alias>bid</remote-alias>
+              <ordinal>40</ordinal>
+              <family>bids.csv</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>25305</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>bid_time</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[bid_time]</local-name>
+              <parent-name>[bids.csv_49519E358E8448B38B7073A19F333A7A]</parent-name>
+              <remote-alias>bid_time</remote-alias>
+              <ordinal>41</ordinal>
+              <family>bids.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>6223030</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>time_of_bid</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[time_of_bid]</local-name>
+              <parent-name>[bids.csv_49519E358E8448B38B7073A19F333A7A]</parent-name>
+              <remote-alias>time_of_bid</remote-alias>
+              <ordinal>42</ordinal>
+              <family>bids.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>6266148</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>time_of_bid_unix</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[time_of_bid_unix]</local-name>
+              <parent-name>[bids.csv_49519E358E8448B38B7073A19F333A7A]</parent-name>
+              <remote-alias>time_of_bid_unix</remote-alias>
+              <ordinal>43</ordinal>
+              <family>bids.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>6266148</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>buyer_number</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[buyer_number]</local-name>
+              <parent-name>[bids.csv_49519E358E8448B38B7073A19F333A7A]</parent-name>
+              <remote-alias>buyer_number</remote-alias>
+              <ordinal>44</ordinal>
+              <family>bids.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>1</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>description</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[description (bids.csv)]</local-name>
+              <parent-name>[bids.csv_49519E358E8448B38B7073A19F333A7A]</parent-name>
+              <remote-alias>description</remote-alias>
+              <ordinal>45</ordinal>
+              <family>bids.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>1186123</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>item_id</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[item_id (images.csv)]</local-name>
+              <parent-name>[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB]</parent-name>
+              <remote-alias>item_id</remote-alias>
+              <ordinal>46</ordinal>
+              <family>images.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>654943</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>image_url</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[image_url]</local-name>
+              <parent-name>[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB]</parent-name>
+              <remote-alias>image_url</remote-alias>
+              <ordinal>47</ordinal>
+              <family>images.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>1987928</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>image_height</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[image_height]</local-name>
+              <parent-name>[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB]</parent-name>
+              <remote-alias>image_height</remote-alias>
+              <ordinal>48</ordinal>
+              <family>images.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>582</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>image_width</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[image_width]</local-name>
+              <parent-name>[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB]</parent-name>
+              <remote-alias>image_width</remote-alias>
+              <ordinal>49</ordinal>
+              <family>images.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>911</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+          </metadata-records>
+        </connection>
+      </extract>
+      <layout _.fcp.SchemaViewerObjectModel.false...dim-percentage='0.5' _.fcp.SchemaViewerObjectModel.false...measure-percentage='0.4' dim-ordering='alphabetic' measure-ordering='alphabetic' show-structure='true' />
+      <semantic-values>
+        <semantic-value key='[Country].[Name]' value='&quot;United States&quot;' />
+      </semantic-values>
+      <_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
+        <objects>
+          <object caption='affiliates.csv' id='affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D'>
+            <properties context=''>
+              <relation connection='textscan.1cbqllq0z933i313wg60m1wjh1hi' name='affiliates.csv' table='[affiliates#csv]' type='table'>
+                <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+                  <column datatype='integer' name='affiliate_id' ordinal='0' />
+                  <column datatype='string' name='logo' ordinal='1' />
+                  <column datatype='integer' name='do_not_display_tab' ordinal='2' />
+                  <column datatype='string' name='company_name' ordinal='3' />
+                  <column datatype='string' name='firstname' ordinal='4' />
+                  <column datatype='string' name='lastname' ordinal='5' />
+                  <column datatype='integer' name='auc_count' ordinal='6' />
+                </columns>
+              </relation>
+            </properties>
+            <properties context='extract'>
+              <relation name='affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D' table='[Extract].[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]' type='table' />
+            </properties>
+          </object>
+          <object caption='auctions.csv' id='auctions.csv_6FEA281E47874629A2901108263316BB'>
+            <properties context=''>
+              <relation connection='textscan.1cbqllq0z933i313wg60m1wjh1hi' name='auctions.csv' table='[auctions#csv]' type='table'>
+                <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+                  <column datatype='integer' name='auction_id' ordinal='0' />
+                  <column datatype='string' name='url' ordinal='1' />
+                  <column datatype='string' name='title' ordinal='2' />
+                  <column datatype='integer' name='item_count' ordinal='3' />
+                  <column datatype='string' name='start_datetime' ordinal='4' />
+                  <column datatype='string' name='status' ordinal='5' />
+                  <column datatype='integer' name='affiliate_id' ordinal='6' />
+                  <column datatype='string' name='aff_company_name' ordinal='7' />
+                  <column datatype='string' name='state_abbreviation' ordinal='8' />
+                  <column datatype='string' name='city' ordinal='9' />
+                  <column datatype='integer' name='zip' ordinal='10' />
+                  <column datatype='string' name='address' ordinal='11' />
+                </columns>
+              </relation>
+            </properties>
+            <properties context='extract'>
+              <relation name='auctions.csv_6FEA281E47874629A2901108263316BB' table='[Extract].[auctions.csv_6FEA281E47874629A2901108263316BB]' type='table' />
+            </properties>
+          </object>
+          <object caption='bids.csv' id='bids.csv_49519E358E8448B38B7073A19F333A7A'>
+            <properties context=''>
+              <relation connection='textscan.1cbqllq0z933i313wg60m1wjh1hi' name='bids.csv' table='[bids#csv]' type='table'>
+                <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+                  <column datatype='integer' name='bid_id' ordinal='0' />
+                  <column datatype='integer' name='item_id' ordinal='1' />
+                  <column datatype='string' name='username' ordinal='2' />
+                  <column datatype='real' name='bid' ordinal='3' />
+                  <column datatype='string' name='bid_time' ordinal='4' />
+                  <column datatype='string' name='time_of_bid' ordinal='5' />
+                  <column datatype='integer' name='time_of_bid_unix' ordinal='6' />
+                  <column datatype='string' name='buyer_number' ordinal='7' />
+                  <column datatype='string' name='description' ordinal='8' />
+                </columns>
+              </relation>
+            </properties>
+            <properties context='extract'>
+              <relation name='bids.csv_49519E358E8448B38B7073A19F333A7A' table='[Extract].[bids.csv_49519E358E8448B38B7073A19F333A7A]' type='table' />
+            </properties>
+          </object>
+          <object caption='images.csv' id='images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB'>
+            <properties context=''>
+              <relation connection='textscan.1cbqllq0z933i313wg60m1wjh1hi' name='images.csv' table='[images#csv]' type='table'>
+                <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+                  <column datatype='integer' name='item_id' ordinal='0' />
+                  <column datatype='string' name='image_url' ordinal='1' />
+                  <column datatype='integer' name='image_height' ordinal='2' />
+                  <column datatype='integer' name='image_width' ordinal='3' />
+                </columns>
+              </relation>
+            </properties>
+            <properties context='extract'>
+              <relation name='images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB' table='[Extract].[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB]' type='table' />
+            </properties>
+          </object>
+          <object caption='items.csv' id='items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7'>
+            <properties context=''>
+              <relation connection='textscan.1cbqllq0z933i313wg60m1wjh1hi' name='items.csv' table='[items#csv]' type='table'>
+                <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+                  <column datatype='integer' name='item_id' ordinal='0' />
+                  <column datatype='integer' name='auction_id' ordinal='1' />
+                  <column datatype='string' name='description' ordinal='2' />
+                  <column datatype='real' name='current_bid' ordinal='3' />
+                  <column datatype='string' name='highbidder_username' ordinal='4' />
+                  <column datatype='string' name='url' ordinal='5' />
+                  <column datatype='real' name='tax_rate' ordinal='6' />
+                  <column datatype='real' name='buyer_premium' ordinal='7' />
+                  <column datatype='string' name='lot_number' ordinal='8' />
+                  <column datatype='string' name='bidding_status' ordinal='9' />
+                  <column datatype='integer' name='end_time_unix' ordinal='10' />
+                  <column datatype='integer' name='bid_count' ordinal='11' />
+                  <column datatype='integer' name='viewed' ordinal='12' />
+                  <column datatype='integer' name='is_favorite' ordinal='13' />
+                  <column datatype='string' name='total_cost' ordinal='14' />
+                  <column datatype='string' name='cost_split' ordinal='15' />
+                  <column datatype='string' name='max_desired_bid' ordinal='16' />
+                  <column datatype='string' name='item_bid_group_id' ordinal='17' />
+                </columns>
+              </relation>
+            </properties>
+            <properties context='extract'>
+              <relation name='items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7' table='[Extract].[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]' type='table' />
+            </properties>
+          </object>
+        </objects>
+        <relationships>
+          <relationship>
+            <expression op='='>
+              <expression op='[affiliate_id]' />
+              <expression op='[affiliate_id (auctions.csv)]' />
+            </expression>
+            <first-end-point object-id='affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D' />
+            <second-end-point object-id='auctions.csv_6FEA281E47874629A2901108263316BB' />
+          </relationship>
+          <relationship>
+            <expression op='='>
+              <expression op='[item_id]' />
+              <expression op='[item_id (bids.csv)]' />
+            </expression>
+            <first-end-point object-id='items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7' />
+            <second-end-point object-id='bids.csv_49519E358E8448B38B7073A19F333A7A' />
+          </relationship>
+          <relationship>
+            <expression op='='>
+              <expression op='[item_id]' />
+              <expression op='[item_id (images.csv)]' />
+            </expression>
+            <first-end-point object-id='items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7' />
+            <second-end-point object-id='images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB' />
+          </relationship>
+          <relationship>
+            <expression op='='>
+              <expression op='[auction_id]' />
+              <expression op='[auction_id (items.csv)]' />
+            </expression>
+            <first-end-point object-id='auctions.csv_6FEA281E47874629A2901108263316BB' />
+            <second-end-point object-id='items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7' />
+          </relationship>
+        </relationships>
+      </_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
+    </datasource>
+  </datasources>
+  <shared-views>
+    <shared-view name='federated.04ie6gw1vrznht19ek2ik03cy0ek'>
+      <datasources>
+        <datasource caption='bidrl' name='federated.04ie6gw1vrznht19ek2ik03cy0ek' />
+      </datasources>
+      <datasource-dependencies datasource='federated.04ie6gw1vrznht19ek2ik03cy0ek'>
+        <column caption='Affiliate Id' datatype='integer' name='[affiliate_id]' role='dimension' type='ordinal' />
+        <column-instance column='[affiliate_id]' derivation='None' name='[none:affiliate_id:ok]' pivot='key' type='ordinal' />
+      </datasource-dependencies>
+      <filter class='categorical' column='[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:affiliate_id:ok]'>
+        <groupfilter function='member' level='[none:affiliate_id:ok]' member='47' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
+      </filter>
+    </shared-view>
+  </shared-views>
+  <worksheets>
+    <worksheet name='Sheet 1'>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='bidrl' name='federated.04ie6gw1vrznht19ek2ik03cy0ek' />
+          </datasources>
+          <datasource-dependencies datasource='federated.04ie6gw1vrznht19ek2ik03cy0ek'>
+            <column caption='Affiliate Id' datatype='integer' name='[affiliate_id]' role='dimension' type='ordinal' />
+            <column caption='Auction Id' datatype='integer' name='[auction_id]' role='dimension' type='ordinal' />
+            <column caption='Buyer Premium' datatype='real' name='[buyer_premium]' role='measure' type='quantitative' />
+            <column caption='Current Bid' datatype='real' name='[current_bid]' role='measure' type='quantitative' />
+            <column caption='Description' datatype='string' name='[description]' role='dimension' type='nominal' />
+            <column caption='Highbidder Username' datatype='string' name='[highbidder_username]' role='dimension' type='nominal' />
+            <column caption='Item Id' datatype='integer' name='[item_id]' role='dimension' type='ordinal' />
+            <column-instance column='[affiliate_id]' derivation='None' name='[none:affiliate_id:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[auction_id]' derivation='None' name='[none:auction_id:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[description]' derivation='None' name='[none:description:nk]' pivot='key' type='nominal' />
+            <column-instance column='[highbidder_username]' derivation='None' name='[none:highbidder_username:nk]' pivot='key' type='nominal' />
+            <column-instance column='[item_id]' derivation='None' name='[none:item_id:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[buyer_premium]' derivation='Sum' name='[sum:buyer_premium:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[current_bid]' derivation='Sum' name='[sum:current_bid:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[tax_rate]' derivation='Sum' name='[sum:tax_rate:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[viewed]' derivation='Sum' name='[sum:viewed:ok]' pivot='key' type='ordinal' />
+            <column caption='Tax Rate' datatype='real' name='[tax_rate]' role='measure' type='quantitative' />
+            <column caption='Viewed' datatype='integer' name='[viewed]' role='measure' type='quantitative' />
+          </datasource-dependencies>
+          <filter class='categorical' column='[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:highbidder_username:nk]'>
+            <groupfilter function='member' level='[none:highbidder_username:nk]' member='&quot;ndt&quot;' user:ui-domain='relevant' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
+          </filter>
+          <slices>
+            <column>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:highbidder_username:nk]</column>
+            <column>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:affiliate_id:ok]</column>
+          </slices>
+          <aggregation value='true' />
+        </view>
+        <style>
+          <style-rule element='header'>
+            <format attr='width' field='[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:description:nk]' value='432' />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Automatic' />
+          </pane>
+        </panes>
+        <rows>([federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:auction_id:ok] / ([federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:item_id:ok] / ([federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:description:nk] / ([federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:highbidder_username:nk] / ([federated.04ie6gw1vrznht19ek2ik03cy0ek].[sum:viewed:ok] / ([federated.04ie6gw1vrznht19ek2ik03cy0ek].[sum:current_bid:ok] / ([federated.04ie6gw1vrznht19ek2ik03cy0ek].[sum:buyer_premium:ok] / [federated.04ie6gw1vrznht19ek2ik03cy0ek].[sum:tax_rate:ok])))))))</rows>
+        <cols />
+      </table>
+      <simple-id uuid='{87A8D90E-288A-42E6-9A78-56B01CCB56A2}' />
+    </worksheet>
+    <worksheet name='Sheet 2'>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='bidrl' name='federated.04ie6gw1vrznht19ek2ik03cy0ek' />
+          </datasources>
+          <datasource-dependencies datasource='federated.04ie6gw1vrznht19ek2ik03cy0ek'>
+            <column caption='Affiliate Id' datatype='integer' name='[affiliate_id]' role='dimension' type='ordinal' />
+            <column-instance column='[item_id]' derivation='Count' name='[cnt:item_id:ok]' pivot='key' type='ordinal' />
+            <column caption='Item Id' datatype='integer' name='[item_id]' role='dimension' type='ordinal' />
+            <column-instance column='[affiliate_id]' derivation='None' name='[none:affiliate_id:ok]' pivot='key' type='ordinal' />
+          </datasource-dependencies>
+          <slices>
+            <column>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:affiliate_id:ok]</column>
+          </slices>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Automatic' />
+          </pane>
+        </panes>
+        <rows>([federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:affiliate_id:ok] / [federated.04ie6gw1vrznht19ek2ik03cy0ek].[cnt:item_id:ok])</rows>
+        <cols />
+      </table>
+      <simple-id uuid='{3249667A-325A-4136-8211-374876A610C6}' />
+    </worksheet>
+  </worksheets>
+  <windows source-height='30'>
+    <window class='worksheet' maximized='true' name='Sheet 1'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'>
+            <card type='columns' />
+          </strip>
+          <strip size='2147483647'>
+            <card type='rows' />
+          </strip>
+          <strip size='31'>
+            <card type='title' />
+          </strip>
+        </edge>
+      </cards>
+      <viewpoint>
+        <highlight>
+          <color-one-way>
+            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:affiliate_id:ok]</field>
+            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:auction_id:ok]</field>
+            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:company_name:nk]</field>
+            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:cost_split:nk]</field>
+            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:description (bids.csv):nk]</field>
+            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:description:nk]</field>
+            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:highbidder_username:nk]</field>
+            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:image_url:nk]</field>
+            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:item_id:ok]</field>
+            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[sum:viewed:ok]</field>
+          </color-one-way>
+        </highlight>
+      </viewpoint>
+      <simple-id uuid='{6B451818-AAA4-4E85-8635-31FD9879F22C}' />
+    </window>
+    <window class='worksheet' name='Sheet 2'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'>
+            <card type='columns' />
+          </strip>
+          <strip size='2147483647'>
+            <card type='rows' />
+          </strip>
+          <strip size='31'>
+            <card type='title' />
+          </strip>
+        </edge>
+      </cards>
+      <viewpoint>
+        <highlight>
+          <color-one-way>
+            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:affiliate_id:ok]</field>
+            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:item_id:ok]</field>
+          </color-one-way>
+        </highlight>
+      </viewpoint>
+      <simple-id uuid='{C297E3EF-A1C0-4984-A99F-E8964C1EBE3B}' />
+    </window>
+  </windows>
+  <thumbnails>
+    <thumbnail height='192' name='Sheet 1' width='192'>
+      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
+      AAAAAElFTkSuQmCC
+    </thumbnail>
+    <thumbnail height='44' name='Sheet 2' width='192'>
+      iVBORw0KGgoAAAANSUhEUgAAAMAAAAAsCAYAAAAzWrf+AAAACXBIWXMAAA7DAAAOwwHHb6hk
+      AAAFBElEQVR4nO3ce0zVZRzH8bceTxwkpiCizOLSVaWL5kFTEVOaMy/DYY0lloVuWk1tzls2
+      LVuuvKyLysTNShRtzOmkTRNMjaGZcgzTdbylcilQBEwunSPnHJ/++KGhHtNxJJTn+9r463z3
+      +fHbns/vPM/ZgTZKKYUQmmrb0r+AEC1JCiC0JgUQWpMCCK1JAYTWpABCa1IAoTUpgLin2Wy2
+      Zs2XAgitSQGE1qQAQmtSAKE1KYDQmhRAaE0KILQmBRBakwIIrUkBhNakAEJrUgChNSmA0JoU
+      QGhNCiC0JgUQWpMCCK1JAYTWpABCa21u979Bm/tvMoVoSbctgBAtyWazYbVamy1ftkBCa1IA
+      oTUpgNCaFEBord3dCClKT2bsihMw8jNsC+OgKJ3ksSs4cePg1ddFgzp+/34t32w/QkX9AwRG
+      DmfaeyMJB8BDxaGNpK3fT4kD/EOtjJ+ZgrWDlxR7Jsu/3kthjQf/h/vz2pRx9AkxGSmlP5K2
+      aiu/lTswhTzDiDff4KXHAoDDfDV5FQdvDIsYy8fzhtG5OW/7XqJ8VbtDzYqdpdJWjlN9FuR6
+      n3EdUJ8MGaIW5Nb6fLnWpHLPUjU7NU+VOtxKqXpVW3JeVTW85j62Qc1etFnZq+qVUm7lqChV
+      FxxeQ9TnnzaaO5utli7aqoqMELXhw1SVV+pQbqVUfVWBWj8/Vf3sLUcp5ShYo5b/UHn3b9QH
+      +fn5zZrv4xbIjX3tav6c9A7DH7z1VHVOJlkdk0iOC/Dtcq1KMXl72pOYEkuYxQSYCXgolCAA
+      nNh2n2DA+ER6BJkBE5ZOYYRYvMWcxjJ09L9zkcMY37sE21ngwlmqe40mNsyCCTAH9eLVRD8O
+      FTi9BFWxL8+P+BeCm+uG70m+FeB8Fiu+68v05Ij/GDrJt2tyiU4awxM+XayVuXSGU936YfW2
+      qCnkdE0MMeF3kBMcQtnObAqdHgA8zhrcbf6m9JwTOgZz5acc8i+6jFlXHZWqHbVlZTfFeI7v
+      wBYeR09Tk+/ovtTkArjtqSS+foZJ2+bS95YniTqyZ08gO34daUldmnqp1snhwHzFSVmNEw+A
+      6yLHNn3E4l1VgBPHFRd15XW4ADxOynJX8n6G3ZhtLDyBhfNGEWkxVq7JEohfWzf+/haw9OPt
+      xROJCTIbs+YAQtsp3P7+12cUZ7Hsl+eYmXAnjWtdmlyAg5szKK7MZPLzVqxWq3EI3jYDa3I6
+      RVeHTmawenc0SS/3vDun7dakaxSdXU7aBxrbE8xB9BgUw+XCYiCKRzvU4eoUgBnAZCFscCyP
+      nCniwm2DqzhSYCLS61r2YP/1FOERjY+4Tg7vLMY6vDuaPfwBHwowYP5+bDbbtZ/NU580PuXZ
+      MAFjQ+Tm4JZMyoa+wih5+HvxOP272Vi3qxCnB+MdIK+AkKe6Ax2I6V3NpszDXHTR8A6wl/PP
+      RtP1ppxLlBZWGhmeak5uSSOnywgGBgNc5lzJH9S5AFyU711NevFgXmy8z6naR55fPJpt/a9p
+      vgdzdQ6ZWZDwZTxy9PXGRFTCRAZtTGPu1BIcpkAiY1OY1s84FAT0n0DyX2tZNmMVFR5/QqPH
+      8NaUhg9I7RnMyYlg/ruD6ACU7v6CJbZyHBhz06c8jZHiR/2R9XywpJCa+gcIjIwlZfqwRiXy
+      YN9+gPC4eVo+/UG+DHcf8mDPWMzxgXNIjGr9y1a+DCeu5znKUXMiCRos/v/DP0R3T3PltAJh
+      AAAAAElFTkSuQmCC
+    </thumbnail>
+  </thumbnails>
+</workbook>

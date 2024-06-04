@@ -39,3 +39,8 @@ Scraping and Data Analysis
 - `gigascrape.py`
 	- Scrapes all data from bidrl into a relational database (bidrl.db) stored in local_files.
 	- Optional: you can view the sqlite database using a tool like https://sqlitebrowser.org/dl/
+- `dump_database_to_csvs.py`
+	- Dumps all information from the database (populated by `gigascrape.py`) into csv files in the local_files/data_analysis/ folder.
+	- This must be run before attempting to open any of the Tableau workbooks.
+- Tableau workbooks in local_files/data_analysis/ folder
+	- These contain our analyses and visualizations of the data we scraped from bidrl using `gigascrape.py`. To use them, first run gigascrape, then dump_database_to_csvs, then open!
