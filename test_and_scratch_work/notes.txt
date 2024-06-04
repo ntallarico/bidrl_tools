@@ -11,6 +11,10 @@ questions I'd like to answer in reporting once I have full database:
 - can I analyze the bid history to determine certain scenarios?
     - someone gave their max amount, was outbid, then later upped it to try to win
         - then, how far above their original max amount did they end up paying?
+- can I identify a re-listed item? I know they have to be re-listing items that don't sell
+	- would lot number stay the same?
+	- would love to see the most re-listed item(s)
+	- what items do not sell but are not re-listed?
 
 stuff to do with reporting stuff:
 - item reporting table
