@@ -108,7 +108,7 @@ def bulk_print_expense_input_links(invoices):
         print(invoice.expense_input_form_link)
 
 # main driver function for this script
-def main():#
+def main():
     earliest_invoice_date = get_start_date_from_user()
     #earliest_invoice_date = datetime.strptime('4/25/24', '%m/%d/%y').date() # for debugging
 
@@ -119,7 +119,7 @@ def main():#
     invoices = bf.get_invoices(browser, earliest_invoice_date)
 
     # calculate total cost of each invoice and item
-    bf.calculate_total_cost_of_invoices(invoices)
+    #bf.calculate_total_cost_of_invoices(invoices)
 
     # tear down browser object
     browser.quit()
