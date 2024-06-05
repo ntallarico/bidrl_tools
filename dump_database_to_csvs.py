@@ -6,7 +6,7 @@ import bidrl_functions as bf
 
 def dump_tables_to_csv(folder_path_for_csvs):
     start_time_dump_tables_to_csv = time.time()
-    
+
     bf.ensure_directory_exists(folder_path_for_csvs)
 
     # connect to SQLite database
@@ -15,6 +15,7 @@ def dump_tables_to_csv(folder_path_for_csvs):
 
     # get list of all tables in the database
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    #cursor.execute("SELECT name FROM sqlite_master WHERE type='table' and name not in ('bids', 'images', 'items');")
     tables = cursor.fetchall()
 
     print(f"\nFound {len(tables)} tables in database:")
@@ -30,7 +31,7 @@ def dump_tables_to_csv(folder_path_for_csvs):
         start_time_select_from_db = time.time()
         cursor.execute(f"SELECT * FROM {table_name}")
         data = cursor.fetchall()
-        print(f"Table {table_name} pulled from database. Time taken: {time.time() - start_time_select_from_db:.4f} seconds")
+        print(f"Table {table_name} pulled from database. Rows: {len(data)}. Time taken: {time.time() - start_time_select_from_db:.4f} seconds.")
 
         # get column headers
         column_headers = [description[0] for description in cursor.description]
@@ -45,12 +46,13 @@ def dump_tables_to_csv(folder_path_for_csvs):
             csv_writer.writerow(column_headers)
             csv_writer.writerows(data)
 
-        print(f"Table {table_name} dumped to {csv_file_path}. Time taken: {time.time() - start_time_write_csv:.4f} seconds")
-
+        print(f"Table {table_name} dumped to {csv_file_path}. Time taken: {time.time() - start_time_write_csv:.4f} seconds.")
+    
     # close database connection
-    print(f"\nCompleted database dump to CSVs. Total time taken: {time.time() - start_time_dump_tables_to_csv:.4f} seconds")
-    print("Closing sqlite connection")
+    print("\nCompleted database dump to CSVs. Closing sqlite connection.")
     conn.close()
+
+    print(f"\nTotal time taken: {time.time() - start_time_dump_tables_to_csv:.4f} seconds.")
 
 
 if __name__ == "__main__":
