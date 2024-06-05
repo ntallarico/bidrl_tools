@@ -621,3 +621,67 @@ def scrape_invoice_links(browser):
                 except: continue
     
     return invoice_links'''
+
+
+'''# get auctions list, using scrape_items_fast (returns less info but in massively shorter time. uses /api/getitems/ on an auction_id)
+# requires:
+    # id of affiliate "company". ex: '47' for South Carolina. defaults to first value in home_affiliates list if none specified
+    # webdriver object. if webdriver object has been logged in as a user, then the attribute is_favorite will be filled in for items
+# returns: list of Auction objects
+def get_all_auctions_fast(browser, affiliate_id = home_affiliates[0]):
+    auctions = scrape_auctions(browser, affiliate_id, auctions_to_scrape = 'all')
+    for auction in auctions:
+        auction.items = scrape_items_fast(browser, auction.id)
+    return auctions'''
+
+
+'''
+# an attempt to pull together invoices through scraping auction items
+# ran into several issues:
+    # get_all_auctions_fast took forever to scrape_items_fast for all hundreds of auctions in the list because that's hundreds of API pulls
+    # couldn't get invoice information lol. like invoice ID, url, date, and such
+
+# log in and pull invoices
+# we used to scrape https://www.bidrl.com/myaccount/invoices but found it more reliable to assemble invoices from item info
+# requires: logged in webdriver, date_obj indicating the date of the earliest invoice to scrape
+# returns: list of Invoice objects
+def get_invoices(browser, earliest_invoice_date):
+    print("\nGetting list of all auctions.")
+    auctions = get_all_auctions_fast(browser, affiliate_id = home_affiliates[0])
+    print(f"Auctions found: {len(auctions)}")
+
+    invoices = []
+    # each invoice is for an auction, so we will loop through the auctions and generate an invoice for any in which we purchase items
+    for auction in auctions:
+        print(auction.title)
+
+        # skip auction if it is not complete
+        if auction.status != 'closed':
+            continue
+
+        # check if start date of the auction is earlier than our desired earliest_invoice_date 
+        date_obj_auction_start_date = datetime.strptime(auction.start_datetime, "%Y-%m-%dT%H:%M:%S%z")
+        if date_obj_auction_start_date < earliest_invoice_date:
+            print(f"earliest_invoice_date reached when parsing auction with start time: {date_obj_auction_start_date}")
+            return
+
+        invoice = Invoice(**{
+                        'id': '11111111',
+                        'date': '4/26/24',
+                        'link': auction.url,
+                        'items': [],
+                        'total_cost': None
+                        })
+        
+        username = get_session(browser)['user_name']
+
+        total_cost = 0
+        for item in auction.items:
+            if item.highbidder_username == username:
+                invoice.items.append(item)
+                total_cost += item.total_cost
+        invoice.total_cost = total_cost
+
+        invoices.append(invoice)
+    
+    return invoices'''
