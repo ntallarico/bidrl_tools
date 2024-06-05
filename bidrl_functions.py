@@ -151,26 +151,32 @@ def parse_invoice_page(browser, invoice_url, earliest_invoice_date):
                     tax_rate_text = cells[2].get_text(strip=True)
                     amount = cells[3].get_text(strip=True)
 
+                    auction_id = extract_ids_from_item_url(item_url)['auction_id']
+                    scraped_item = get_item_with_ids(browser, item_id, auction_id, get_bid_history = 'false', get_images = 'false')
+                    buyer_premium = scraped_item.buyer_premium
+
                      # test if item scraped is a real item
                         # ensure item_id is populated
                         # ensure item_id != 'Lot', meaning the "item" scraped is just the header row of the table
                      # then create item in Invoice's item list
                     if item_id and item_id != 'Lot':
                         invoice.items.append(Item(**{
-                            'id': item_id,
-                            'description': description,
-                            'tax_rate': float(tax_rate_text[0:5]) * 0.01,
-                            'current_bid': float(amount),
-                            'url': item_url
+                            'id': item_id
+                            , 'description': description
+                            , 'tax_rate': float(tax_rate_text[0:5]) * 0.01
+                            , 'current_bid': float(amount)
+                            , 'url': item_url
+                            , 'buyer_premium': buyer_premium
                         }))
                     #invoice.items[len(items)-1].display() # call display function for most recent item added
                     
                 except Exception as e:
                     print(f"parse_invoice_page(): Error processing row: {e}")
-                    quit()
+                    #print(cells)
+                    tear_down(browser)
     else:
         print("Parse_invoice_page() could not find '<div id=\"invoice-content\">'. Exiting program.")
-        quit()
+        tear_down(browser)
 
     return invoice
 
@@ -228,18 +234,21 @@ def get_invoices(browser, earliest_invoice_date):
         quit()
 
 
-# calculates total cost of each invoice
+"""# calculates total cost of each invoice
 # requires: list of Invoice objects with Amount and Tax_Rate attributes populated
 # returns: nothing. alters the Invoice objects in the list and the Item objects in the lists of those Invoices
 def calculate_total_cost_of_invoices(invoices):
     for invoice in invoices:
         invoice_total_cost = 0
         for item in invoice.items:
+            # =(ROUND(tax_rate * (current_bid * (1 + buyer_premium)), 2)) + ROUND((current_bid * (1 + buyer_premium)), 2)
+            #invoice_total_cost = 
             item.total_cost = item.tax_rate + float(item.current_bid)
             invoice_total_cost += item.total_cost
 
         invoice.total_cost = invoice_total_cost
-    return
+    return"""
+
 
 
 # extract item_id and auction_id from the URL string
