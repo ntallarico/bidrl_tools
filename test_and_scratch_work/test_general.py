@@ -13,6 +13,7 @@ from config import user_email, user_password, google_form_link_base
 from bidrl_classes import Auction, Item, Invoice
 import bidrl_functions as bf
 from bs4 import BeautifulSoup
+from datetime import datetime
 
 
 
@@ -69,7 +70,9 @@ def test_get_invoices():
     # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
     browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
 
-    invoices = bf.get_invoices(browser)
+    start_date_obj = datetime.strptime('6/2/24', '%m/%d/%y').date()
+
+    invoices = bf.get_invoices(browser, start_date_obj)
     for invoice in invoices:
         invoice.display()
 
@@ -256,7 +259,7 @@ def test_scrape_affiliates():
     for affiliate in affiliates:
         affiliate.display()
 
-test_scrape_affiliates()
+#test_scrape_affiliates()
 
 
 def test_scrape_and_insert_all_affiliates_to_sql_db():
@@ -346,4 +349,3 @@ def test_user_login_urls():
             print("\t\t"+ str(response_json))
 
 #test_user_login_urls()
-

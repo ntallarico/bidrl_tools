@@ -685,3 +685,95 @@ def get_invoices(browser, earliest_invoice_date):
         invoices.append(invoice)
     
     return invoices'''
+
+
+
+"""
+#old parse_invoice_page function that did not use item url for scraping, but rather pulled information off of the page
+
+# requires: logged in webdriver, invoice URL, and a date_obj indicating the date of the earliest invoice to scrape
+# returns: Invoice object
+def parse_invoice_page(browser, invoice_url, earliest_invoice_date):
+    # get html content returned by GET request to the invoice URL
+    response = browser.request('GET', invoice_url)
+    html_content = response.text
+
+    soup = BeautifulSoup(html_content, 'html.parser')
+
+    # find main invoice content block
+    invoice_content = soup.find('div', id="invoice-content")
+    #print(F"\n\n{invoice_content}")
+
+    invoice = Invoice(**{
+                        'id': None,
+                        'date': None,
+                        'link': invoice_url,
+                        'items': [],
+                        'total_cost': None
+                        })
+
+    if invoice_content:
+        # pull out invoice date and number
+        invoice_info = invoice_content.find('tr', class_="no-borders")
+        invoice_info_spans = invoice_info.find('th', style="vertical-align: bottom;").find_all('span')
+        invoice.id = invoice_info_spans[0].text.strip()
+        invoice.date = invoice_info_spans[1].text.strip()
+        #print(f"inv id: {invoice.id}\ninv date: {invoice.date}")
+
+        # if date of invoice is earlier than earliest_invoice_date, return nothing
+        # if function is called by get_invoices(), then get_invoices() knows to then break the invoice processing loop
+        invoice_date_obj = datetime.strptime(invoice.date, "%m/%d/%Y").date()
+        if invoice_date_obj < earliest_invoice_date:
+            return
+
+        # loop through all tr rows and parse out items
+        rows = invoice_content.find_all('tr')
+        for row in rows:
+            #print(f"\n\nRow:\n{row}")
+            cells = row.find_all(['td', 'th'])
+            #print(f"\nnum cells: {len(cells)}")
+
+            # if the first text in the row is 'Lot', then this row is the header row of the table. skip
+            if cells[0].get_text(strip=True) == 'Lot':
+                continue
+
+            if len(cells) == 4: # ensure the row has the correct number of cells
+                #print(f"\n\nCells:\n{cells}")
+                try:
+                    item_url = cells[0].find('a')['href'] if cells[0].find('a') else 'No URL'
+                    item_lot_number = cells[0].get_text(strip=True)
+                    description = cells[1].get_text(strip=True)
+                    tax_rate_text = cells[2].get_text(strip=True)
+                    amount = cells[3].get_text(strip=True)
+
+                    item_ids = extract_ids_from_item_url(item_url)
+                    auction_id = item_ids['auction_id']
+                    item_id = item_ids['item_id']
+                    scraped_item = get_item_with_ids(browser, item_id, auction_id, get_bid_history = 'false', get_images = 'false')
+                    buyer_premium = scraped_item.buyer_premium
+
+                    # test if item scraped is a real item by ensuring item_id is populated
+                    # then create item in Invoice's item list
+                    if item_lot_number:
+                        invoice.items.append(Item(**{
+                            'id': item_id
+                            , 'auction_id': auction_id
+                            , 'lot_number': item_lot_number
+                            , 'description': description
+                            , 'tax_rate': float(tax_rate_text[0:5]) * 0.01
+                            , 'current_bid': float(amount)
+                            , 'url': item_url
+                            , 'buyer_premium': scraped_item.buyer_premium
+                        }))
+                    
+                    #invoice.items[len(items)-1].display() # call display function for most recent item added
+                    
+                except Exception as e:
+                    print(f"parse_invoice_page(): Error processing row: {e}")
+                    #print(cells)
+                    tear_down(browser)
+    else:
+        print("Parse_invoice_page() could not find '<div id=\"invoice-content\">'. Exiting program.")
+        tear_down(browser)
+
+    return invoice"""

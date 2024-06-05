@@ -115,7 +115,7 @@ def parse_invoice_page(browser, invoice_url, earliest_invoice_date):
 
     # find main invoice content block
     invoice_content = soup.find('div', id="invoice-content")
-    #print(invoice_content)
+    #print(F"\n\n{invoice_content}")
 
     invoice = Invoice(**{
                         'id': None,
@@ -140,34 +140,28 @@ def parse_invoice_page(browser, invoice_url, earliest_invoice_date):
             return
 
         # loop through all tr rows and parse out items
-        rows = soup.find_all('tr')
+        rows = invoice_content.find_all('tr')
         for row in rows:
+            #print(f"\n\nRow:\n{row}")
             cells = row.find_all(['td', 'th'])
-            if len(cells) == 4:  # ensure the row has the correct number of cells
+            #print(f"\nnum cells: {len(cells)}")
+
+            # if the first text in the row is 'Lot', then this row is the header row of the table. skip
+            if cells[0].get_text(strip=True) == 'Lot':
+                continue
+
+            if len(cells) == 4: # ensure the row has the correct number of cells
+                #print(f"\n\nCells:\n{cells}")
                 try:
                     item_url = cells[0].find('a')['href'] if cells[0].find('a') else 'No URL'
-                    item_id = cells[0].get_text(strip=True)
-                    description = cells[1].get_text(strip=True)
-                    tax_rate_text = cells[2].get_text(strip=True)
-                    amount = cells[3].get_text(strip=True)
 
-                    auction_id = extract_ids_from_item_url(item_url)['auction_id']
+                    # extract item_id and auction_id from the item_url, then scrape new info for the item and append it to the items list
+                    item_ids = extract_ids_from_item_url(item_url)
+                    auction_id = item_ids['auction_id']
+                    item_id = item_ids['item_id']
                     scraped_item = get_item_with_ids(browser, item_id, auction_id, get_bid_history = 'false', get_images = 'false')
-                    buyer_premium = scraped_item.buyer_premium
-
-                     # test if item scraped is a real item
-                        # ensure item_id is populated
-                        # ensure item_id != 'Lot', meaning the "item" scraped is just the header row of the table
-                     # then create item in Invoice's item list
-                    if item_id and item_id != 'Lot':
-                        invoice.items.append(Item(**{
-                            'id': item_id
-                            , 'description': description
-                            , 'tax_rate': float(tax_rate_text[0:5]) * 0.01
-                            , 'current_bid': float(amount)
-                            , 'url': item_url
-                            , 'buyer_premium': buyer_premium
-                        }))
+                    invoice.items.append(scraped_item)
+                    
                     #invoice.items[len(items)-1].display() # call display function for most recent item added
                     
                 except Exception as e:

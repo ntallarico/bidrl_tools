@@ -137,14 +137,14 @@ class Item:
         self.bid_count = bid_count
         self.viewed = viewed
         self.images = images if images is not None else []
-        #self.total_cost = total_cost # calculated total cost based on current_bid, tax rate, and buyer_premium
+        self.total_cost = total_cost # calculated total cost based on current_bid, tax rate, and buyer_premium
         self.cost_split = cost_split
         self.max_desired_bid = max_desired_bid
         self.item_bid_group_id = item_bid_group_id
 
-        # populate total_cost based on current_bid, tax_rate, and buyer_premium
+        # populate total_cost based on current_bid, tax_rate, and buyer_premium if we have all three
         if self.tax_rate is not None and self.buyer_premium is not None and self.current_bid is not None:
-            self.total_cost = round(self.tax_rate * (self.current_bid * (1 + self.buyer_premium)), 2) + round(self.current_bid * (1 + self.buyer_premium), 2)
+            self.total_cost = round(round(self.tax_rate * (self.current_bid * (1 + self.buyer_premium)), 2) + round(self.current_bid * (1 + self.buyer_premium), 2),2)
 
     def display(self):
         print(f"\nID: {self.id}")
