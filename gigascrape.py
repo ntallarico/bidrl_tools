@@ -147,9 +147,14 @@ def gigascrape():
 
     # filter affiliates to include only those in the home_affiliates list
     affiliates = [affiliate for affiliate in affiliates if affiliate.id in home_affiliates]
+    # sort the list of affiliates to match the order of affiliate IDs in home_affiliates
+    affiliates = sorted(affiliates, key=lambda x: home_affiliates.index(x.id) if x.id in home_affiliates else len(home_affiliates))
+    # print affiliates list
     print("\nBased on IDs in home_affiliates list, auctions will be scraped from:")
     for affiliate in affiliates:
         print(f"{affiliate.company_name}")
+
+    
 
 
     try:
