@@ -816,7 +816,7 @@ def insert_affiliate_to_sql_db(conn, affiliate):
 
 # scrapes all affiliates and inserts them into the SQL database
 def scrape_and_insert_all_affiliates_to_sql_db(conn):
-    print("Scraping all affiliates and inserting into the sql database")
+    print("\nScraping all affiliates and inserting into the sql database")
     # Scrape all affiliates using the existing function
     affiliates = scrape_affiliates()
     
