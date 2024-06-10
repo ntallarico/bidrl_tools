@@ -120,6 +120,19 @@ def sql_database_setup():
         );
     ''')
 
+
+    ### views ###
+
+    # create user reporting view. drop it if it already exists first
+    bf.drop_and_create_view(conn, 'reporting_user', '''
+        CREATE VIEW v_reporting_user AS
+
+        SELECT
+            highbidder_username
+        FROM items
+        ;
+    ''')
+
     conn.commit()
     conn.close()
 
@@ -128,8 +141,8 @@ def database_setup_main():
     try:
         sql_database_setup()
         print("\nDatabase setup complete.")
-    except:
-        print("\nDatabase setup failed.")
+    except Exception as e:
+        print(f"\nDatabase setup failed with exception: {e}.")
         return 1
 
 
