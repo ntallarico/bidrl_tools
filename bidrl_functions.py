@@ -700,6 +700,7 @@ def init_sql_connection(sql_server_name, sql_database_name, sql_admin_username, 
                         f'PWD={sql_admin_password}')
     return conn
 
+
 # return sqlite database connection object
 # this will create the file if it does not already exist
 def init_sqlite_connection():
@@ -707,6 +708,7 @@ def init_sqlite_connection():
     conn = sqlite3.connect('local_files/bidrl.db')
     conn.row_factory = sqlite3.Row
     return conn
+
 
 # returns: 1 if table exists in database and 0 if it does not
 def check_if_table_exists(conn, table_name):
@@ -723,6 +725,24 @@ def check_if_table_exists(conn, table_name):
         print("error getting result in check_if_table_exists(). Exiting.")
         quit()
 
+
+# returns: 1 if view exists in database and 0 if it does not
+def check_if_view_exists(conn, view_name):
+    cursor = conn.cursor()
+    print(f"Checking if view exists: {view_name}")
+    cursor.execute(f'''
+        SELECT COUNT(name) FROM sqlite_master WHERE type='view' AND name='{view_name}';
+    ''')
+    result = cursor.fetchone()
+    if result:
+        if result[0] == 1: return 1
+        else: return 0
+    else:
+        print("error getting result in check_if_view_exists(). Exiting.")
+        quit()
+
+
+# creates table in sqlite database
 def create_table(conn, table_name, table_creation_sql):
     cursor = conn.cursor()
     if check_if_table_exists(conn, table_name) == 0:
@@ -730,6 +750,26 @@ def create_table(conn, table_name, table_creation_sql):
         cursor.execute(table_creation_sql)
     else:
         print("Does exist - skipping.")
+
+
+# creates view in sqlite database
+def create_view(conn, view_name, view_creation_sql):
+    cursor = conn.cursor()
+    if check_if_view_exists(conn, view_name) == 0:
+        print(f"Does not exist. Creating view: {view_name}.")
+        cursor.execute(view_creation_sql)
+    else:
+        print("Does exist - skipping.")
+
+
+# creates view in sqlite database
+def drop_and_create_view(conn, view_name, view_creation_sql):
+    cursor = conn.cursor()
+    print(f"Dropping view: {view_name}.")
+    cursor.execute(f'''DROP VIEW IF EXISTS {view_name};''')
+    print(f"Creating view: {view_name}.")
+    cursor.execute(view_creation_sql)
+
 
 # inserts an auction object into the auctions table in the sql database
 # requires sqlite database connection object and an Auction object
@@ -744,6 +784,7 @@ def insert_auction_to_sql_db(conn, auction):
         sql = ''' INSERT INTO auctions(auction_id, url, title, item_count, start_datetime, status, affiliate_id, aff_company_name, state_abbreviation, city, zip, address)
                   VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) '''
         cur.execute(sql, (auction.id, auction.url, auction.title, auction.item_count, auction.start_datetime, auction.status, auction.affiliate_id, auction.aff_company_name, auction.state_abbreviation, auction.city, auction.zip, auction.address))
+
 
 # inserts an item object into the items table in the sql database
 # requires sqlite database connection object and an Item object
@@ -760,6 +801,7 @@ def insert_item_to_sql_db(conn, item):
         cur = conn.cursor()
         cur.execute(sql, (item.id, item.auction_id, item.description, item.current_bid, item.highbidder_username, item.url, item.tax_rate, item.buyer_premium, item.lot_number, item.bidding_status, item.end_time_unix, item.bid_count, item.viewed, item.is_favorite, item.total_cost, item.cost_split, item.max_desired_bid))
 
+
 # inserts a bid object into the bids table in the sql database
 # requires sqlite database connection object and a Bid object
 def insert_bid_to_sql_db(conn, bid):
@@ -773,6 +815,7 @@ def insert_bid_to_sql_db(conn, bid):
         sql = ''' INSERT INTO bids(bid_id, item_id, username, bid, bid_time, time_of_bid, time_of_bid_unix, buyer_number, description)
                   VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?) '''
         cur.execute(sql, (bid.bid_id, bid.item_id, bid.user_name, bid.bid, bid.bid_time, bid.time_of_bid, bid.time_of_bid_unix, bid.buyer_number, bid.description))
+
 
 # inserts an invoice object into the invoices table in the sql database
 # requires sqlite database connection object and an Invoice object
