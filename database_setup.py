@@ -48,7 +48,7 @@ def create_v_reporting_user(conn):
             LEFT JOIN auctions au on au.auction_id = i.auction_id
             LEFT JOIN affiliates af on af.affiliate_id = au.affiliate_id
             --LEFT JOIN bids b on b.username = u.username -- join in all bids, regardless of item win status
-        WHERE au.status = 'closed' and u.username = 'ndt'
+        WHERE au.status = 'closed'
         GROUP BY
             u.username
             , af.company_name
