@@ -179,11 +179,29 @@ def sql_database_setup():
 
     # create indexes on columns that we commonly use for joining/filtering/sorting. this DRASTICALLY speeds up queries
     # add more indexes here as needed!
-    bf.create_index(conn, 'bids', 'username')
-    bf.create_index(conn, 'items', 'highbidder_username')
-    bf.create_index(conn, 'items', 'item_id')
+    
+    bf.create_index(conn, 'affiliates', 'affiliate_id')
+
     bf.create_index(conn, 'auctions', 'auction_id')
     bf.create_index(conn, 'auctions', 'status')
+    bf.create_index(conn, 'auctions', 'affiliate_id')
+
+    bf.create_index(conn, 'items', 'item_id')
+    bf.create_index(conn, 'items', 'auction_id')
+    bf.create_index(conn, 'items', 'highbidder_username')
+    bf.create_index(conn, 'items', 'lot_number')
+    bf.create_index(conn, 'items', 'bidding_status')
+    bf.create_index(conn, 'items', 'end_time_unix')
+    bf.create_index(conn, 'items', 'is_favorite')
+
+    bf.create_index(conn, 'bids', 'bid_id')
+    bf.create_index(conn, 'bids', 'item_id')
+    bf.create_index(conn, 'bids', 'username')
+    bf.create_index(conn, 'bids', 'time_of_bid_unix')
+
+    bf.create_index(conn, 'images', 'item_id')
+    
+    bf.create_index(conn, 'invoices', 'invoice_id')
 
 
     conn.commit()
