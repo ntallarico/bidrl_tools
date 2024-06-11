@@ -27,8 +27,8 @@ def create_v_reporting_user(conn):
         SELECT
             u.username
             , af.company_name
-            , ROUND(SUM(DISTINCT i.current_bid), 2) AS total_bid
-            , ROUND(SUM(DISTINCT i.total_cost), 2) AS total_spent
+            , ROUND(SUM(i.current_bid), 2) AS total_bid
+	        , ROUND(SUM(i.total_cost), 2) AS total_spent
             , COUNT(DISTINCT i.item_id) AS items_bought
             --, COUNT(DISTINCT b.bid_id) AS bids_placed
             --, MIN(b.time_of_bid_unix) AS earliest_bid_time
