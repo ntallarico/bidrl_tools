@@ -771,6 +771,18 @@ def drop_and_create_view(conn, view_name, view_creation_sql):
     cursor.execute(view_creation_sql)
 
 
+# creates index in sqlite database
+def create_index(conn, table_name, column_name, index_name = None):
+    cursor = conn.cursor()
+
+    # if no index_name is specified, append 'idx_' to the column name and use that
+    if index_name is None:
+        index_name = 'idx_' + column_name
+
+    print(f"Creating index (if does not already exist) on table: {table_name}. Column {column_name}. Index name: {index_name}")
+    cursor.execute(f'''CREATE INDEX IF NOT EXISTS {index_name} ON {table_name}({column_name});''')
+
+
 # inserts an auction object into the auctions table in the sql database
 # requires sqlite database connection object and an Auction object
 def insert_auction_to_sql_db(conn, auction):

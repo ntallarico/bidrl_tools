@@ -16,7 +16,7 @@ def drop_database(conn):
 
 # create user reporting view. drop it if it already exists first
 def create_v_reporting_user(conn):
-    bf.drop_and_create_view(conn, 'reporting_user', '''
+    bf.drop_and_create_view(conn, 'v_reporting_user', '''
         CREATE VIEW v_reporting_user AS
 
         WITH usernames as (
@@ -60,6 +60,9 @@ def sql_database_setup():
     conn = bf.init_sqlite_connection()
     cursor = conn.cursor()
 
+
+    ##### tables #####
+
     # create affiliates table
     bf.create_table(conn, 'affiliates', '''
         CREATE TABLE IF NOT EXISTS affiliates (
@@ -72,6 +75,7 @@ def sql_database_setup():
             , auc_count INTEGER
         );
     ''')
+    
 
     # create auctions table
     bf.create_table(conn, 'auctions', '''
@@ -161,10 +165,25 @@ def sql_database_setup():
     ''')
 
 
-    ### views ###
+    ##### views #####
+
+    print('')
 
     # create view v_reporting_user
     create_v_reporting_user(conn)
+
+
+    ##### indexes #####
+
+    print('')
+
+    # create indexes on columns that we commonly use for joining/filtering/sorting. this DRASTICALLY speeds up queries
+    # add more indexes here as needed!
+    bf.create_index(conn, 'bids', 'username')
+    bf.create_index(conn, 'items', 'highbidder_username')
+    bf.create_index(conn, 'items', 'item_id')
+    bf.create_index(conn, 'auctions', 'auction_id')
+    bf.create_index(conn, 'auctions', 'status')
 
 
     conn.commit()
