@@ -16,7 +16,6 @@
     <_.fcp.SchemaViewerObjectModel.true...SchemaViewerObjectModel />
     <SetMembershipControl />
     <SheetIdentifierTracking />
-    <SortTagCleanup />
     <_.fcp.VConnDownstreamExtractsWithWarnings.true...VConnDownstreamExtractsWithWarnings />
     <WindowsPersistSimpleIdentifiers />
     <ZoneBackgroundTransparency />
@@ -1063,7 +1062,7 @@
       <column caption='Viewed' datatype='integer' name='[viewed]' role='measure' type='quantitative' />
       <column aggregation='Sum' caption='Zip' datatype='integer' default-format='*00000' name='[zip]' role='dimension' semantic-role='[ZipCode].[Name]' type='ordinal' />
       <extract _.fcp.ObjectModelExtractV2.true...object-id='' _.fcp.VConnDownstreamExtractsWithWarnings.true...user-specific='false' count='-1' enabled='true' units='records'>
-        <connection access_mode='readonly' authentication='auth-none' author-locale='en_US' class='hyper' dbname='C:/Users/Nick/AppData/Local/Temp/TableauTemp/#TableauTemp_0a72vx215eo5zi1acuc6p0j5ayhr.hyper' default-settings='yes' schema='Extract' sslmode='' update-time='06/06/2024 12:39:18 PM' username='tableau_internal_user'>
+        <connection access_mode='readonly' author-locale='en_US' class='hyper' dbname='C:/Users/Nick/AppData/Local/Temp/TableauTemp/#TableauTemp_1jgal6i1wfwolj1epfj4f1v7ykzq.hyper' default-settings='hyper' schema='Extract' sslmode='' tablename='Extract' update-time='06/11/2024 01:39:18 PM' username='tableau_internal_user'>
           <_.fcp.ObjectModelEncapsulateLegacy.false...relation name='affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D' table='[Extract].[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]' type='table' />
           <_.fcp.ObjectModelEncapsulateLegacy.true...relation type='collection'>
             <relation name='affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D' table='[Extract].[affiliates.csv_CCC5A0E78F4F435DB335BFA82C826F3D]' type='table' />
@@ -1124,9 +1123,6 @@
             <map key='[viewed]' value='[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7].[viewed]' />
             <map key='[zip]' value='[auctions.csv_6FEA281E47874629A2901108263316BB].[zip]' />
           </cols>
-          <refresh>
-            <refresh-event add-from-file-path='bidrl' increment-value='%null%' refresh-type='create' rows-inserted='9719880' timestamp-start='2024-06-06 12:37:45.482' />
-          </refresh>
           <metadata-records>
             <metadata-record class='column'>
               <remote-name>affiliate_id</remote-name>
@@ -1240,7 +1236,7 @@
               <family>auctions.csv</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>2014</approx-count>
+              <approx-count>2043</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -1254,7 +1250,7 @@
               <family>auctions.csv</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
-              <approx-count>2014</approx-count>
+              <approx-count>2043</approx-count>
               <contains-null>true</contains-null>
               <collation flag='0' name='LEN_RUS' />
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
@@ -1269,7 +1265,7 @@
               <family>auctions.csv</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
-              <approx-count>1729</approx-count>
+              <approx-count>1787</approx-count>
               <contains-null>true</contains-null>
               <collation flag='0' name='LEN_RUS' />
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
@@ -1284,7 +1280,7 @@
               <family>auctions.csv</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>470</approx-count>
+              <approx-count>462</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -1298,7 +1294,7 @@
               <family>auctions.csv</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
-              <approx-count>1380</approx-count>
+              <approx-count>1381</approx-count>
               <contains-null>true</contains-null>
               <collation flag='0' name='LEN_RUS' />
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
@@ -1357,7 +1353,7 @@
               <family>auctions.csv</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
-              <approx-count>3</approx-count>
+              <approx-count>2</approx-count>
               <contains-null>true</contains-null>
               <collation flag='0' name='LEN_RUS' />
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
@@ -1372,7 +1368,7 @@
               <family>auctions.csv</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
-              <approx-count>5</approx-count>
+              <approx-count>4</approx-count>
               <contains-null>true</contains-null>
               <collation flag='0' name='LEN_RUS' />
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
@@ -1387,7 +1383,7 @@
               <family>auctions.csv</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>5</approx-count>
+              <approx-count>4</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -1401,7 +1397,7 @@
               <family>auctions.csv</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
-              <approx-count>13</approx-count>
+              <approx-count>10</approx-count>
               <contains-null>true</contains-null>
               <collation flag='0' name='LEN_RUS' />
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[auctions.csv_6FEA281E47874629A2901108263316BB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
@@ -1416,7 +1412,7 @@
               <family>items.csv</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>396853</approx-count>
+              <approx-count>406300</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -1430,7 +1426,7 @@
               <family>items.csv</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>6952</approx-count>
+              <approx-count>6750</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -1444,7 +1440,7 @@
               <family>items.csv</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
-              <approx-count>76473</approx-count>
+              <approx-count>76749</approx-count>
               <contains-null>true</contains-null>
               <collation flag='0' name='LEN_RUS' />
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
@@ -1459,7 +1455,7 @@
               <family>items.csv</family>
               <local-type>real</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>6186</approx-count>
+              <approx-count>5720</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -1473,7 +1469,7 @@
               <family>items.csv</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
-              <approx-count>10790</approx-count>
+              <approx-count>10824</approx-count>
               <contains-null>true</contains-null>
               <collation flag='0' name='LEN_RUS' />
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
@@ -1488,7 +1484,7 @@
               <family>items.csv</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
-              <approx-count>396853</approx-count>
+              <approx-count>406300</approx-count>
               <contains-null>true</contains-null>
               <collation flag='0' name='LEN_RUS' />
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
@@ -1531,7 +1527,7 @@
               <family>items.csv</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
-              <approx-count>77835</approx-count>
+              <approx-count>80609</approx-count>
               <contains-null>true</contains-null>
               <collation flag='0' name='LEN_RUS' />
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
@@ -1561,7 +1557,7 @@
               <family>items.csv</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>396853</approx-count>
+              <approx-count>406300</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -1575,7 +1571,7 @@
               <family>items.csv</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>621</approx-count>
+              <approx-count>560</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -1589,7 +1585,7 @@
               <family>items.csv</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>676</approx-count>
+              <approx-count>644</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -1609,17 +1605,16 @@
             </metadata-record>
             <metadata-record class='column'>
               <remote-name>total_cost</remote-name>
-              <remote-type>129</remote-type>
+              <remote-type>5</remote-type>
               <local-name>[total_cost]</local-name>
               <parent-name>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</parent-name>
               <remote-alias>total_cost</remote-alias>
               <ordinal>33</ordinal>
               <family>items.csv</family>
-              <local-type>string</local-type>
-              <aggregation>Count</aggregation>
-              <approx-count>7798</approx-count>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>7736</approx-count>
               <contains-null>true</contains-null>
-              <collation flag='0' name='LEN_RUS' />
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[items.csv_DCEA9AD5C23146EBA1ABC8BDB99562B7]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
             <metadata-record class='column'>
@@ -1677,7 +1672,7 @@
               <family>bids.csv</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>7333051</approx-count>
+              <approx-count>7470650</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -1691,7 +1686,7 @@
               <family>bids.csv</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>828160</approx-count>
+              <approx-count>858286</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -1705,7 +1700,7 @@
               <family>bids.csv</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
-              <approx-count>32900</approx-count>
+              <approx-count>32445</approx-count>
               <contains-null>true</contains-null>
               <collation flag='0' name='LEN_RUS' />
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
@@ -1720,7 +1715,7 @@
               <family>bids.csv</family>
               <local-type>real</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>24402</approx-count>
+              <approx-count>25370</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -1734,7 +1729,7 @@
               <family>bids.csv</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
-              <approx-count>5727130</approx-count>
+              <approx-count>6101919</approx-count>
               <contains-null>true</contains-null>
               <collation flag='0' name='LEN_RUS' />
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
@@ -1749,7 +1744,7 @@
               <family>bids.csv</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
-              <approx-count>5748693</approx-count>
+              <approx-count>6112699</approx-count>
               <contains-null>true</contains-null>
               <collation flag='0' name='LEN_RUS' />
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
@@ -1764,7 +1759,7 @@
               <family>bids.csv</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>5748693</approx-count>
+              <approx-count>6112699</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -1793,7 +1788,7 @@
               <family>bids.csv</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
-              <approx-count>1177711</approx-count>
+              <approx-count>1199284</approx-count>
               <contains-null>true</contains-null>
               <collation flag='0' name='LEN_RUS' />
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[bids.csv_49519E358E8448B38B7073A19F333A7A]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
@@ -1808,7 +1803,7 @@
               <family>images.csv</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>644450</approx-count>
+              <approx-count>699683</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -1822,7 +1817,7 @@
               <family>images.csv</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
-              <approx-count>1987928</approx-count>
+              <approx-count>2052644</approx-count>
               <contains-null>true</contains-null>
               <collation flag='0' name='LEN_RUS' />
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
@@ -1837,7 +1832,7 @@
               <family>images.csv</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>563</approx-count>
+              <approx-count>557</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -1851,7 +1846,7 @@
               <family>images.csv</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>628</approx-count>
+              <approx-count>533</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[images.csv_5DC01D5A5A614E3F9A0320E2B5FBA0FB]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -2014,6 +2009,389 @@
         </relationships>
       </_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
     </datasource>
+    <datasource caption='v_reporting_user' inline='true' name='federated.1w2jusx136n7ln129ofws09zgfuw' version='18.1'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='v_reporting_user' name='textscan.17g6o2q1mvgcf91ej7jt502muix9'>
+            <connection class='textscan' directory='C:/Users/Nick/Stuff/Projects/BidRL/bidrl_tools/local_files/data_analysis' filename='v_reporting_user.csv' password='' server='' />
+          </named-connection>
+        </named-connections>
+        <_.fcp.ObjectModelEncapsulateLegacy.false...relation connection='textscan.17g6o2q1mvgcf91ej7jt502muix9' name='v_reporting_user.csv' table='[v_reporting_user#csv]' type='table'>
+          <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+            <column datatype='string' name='username' ordinal='0' />
+            <column datatype='string' name='company_name' ordinal='1' />
+            <column datatype='real' name='total_bid' ordinal='2' />
+            <column datatype='real' name='total_spent' ordinal='3' />
+            <column datatype='integer' name='items_bought' ordinal='4' />
+            <column datatype='real' name='most_expensive_purchase' ordinal='5' />
+            <column datatype='integer' name='purchase_count_total_cost_0_to_1_99' ordinal='6' />
+            <column datatype='integer' name='purchase_count_total_cost_2_to_4_99' ordinal='7' />
+            <column datatype='integer' name='purchase_count_bid_0_to_1_99' ordinal='8' />
+            <column datatype='integer' name='purchase_count_bid_2_to_4_99' ordinal='9' />
+          </columns>
+        </_.fcp.ObjectModelEncapsulateLegacy.false...relation>
+        <_.fcp.ObjectModelEncapsulateLegacy.true...relation connection='textscan.17g6o2q1mvgcf91ej7jt502muix9' name='v_reporting_user.csv' table='[v_reporting_user#csv]' type='table'>
+          <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+            <column datatype='string' name='username' ordinal='0' />
+            <column datatype='string' name='company_name' ordinal='1' />
+            <column datatype='real' name='total_bid' ordinal='2' />
+            <column datatype='real' name='total_spent' ordinal='3' />
+            <column datatype='integer' name='items_bought' ordinal='4' />
+            <column datatype='real' name='most_expensive_purchase' ordinal='5' />
+            <column datatype='integer' name='purchase_count_total_cost_0_to_1_99' ordinal='6' />
+            <column datatype='integer' name='purchase_count_total_cost_2_to_4_99' ordinal='7' />
+            <column datatype='integer' name='purchase_count_bid_0_to_1_99' ordinal='8' />
+            <column datatype='integer' name='purchase_count_bid_2_to_4_99' ordinal='9' />
+          </columns>
+        </_.fcp.ObjectModelEncapsulateLegacy.true...relation>
+        <metadata-records>
+          <metadata-record class='capability'>
+            <remote-name />
+            <remote-type>0</remote-type>
+            <parent-name>[v_reporting_user.csv]</parent-name>
+            <remote-alias />
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='character-set'>&quot;UTF-8&quot;</attribute>
+              <attribute datatype='string' name='collation'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='field-delimiter'>&quot;,&quot;</attribute>
+              <attribute datatype='string' name='header-row'>&quot;true&quot;</attribute>
+              <attribute datatype='string' name='locale'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='single-char'>&quot;&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>username</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[username]</local-name>
+            <parent-name>[v_reporting_user.csv]</parent-name>
+            <remote-alias>username</remote-alias>
+            <ordinal>0</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>company_name</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[company_name]</local-name>
+            <parent-name>[v_reporting_user.csv]</parent-name>
+            <remote-alias>company_name</remote-alias>
+            <ordinal>1</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>total_bid</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[total_bid]</local-name>
+            <parent-name>[v_reporting_user.csv]</parent-name>
+            <remote-alias>total_bid</remote-alias>
+            <ordinal>2</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>total_spent</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[total_spent]</local-name>
+            <parent-name>[v_reporting_user.csv]</parent-name>
+            <remote-alias>total_spent</remote-alias>
+            <ordinal>3</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>items_bought</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[items_bought]</local-name>
+            <parent-name>[v_reporting_user.csv]</parent-name>
+            <remote-alias>items_bought</remote-alias>
+            <ordinal>4</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>most_expensive_purchase</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[most_expensive_purchase]</local-name>
+            <parent-name>[v_reporting_user.csv]</parent-name>
+            <remote-alias>most_expensive_purchase</remote-alias>
+            <ordinal>5</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>purchase_count_total_cost_0_to_1_99</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[purchase_count_total_cost_0_to_1_99]</local-name>
+            <parent-name>[v_reporting_user.csv]</parent-name>
+            <remote-alias>purchase_count_total_cost_0_to_1_99</remote-alias>
+            <ordinal>6</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>purchase_count_total_cost_2_to_4_99</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[purchase_count_total_cost_2_to_4_99]</local-name>
+            <parent-name>[v_reporting_user.csv]</parent-name>
+            <remote-alias>purchase_count_total_cost_2_to_4_99</remote-alias>
+            <ordinal>7</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>purchase_count_bid_0_to_1_99</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[purchase_count_bid_0_to_1_99]</local-name>
+            <parent-name>[v_reporting_user.csv]</parent-name>
+            <remote-alias>purchase_count_bid_0_to_1_99</remote-alias>
+            <ordinal>8</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>purchase_count_bid_2_to_4_99</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[purchase_count_bid_2_to_4_99]</local-name>
+            <parent-name>[v_reporting_user.csv]</parent-name>
+            <remote-alias>purchase_count_bid_2_to_4_99</remote-alias>
+            <ordinal>9</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled='yes' />
+      <column caption='Username Filter' datatype='boolean' name='[Username (copy)_2066307832039960580]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='[username] = [Parameters].[Parameter 2]' />
+      </column>
+      <_.fcp.ObjectModelTableType.true...column caption='v_reporting_user.csv' datatype='table' name='[__tableau_internal_object_id__].[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]' role='measure' type='quantitative' />
+      <column caption='Company Name' datatype='string' name='[company_name]' role='dimension' type='nominal' />
+      <column caption='Items Bought' datatype='integer' name='[items_bought]' role='measure' type='quantitative' />
+      <column caption='Most Expensive Purchase' datatype='real' default-format='c&quot;$&quot;#,##0;(&quot;$&quot;#,##0)' name='[most_expensive_purchase]' role='measure' type='quantitative' />
+      <column caption='Purchase Count Bid 0 To 1 99' datatype='integer' name='[purchase_count_bid_0_to_1_99]' role='measure' type='quantitative' />
+      <column caption='Purchase Count Bid 2 To 4 99' datatype='integer' name='[purchase_count_bid_2_to_4_99]' role='measure' type='quantitative' />
+      <column caption='Purchase Count Total Cost 0 To 1 99' datatype='integer' name='[purchase_count_total_cost_0_to_1_99]' role='measure' type='quantitative' />
+      <column caption='Purchase Count Total Cost 2 To 4 99' datatype='integer' name='[purchase_count_total_cost_2_to_4_99]' role='measure' type='quantitative' />
+      <column caption='Total Bid' datatype='real' default-format='c&quot;$&quot;#,##0;(&quot;$&quot;#,##0)' name='[total_bid]' role='measure' type='quantitative' />
+      <column caption='Total Spent' datatype='real' default-format='c&quot;$&quot;#,##0;(&quot;$&quot;#,##0)' name='[total_spent]' role='measure' type='quantitative' />
+      <column caption='Username' datatype='string' name='[username]' role='dimension' type='nominal' />
+      <extract _.fcp.ObjectModelExtractV2.true...object-id='' _.fcp.VConnDownstreamExtractsWithWarnings.true...user-specific='false' count='-1' enabled='true' units='records'>
+        <connection access_mode='readonly' authentication='auth-none' author-locale='en_US' class='hyper' dbname='C:/Users/Nick/AppData/Local/Temp/TableauTemp/#TableauTemp_06gk5vl1aoxco61dk7k5y1wfoou1.hyper' default-settings='yes' schema='Extract' sslmode='' update-time='06/11/2024 02:05:01 PM' username='tableau_internal_user'>
+          <_.fcp.ObjectModelEncapsulateLegacy.false...relation name='Extract' table='[Extract].[Extract]' type='table' />
+          <_.fcp.ObjectModelEncapsulateLegacy.true...relation name='Extract' table='[Extract].[Extract]' type='table' />
+          <refresh>
+            <refresh-event add-from-file-path='v_reporting_user' increment-value='%null%' refresh-type='create' rows-inserted='9913' timestamp-start='2024-06-11 14:05:00.754' />
+          </refresh>
+          <metadata-records>
+            <metadata-record class='column'>
+              <remote-name>username</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[username]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>username</remote-alias>
+              <ordinal>0</ordinal>
+              <family>v_reporting_user.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>9519</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>company_name</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[company_name]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>company_name</remote-alias>
+              <ordinal>1</ordinal>
+              <family>v_reporting_user.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>3</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>total_bid</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[total_bid]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>total_bid</remote-alias>
+              <ordinal>2</ordinal>
+              <family>v_reporting_user.csv</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>3048</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>total_spent</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[total_spent]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>total_spent</remote-alias>
+              <ordinal>3</ordinal>
+              <family>v_reporting_user.csv</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>3740</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>items_bought</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[items_bought]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>items_bought</remote-alias>
+              <ordinal>4</ordinal>
+              <family>v_reporting_user.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>346</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>most_expensive_purchase</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[most_expensive_purchase]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>most_expensive_purchase</remote-alias>
+              <ordinal>5</ordinal>
+              <family>v_reporting_user.csv</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>1468</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>purchase_count_total_cost_0_to_1_99</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[purchase_count_total_cost_0_to_1_99]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>purchase_count_total_cost_0_to_1_99</remote-alias>
+              <ordinal>6</ordinal>
+              <family>v_reporting_user.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>173</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>purchase_count_total_cost_2_to_4_99</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[purchase_count_total_cost_2_to_4_99]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>purchase_count_total_cost_2_to_4_99</remote-alias>
+              <ordinal>7</ordinal>
+              <family>v_reporting_user.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>182</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>purchase_count_bid_0_to_1_99</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[purchase_count_bid_0_to_1_99]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>purchase_count_bid_0_to_1_99</remote-alias>
+              <ordinal>8</ordinal>
+              <family>v_reporting_user.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>173</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>purchase_count_bid_2_to_4_99</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[purchase_count_bid_2_to_4_99]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>purchase_count_bid_2_to_4_99</remote-alias>
+              <ordinal>9</ordinal>
+              <family>v_reporting_user.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>182</approx-count>
+              <contains-null>true</contains-null>
+              <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+            </metadata-record>
+          </metadata-records>
+        </connection>
+      </extract>
+      <layout _.fcp.SchemaViewerObjectModel.false...dim-percentage='0.5' _.fcp.SchemaViewerObjectModel.false...measure-percentage='0.4' dim-ordering='alphabetic' measure-ordering='alphabetic' show-structure='true' />
+      <semantic-values>
+        <semantic-value key='[Country].[Name]' value='&quot;United States&quot;' />
+      </semantic-values>
+      <datasource-dependencies datasource='Parameters'>
+        <column _.fcp.ParameterDefaultValues.true...source-field='[federated.04ie6gw1vrznht19ek2ik03cy0ek].[highbidder_username]' caption='Username' datatype='string' name='[Parameter 2]' param-domain-type='list' role='measure' type='nominal' value='&quot;ndt&quot;'>
+          <calculation class='tableau' formula='&quot;ndt&quot;' />
+        </column>
+      </datasource-dependencies>
+      <_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
+        <objects>
+          <object caption='v_reporting_user.csv' id='v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B'>
+            <properties context=''>
+              <relation connection='textscan.17g6o2q1mvgcf91ej7jt502muix9' name='v_reporting_user.csv' table='[v_reporting_user#csv]' type='table'>
+                <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+                  <column datatype='string' name='username' ordinal='0' />
+                  <column datatype='string' name='company_name' ordinal='1' />
+                  <column datatype='real' name='total_bid' ordinal='2' />
+                  <column datatype='real' name='total_spent' ordinal='3' />
+                  <column datatype='integer' name='items_bought' ordinal='4' />
+                  <column datatype='real' name='most_expensive_purchase' ordinal='5' />
+                  <column datatype='integer' name='purchase_count_total_cost_0_to_1_99' ordinal='6' />
+                  <column datatype='integer' name='purchase_count_total_cost_2_to_4_99' ordinal='7' />
+                  <column datatype='integer' name='purchase_count_bid_0_to_1_99' ordinal='8' />
+                  <column datatype='integer' name='purchase_count_bid_2_to_4_99' ordinal='9' />
+                </columns>
+              </relation>
+            </properties>
+            <properties context='extract'>
+              <relation name='Extract' table='[Extract].[Extract]' type='table' />
+            </properties>
+          </object>
+        </objects>
+      </_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
+    </datasource>
   </datasources>
   <worksheets>
     <worksheet name='Data AsOf'>
@@ -2140,8 +2518,8 @@
             <column caption='Total Cost' datatype='real' datatype-customized='true' default-format='n#,##0.00;-#,##0.00' name='[total_cost]' role='dimension' type='ordinal' />
             <column-instance column='[Calculation_512284483905646604]' derivation='User' name='[usr:Calculation_512284483905646604:ok:15]' pivot='key' type='ordinal'>
               <table-calc ordering-type='Columns' />
-              <table-calc field='[federated.04ie6gw1vrznht19ek2ik03cy0ek].[Latest Bid (copy)_512284483906699279]' ordering-type='Columns' />
               <table-calc field='[federated.04ie6gw1vrznht19ek2ik03cy0ek].[Calculation_512284483904946185]' ordering-type='Columns' />
+              <table-calc field='[federated.04ie6gw1vrznht19ek2ik03cy0ek].[Latest Bid (copy)_512284483906699279]' ordering-type='Columns' />
               <table-calc field='[federated.04ie6gw1vrznht19ek2ik03cy0ek].[Total Spent (copy)_512284483906490381]' ordering-type='Columns' />
               <table-calc field='[federated.04ie6gw1vrznht19ek2ik03cy0ek].[Earliest Bid (copy)_512284483906555918]' ordering-type='Columns' />
             </column-instance>
@@ -2204,8 +2582,9 @@
       <table>
         <view>
           <datasources>
-            <datasource caption='bidrl' name='federated.04ie6gw1vrznht19ek2ik03cy0ek' />
+            <datasource caption='v_reporting_user' name='federated.1w2jusx136n7ln129ofws09zgfuw' />
             <datasource name='Parameters' />
+            <datasource caption='bidrl' name='federated.04ie6gw1vrznht19ek2ik03cy0ek' />
           </datasources>
           <datasource-dependencies datasource='Parameters'>
             <column _.fcp.ParameterDefaultValues.true...source-field='[federated.04ie6gw1vrznht19ek2ik03cy0ek].[highbidder_username]' caption='Username' datatype='string' name='[Parameter 2]' param-domain-type='list' role='measure' type='nominal' value='&quot;ndt&quot;'>
@@ -2213,71 +2592,45 @@
             </column>
           </datasource-dependencies>
           <datasource-dependencies datasource='federated.04ie6gw1vrznht19ek2ik03cy0ek'>
-            <column caption='Username Filter' datatype='boolean' name='[Calculation_2066307831693983745]' role='dimension' type='nominal'>
-              <calculation class='tableau' formula='[highbidder_username] = [Parameters].[Parameter 2]' />
-            </column>
-            <column caption='Items Purchased' datatype='integer' name='[Item Id (copy)_512284483868303367]' role='measure' type='ordinal'>
-              <calculation class='tableau' formula='COUNTD([item_id])' />
-            </column>
-            <column caption='Total Spent' datatype='real' datatype-customized='true' default-format='c&quot;$&quot;#,##0.00;(&quot;$&quot;#,##0.00)' name='[Total Cost (copy)_512284483868086278]' role='measure' type='ordinal'>
-              <calculation class='tableau' formula='SUM([total_cost])' />
-            </column>
-            <column caption='Total Bid' datatype='real' datatype-customized='true' default-format='c&quot;$&quot;#,##0.00;(&quot;$&quot;#,##0.00)' name='[Total Spent (copy)_2066307831696572419]' role='measure' type='ordinal'>
-              <calculation class='tableau' formula='SUM([current_bid])' />
-            </column>
-            <column caption='Bid Username Filter' datatype='boolean' name='[Username (copy)_2066307831695441922]' role='dimension' type='nominal'>
+            <column caption='Highbidder Username' datatype='string' name='[highbidder_username]' role='dimension' type='nominal' />
+          </datasource-dependencies>
+          <datasource-dependencies datasource='federated.1w2jusx136n7ln129ofws09zgfuw'>
+            <column caption='Username Filter' datatype='boolean' name='[Username (copy)_2066307832039960580]' role='dimension' type='nominal'>
               <calculation class='tableau' formula='[username] = [Parameters].[Parameter 2]' />
             </column>
-            <column caption='Company Name' datatype='string' name='[company_name]' role='dimension' type='nominal' />
-            <column caption='Current Bid' datatype='real' name='[current_bid]' role='measure' type='quantitative' />
-            <column caption='Highbidder Username' datatype='string' name='[highbidder_username]' role='dimension' type='nominal' />
-            <column caption='Item Id' datatype='integer' name='[item_id]' role='dimension' type='ordinal' />
-            <column-instance column='[Calculation_2066307831693983745]' derivation='None' name='[none:Calculation_2066307831693983745:nk]' pivot='key' type='nominal' />
-            <column-instance column='[Username (copy)_2066307831695441922]' derivation='None' name='[none:Username (copy)_2066307831695441922:nk]' pivot='key' type='nominal' />
-            <column-instance column='[company_name]' derivation='None' name='[none:company_name:nk]' pivot='key' type='nominal' />
-            <column-instance column='[highbidder_username]' derivation='None' name='[none:highbidder_username:nk]' pivot='key' type='nominal' />
-            <column-instance column='[current_bid]' derivation='Sum' name='[sum:current_bid:qk]' pivot='key' type='quantitative' />
-            <column caption='Total Cost' datatype='real' datatype-customized='true' default-format='n#,##0.00;-#,##0.00' name='[total_cost]' role='dimension' type='ordinal' />
+            <column caption='Items Bought' datatype='integer' name='[items_bought]' role='measure' type='quantitative' />
+            <column caption='Most Expensive Purchase' datatype='real' default-format='c&quot;$&quot;#,##0;(&quot;$&quot;#,##0)' name='[most_expensive_purchase]' role='measure' type='quantitative' />
+            <column-instance column='[Username (copy)_2066307832039960580]' derivation='None' name='[none:Username (copy)_2066307832039960580:nk]' pivot='key' type='nominal' />
+            <column-instance column='[username]' derivation='None' name='[none:username:nk]' pivot='key' type='nominal' />
+            <column caption='Purchase Count Bid 0 To 1 99' datatype='integer' name='[purchase_count_bid_0_to_1_99]' role='measure' type='quantitative' />
+            <column caption='Purchase Count Bid 2 To 4 99' datatype='integer' name='[purchase_count_bid_2_to_4_99]' role='measure' type='quantitative' />
+            <column caption='Purchase Count Total Cost 0 To 1 99' datatype='integer' name='[purchase_count_total_cost_0_to_1_99]' role='measure' type='quantitative' />
+            <column caption='Purchase Count Total Cost 2 To 4 99' datatype='integer' name='[purchase_count_total_cost_2_to_4_99]' role='measure' type='quantitative' />
+            <column-instance column='[items_bought]' derivation='Sum' name='[sum:items_bought:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[most_expensive_purchase]' derivation='Sum' name='[sum:most_expensive_purchase:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[purchase_count_bid_0_to_1_99]' derivation='Sum' name='[sum:purchase_count_bid_0_to_1_99:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[purchase_count_bid_2_to_4_99]' derivation='Sum' name='[sum:purchase_count_bid_2_to_4_99:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[purchase_count_total_cost_0_to_1_99]' derivation='Sum' name='[sum:purchase_count_total_cost_0_to_1_99:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[purchase_count_total_cost_2_to_4_99]' derivation='Sum' name='[sum:purchase_count_total_cost_2_to_4_99:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[total_bid]' derivation='Sum' name='[sum:total_bid:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[total_spent]' derivation='Sum' name='[sum:total_spent:ok]' pivot='key' type='ordinal' />
+            <column caption='Total Bid' datatype='real' default-format='c&quot;$&quot;#,##0;(&quot;$&quot;#,##0)' name='[total_bid]' role='measure' type='quantitative' />
+            <column caption='Total Spent' datatype='real' default-format='c&quot;$&quot;#,##0;(&quot;$&quot;#,##0)' name='[total_spent]' role='measure' type='quantitative' />
             <column caption='Username' datatype='string' name='[username]' role='dimension' type='nominal' />
-            <column-instance column='[Item Id (copy)_512284483868303367]' derivation='User' name='[usr:Item Id (copy)_512284483868303367:ok]' pivot='key' type='ordinal' />
-            <column-instance column='[Total Cost (copy)_512284483868086278]' derivation='User' name='[usr:Total Cost (copy)_512284483868086278:ok]' pivot='key' type='ordinal' />
-            <column-instance column='[Total Spent (copy)_2066307831696572419]' derivation='User' name='[usr:Total Spent (copy)_2066307831696572419:qk]' pivot='key' type='quantitative' />
           </datasource-dependencies>
-          <filter class='categorical' column='[federated.04ie6gw1vrznht19ek2ik03cy0ek].[:Measure Names]'>
-            <groupfilter function='union' user:op='manual'>
-              <groupfilter function='member' level='[:Measure Names]' member='&quot;[federated.04ie6gw1vrznht19ek2ik03cy0ek].[usr:Item Id (copy)_512284483868303367:ok]&quot;' />
-              <groupfilter function='member' level='[:Measure Names]' member='&quot;[federated.04ie6gw1vrznht19ek2ik03cy0ek].[usr:Total Cost (copy)_512284483868086278:ok]&quot;' />
-              <groupfilter function='member' level='[:Measure Names]' member='&quot;[federated.04ie6gw1vrznht19ek2ik03cy0ek].[usr:Total Spent (copy)_2066307831696572419:qk]&quot;' />
-            </groupfilter>
-          </filter>
-          <manual-sort column='[federated.04ie6gw1vrznht19ek2ik03cy0ek].[:Measure Names]' direction='ASC'>
-            <dictionary>
-              <bucket>&quot;[federated.04ie6gw1vrznht19ek2ik03cy0ek].[sum:current_bid:qk]&quot;</bucket>
-              <bucket>&quot;[federated.04ie6gw1vrznht19ek2ik03cy0ek].[usr:Item Id (copy)_512284483868303367:ok]&quot;</bucket>
-              <bucket>&quot;[federated.04ie6gw1vrznht19ek2ik03cy0ek].[usr:Total Cost (copy)_512284483868086278:ok]&quot;</bucket>
-              <bucket>&quot;[federated.04ie6gw1vrznht19ek2ik03cy0ek].[usr:Total Spent (copy)_2066307831696572419:qk]&quot;</bucket>
-            </dictionary>
-          </manual-sort>
-          <filter class='categorical' column='[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:Calculation_2066307831693983745:nk]'>
-            <groupfilter function='member' level='[none:Calculation_2066307831693983745:nk]' member='true' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
-          </filter>
-          <filter class='categorical' column='[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:Username (copy)_2066307831695441922:nk]'>
-            <groupfilter function='member' level='[none:Username (copy)_2066307831695441922:nk]' member='true' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
-          </filter>
-          <filter class='categorical' column='[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:company_name:nk]'>
-            <groupfilter function='member' level='[none:company_name:nk]' member='&quot;South Carolina&quot;' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
+          <filter class='categorical' column='[federated.1w2jusx136n7ln129ofws09zgfuw].[none:Username (copy)_2066307832039960580:nk]'>
+            <groupfilter function='member' level='[none:Username (copy)_2066307832039960580:nk]' member='true' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
           </filter>
           <slices>
-            <column>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:company_name:nk]</column>
-            <column>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:Calculation_2066307831693983745:nk]</column>
-            <column>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[:Measure Names]</column>
-            <column>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:Username (copy)_2066307831695441922:nk]</column>
+            <column>[federated.1w2jusx136n7ln129ofws09zgfuw].[none:Username (copy)_2066307832039960580:nk]</column>
           </slices>
           <aggregation value='true' />
         </view>
         <style>
-          <style-rule element='cell'>
-            <format attr='width' value='236' />
+          <style-rule element='header'>
+            <format attr='width' field='[federated.1w2jusx136n7ln129ofws09zgfuw].[sum:items_bought:ok]' value='112' />
+            <format attr='width' field='[federated.1w2jusx136n7ln129ofws09zgfuw].[sum:most_expensive_purchase:ok]' value='92' />
+            <format attr='height-header' value='52' />
           </style-rule>
         </style>
         <panes>
@@ -2286,25 +2639,12 @@
               <breakdown value='auto' />
             </view>
             <mark class='Automatic' />
-            <encodings>
-              <text column='[federated.04ie6gw1vrznht19ek2ik03cy0ek].[Multiple Values]' />
-            </encodings>
-            <style>
-              <style-rule element='mark'>
-                <format attr='mark-labels-show' value='true' />
-                <format attr='mark-labels-cull' value='true' />
-              </style-rule>
-              <style-rule element='pane'>
-                <format attr='minwidth' value='-1' />
-                <format attr='maxwidth' value='-1' />
-              </style-rule>
-            </style>
           </pane>
         </panes>
-        <rows onTop='true'>([federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:highbidder_username:nk] / [federated.04ie6gw1vrznht19ek2ik03cy0ek].[:Measure Names])</rows>
+        <rows>([federated.1w2jusx136n7ln129ofws09zgfuw].[none:username:nk] / ([federated.1w2jusx136n7ln129ofws09zgfuw].[sum:items_bought:ok] / ([federated.1w2jusx136n7ln129ofws09zgfuw].[sum:most_expensive_purchase:ok] / ([federated.1w2jusx136n7ln129ofws09zgfuw].[sum:total_bid:ok] / ([federated.1w2jusx136n7ln129ofws09zgfuw].[sum:total_spent:ok] / ([federated.1w2jusx136n7ln129ofws09zgfuw].[sum:purchase_count_bid_0_to_1_99:ok] / ([federated.1w2jusx136n7ln129ofws09zgfuw].[sum:purchase_count_bid_2_to_4_99:ok] / ([federated.1w2jusx136n7ln129ofws09zgfuw].[sum:purchase_count_total_cost_0_to_1_99:ok] / [federated.1w2jusx136n7ln129ofws09zgfuw].[sum:purchase_count_total_cost_2_to_4_99:ok]))))))))</rows>
         <cols />
       </table>
-      <simple-id uuid='{BC86B141-C91E-43F2-B344-B7226FF1F61D}' />
+      <simple-id uuid='{B375413C-6F9F-4060-976B-154249F3B5C1}' />
     </worksheet>
     <worksheet name='Sheet1'>
       <table>
@@ -2467,8 +2807,8 @@
         <devicelayout auto-generated='true' name='Phone'>
           <size maxheight='700' minheight='700' sizing-mode='vscroll' />
           <zones>
-            <zone h='100000' id='23' type-v2='layout-basic' w='100000' x='0' y='0'>
-              <zone h='98334' id='22' param='vert' type-v2='layout-flow' w='98476' x='762' y='833'>
+            <zone h='100000' id='29' type-v2='layout-basic' w='100000' x='0' y='0'>
+              <zone h='84000' id='28' param='vert' type-v2='layout-flow' w='84000' x='8000' y='8000'>
                 <zone fixed-size='861' forceUpdate='true' h='4687' id='7' type-v2='text' w='82762' x='1143' y='1250'>
                   <formatted-text>
                     <run bold='true' fontalignment='1' fontsize='20'>BidRL Leaderboard</run>
@@ -2540,8 +2880,8 @@
         <devicelayout auto-generated='true' name='Phone'>
           <size maxheight='700' minheight='700' sizing-mode='vscroll' />
           <zones>
-            <zone h='100000' id='10' type-v2='layout-basic' w='100000' x='0' y='0'>
-              <zone h='98140' id='9' param='vert' type-v2='layout-flow' w='97538' x='1231' y='930' />
+            <zone h='100000' id='16' type-v2='layout-basic' w='100000' x='0' y='0'>
+              <zone h='98140' id='15' param='vert' type-v2='layout-flow' w='97538' x='1231' y='930' />
               <zone-style>
                 <format attr='border-color' value='#000000' />
                 <format attr='border-style' value='none' />
@@ -2555,7 +2895,7 @@
       <simple-id uuid='{230981A0-B0CD-4110-A1E5-F6BE87EC3DF0}' />
     </dashboard>
   </dashboards>
-  <windows source-height='30'>
+  <windows source-height='51'>
     <window class='dashboard' name='Leaderboard'>
       <viewpoints>
         <viewpoint name='Data AsOf'>
@@ -2703,7 +3043,6 @@
             <card type='pages' />
             <card type='filters' />
             <card type='marks' />
-            <card type='measures' />
           </strip>
         </edge>
         <edge name='top'>
@@ -2726,20 +3065,12 @@
       <viewpoint>
         <highlight>
           <color-one-way>
-            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[:Measure Names]</field>
-            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:Calculation_2066307831693983745:nk]</field>
-            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:Username (copy)_2066307831695441922:nk]</field>
-            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:company_name:nk]</field>
-            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:description (bids.csv):nk]</field>
-            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:description:nk]</field>
-            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:highbidder_username:nk]</field>
-            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[none:username:nk]</field>
-            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[usr:Total Cost (copy)_512284483868086278:ok]</field>
-            <field>[federated.04ie6gw1vrznht19ek2ik03cy0ek].[usr:Total Spent (copy)_2066307831696572419:ok]</field>
+            <field>[federated.1w2jusx136n7ln129ofws09zgfuw].[none:Username (copy)_2066307832039960580:nk]</field>
+            <field>[federated.1w2jusx136n7ln129ofws09zgfuw].[none:username:nk]</field>
           </color-one-way>
         </highlight>
       </viewpoint>
-      <simple-id uuid='{266B1C90-0D1D-40B4-BF56-3CB708CE6F8D}' />
+      <simple-id uuid='{8DD84267-4189-4B67-B35E-9218A307DE4A}' />
     </window>
   </windows>
   <thumbnails>
@@ -3954,69 +4285,29 @@
       j4SpHNzDlwIcHZ+gqxrJbB5JEM5tod4Ez+yRMpkMmqZhmibxeBxRFDFNE4D/C8xhCDS48rIK
       AAAAAElFTkSuQmCC
     </thumbnail>
-    <thumbnail height='84' name='Sheet 4' width='192'>
-      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
-      vpMXTZHXvgAAAABJRU5ErkJggg==
+    <thumbnail height='76' name='Sheet 4' width='192'>
+      iVBORw0KGgoAAAANSUhEUgAAAMAAAABMCAYAAAA7rrikAAAACXBIWXMAAA7DAAAOwwHHb6hk
+      AAAEJ0lEQVR4nO3afUxVdRzH8bdcoBt4Y4gayC0eXDEsgxLDGrIetiZh0WTFehqMWjo2WGO2
+      pD9g8IcbtTW3ZqVlRYtGCQ0r1JgWQeXKkxZuokUShg89CCuGF3m6/QE1+qNcM7hdv5/Xn797
+      zs7vt533zjm/3Tl+v9+PiFEhgZ6ASCApADFNAYhpCkBMUwBimgIQ0xSAmKYAxDQFIKYpADFN
+      AYhpCkBMUwBimgIQ0xSAmKYAxDQFIKYpADFNAYhpCkBMUwBimgIQ0xSAmKYAxDQFIKYpADFN
+      AYhpCkBMUwBimgIQ0xSAmKYAxDQFIKYpADFNAYhpCkBMUwBimgIQ0xSAmKYAxDQFIKYpADFN
+      AYhpCkBMUwBimgIQ0xSAmKYAxDQFIKYpADFNAYhpCkBMUwBimgIQ0xSAmKYAxDQFIKYpADFN
+      AYhpoec7wHGc2ZiHSEDM8fv9/kBPQiRQ9AokpikAMU0BiGkKQEw77y7Qf6OdqowtJDfVU5gw
+      O1cMKqdb2VjTxNhd1VTmxALD9LS9QcP7X/P94AiEe0jMKqasYAmRU6cMde/itVd30vnLCOGe
+      RFaVVZB7ZSAXEZxmKYC/6q17kPxja3GqswNx+f+ZIfY1Olx35zIO/Dk2yJmRNB6ueog4jxuG
+      z3Cg/mnqPq+mJNMN/W288FIPKx5/hnVxbiaG+hgYCeASgphegQJs6Mt6Pk0sIsfrmja6gIw7
+      luP1uHEBLncMN6Qv5qzvHADHOz4iYk0xWXGTv4dFelkYHYjZB78LeAK0U5WxmfCSdL5r2Eln
+      /xixWRvYvCmPBOC3zjpqKl+mrc/HpV4vEUSSDLRXZVDeAlBORguQUkpTfSEm34zGj7Bjz3zy
+      1y/Cdehvjhkdou/wHt75MIrVpVHArxz7Np7M1e7ZnOlF6wKfAKF4b6/gldYOHKeWZZ+8TVsv
+      0F7FbbVQ2tyB4zh0NJezYuqM7GqHptIUyH0Wx3FwrN78p3ex6S0oeHINSa5/OC7ERVRMIgmX
+      /EhP/zjgwxc2wfCpQYbHAUYZ6NpOTe1e+mdn5heVgHwDCBza/R5d+8Yp+Xj66Bes3X8P1ZU5
+      xP4x5HLj8aaRd99JNu4+TE7RUpIWjHIiwoPbBRBGdOpKlm9v4Tgwb5bXEexmJoCUJaQffZcP
+      uu6lODWUs929nASSp36eO/cy6D7CNyPZXB0yxlhoqLkSlxY9z5aiaQNfbaPmVO7kLtDPDq1H
+      55F+/RUsjAyD0QG6PjvIuehrALjqpnh2vL6XxetuIdE9wUBXBwfnX8utAVlJcJuZ++7yfJ6q
+      2E/5Y9lsHfOQenc2099YY1Y9SmHzegpv3gppT9C4rYD4GZlIkPIswnOigecau/nJNz65DXrj
+      /ZQ+MLnP6UrK45GVb/LihlJ+8LnwJGZRXJaJvgr+Pf0ZTkzTNqiY9jtcHQD8c2bQ1AAAAABJ
+      RU5ErkJggg==
     </thumbnail>
     <thumbnail height='192' name='Sheet1' width='192'>
       iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAACXBIWXMAAA7DAAAOwwHHb6hk

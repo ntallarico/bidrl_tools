@@ -27,12 +27,12 @@ def create_v_reporting_user(conn):
         SELECT
             u.username
             , af.company_name
-            , COUNT(DISTINCT i.current_bid) AS total_bid
-            , COUNT(DISTINCT i.total_cost) AS total_spent
+            , ROUND(SUM(DISTINCT i.current_bid), 2) AS total_bid
+            , ROUND(SUM(DISTINCT i.total_cost), 2) AS total_spent
             , COUNT(DISTINCT i.item_id) AS items_bought
-            , COUNT(DISTINCT b.bid_id) AS bids_placed
-            , MIN(time_of_bid_unix) AS earliest_bid_time
-            , MAX(time_of_bid_unix) AS latest_bid_time
+            --, COUNT(DISTINCT b.bid_id) AS bids_placed
+            --, MIN(b.time_of_bid_unix) AS earliest_bid_time
+            --, MAX(b.time_of_bid_unix) AS latest_bid_time
             --, '' AS most_bought_category
             --, '' AS most_spent_category
             --, '' AS closest_snipe
@@ -40,15 +40,15 @@ def create_v_reporting_user(conn):
             , MAX(i.current_bid) AS most_expensive_purchase
             , COUNT(DISTINCT IIF(i.total_cost BETWEEN 0 AND 1.99, i.item_id, NULL)) AS purchase_count_total_cost_0_to_1_99 -- count of purchases with actual cost of $0-1.99
             , COUNT(DISTINCT IIF(i.total_cost BETWEEN 2 AND 4.99, i.item_id, NULL)) AS purchase_count_total_cost_2_to_4_99 -- count of purchases with actual cost of $2-4.99
-            , COUNT(DISTINCT IIF(i.total_cost BETWEEN 0 AND 1.99, i.item_id, NULL)) AS purchase_count_bid_0_to_1_99 -- count of purchases with bid amount of $0-1.99
-            , COUNT(DISTINCT IIF(i.total_cost BETWEEN 2 AND 4.99, i.item_id, NULL)) AS purchase_count_bid_2_to_4_99 -- count of purchases with bid amount of $2-4.99
-            , COUNT(DISTINCT b.item_id) AS items_bid_on
+            , COUNT(DISTINCT IIF(i.current_bid BETWEEN 0 AND 1.99, i.item_id, NULL)) AS purchase_count_bid_0_to_1_99 -- count of purchases with bid amount of $0-1.99
+            , COUNT(DISTINCT IIF(i.current_bid BETWEEN 2 AND 4.99, i.item_id, NULL)) AS purchase_count_bid_2_to_4_99 -- count of purchases with bid amount of $2-4.99
+            --, COUNT(DISTINCT b.item_id) AS items_bid_on
         FROM usernames u
             LEFT JOIN items i on i.highbidder_username = u.username -- specifically join on items where the user won
             LEFT JOIN auctions au on au.auction_id = i.auction_id
             LEFT JOIN affiliates af on af.affiliate_id = au.affiliate_id
-            LEFT JOIN bids b on b.username = u.username -- join in all bids, regardless of item win status
-        WHERE au.status = 'closed'
+            --LEFT JOIN bids b on b.username = u.username -- join in all bids, regardless of item win status
+        WHERE au.status = 'closed' and u.username = 'ndt'
         GROUP BY
             u.username
             , af.company_name

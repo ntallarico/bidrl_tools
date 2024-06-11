@@ -15,6 +15,7 @@ def dump_tables_to_csv(folder_path_for_csvs):
 
     # get list of all tables and views in the database
     cursor.execute("SELECT name, type FROM sqlite_master WHERE type IN ('table', 'view');")
+    #cursor.execute("SELECT name, type FROM sqlite_master WHERE type IN ('table', 'view') and name IN ('v_reporting_user');")
     tables_and_views = cursor.fetchall()
 
     print(f"\nFound {len(tables_and_views)} tables and views in database:")
