@@ -2205,11 +2205,11 @@
       <column caption='Total Spent' datatype='real' default-format='c&quot;$&quot;#,##0;(&quot;$&quot;#,##0)' name='[total_spent]' role='measure' type='quantitative' />
       <column caption='Username' datatype='string' name='[username]' role='dimension' type='nominal' />
       <extract _.fcp.ObjectModelExtractV2.true...object-id='' _.fcp.VConnDownstreamExtractsWithWarnings.true...user-specific='false' count='-1' enabled='true' units='records'>
-        <connection access_mode='readonly' authentication='auth-none' author-locale='en_US' class='hyper' dbname='C:/Users/Nick/AppData/Local/Temp/TableauTemp/#TableauTemp_06gk5vl1aoxco61dk7k5y1wfoou1.hyper' default-settings='yes' schema='Extract' sslmode='' update-time='06/11/2024 02:05:01 PM' username='tableau_internal_user'>
+        <connection access_mode='readonly' authentication='auth-none' author-locale='en_US' class='hyper' dbname='C:/Users/Nick/AppData/Local/Temp/TableauTemp/#TableauTemp_06gk5vl1aoxco61dk7k5y1wfoou1.hyper' default-settings='yes' schema='Extract' sslmode='' update-time='06/11/2024 02:28:09 PM' username='tableau_internal_user'>
           <_.fcp.ObjectModelEncapsulateLegacy.false...relation name='Extract' table='[Extract].[Extract]' type='table' />
           <_.fcp.ObjectModelEncapsulateLegacy.true...relation name='Extract' table='[Extract].[Extract]' type='table' />
           <refresh>
-            <refresh-event add-from-file-path='v_reporting_user' increment-value='%null%' refresh-type='create' rows-inserted='9913' timestamp-start='2024-06-11 14:05:00.754' />
+            <refresh-event add-from-file-path='v_reporting_user' increment-value='%null%' refresh-type='create' rows-inserted='9913' timestamp-start='2024-06-11 14:28:09.356' />
           </refresh>
           <metadata-records>
             <metadata-record class='column'>
@@ -2222,7 +2222,7 @@
               <family>v_reporting_user.csv</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
-              <approx-count>9519</approx-count>
+              <approx-count>9124</approx-count>
               <contains-null>true</contains-null>
               <collation flag='0' name='LEN_RUS' />
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
@@ -2252,7 +2252,7 @@
               <family>v_reporting_user.csv</family>
               <local-type>real</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>3048</approx-count>
+              <approx-count>3081</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -2266,7 +2266,7 @@
               <family>v_reporting_user.csv</family>
               <local-type>real</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>3740</approx-count>
+              <approx-count>3660</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -2280,7 +2280,7 @@
               <family>v_reporting_user.csv</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>346</approx-count>
+              <approx-count>337</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -2294,7 +2294,7 @@
               <family>v_reporting_user.csv</family>
               <local-type>real</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>1468</approx-count>
+              <approx-count>1540</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -2336,7 +2336,7 @@
               <family>v_reporting_user.csv</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>173</approx-count>
+              <approx-count>178</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -2350,7 +2350,7 @@
               <family>v_reporting_user.csv</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>182</approx-count>
+              <approx-count>177</approx-count>
               <contains-null>true</contains-null>
               <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[v_reporting_user.csv_66C2B68F6749464785E10DCA6E65AF1B]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
             </metadata-record>
@@ -2807,8 +2807,8 @@
         <devicelayout auto-generated='true' name='Phone'>
           <size maxheight='700' minheight='700' sizing-mode='vscroll' />
           <zones>
-            <zone h='100000' id='31' type-v2='layout-basic' w='100000' x='0' y='0'>
-              <zone h='84000' id='30' param='vert' type-v2='layout-flow' w='84000' x='8000' y='8000'>
+            <zone h='100000' id='37' type-v2='layout-basic' w='100000' x='0' y='0'>
+              <zone h='84000' id='36' param='vert' type-v2='layout-flow' w='84000' x='8000' y='8000'>
                 <zone fixed-size='861' forceUpdate='true' h='4687' id='7' type-v2='text' w='82762' x='1143' y='1250'>
                   <formatted-text>
                     <run bold='true' fontalignment='1' fontsize='20'>BidRL Leaderboard</run>
@@ -2880,8 +2880,8 @@
         <devicelayout auto-generated='true' name='Phone'>
           <size maxheight='700' minheight='700' sizing-mode='vscroll' />
           <zones>
-            <zone h='100000' id='18' type-v2='layout-basic' w='100000' x='0' y='0'>
-              <zone h='98140' id='17' param='vert' type-v2='layout-flow' w='97538' x='1231' y='930' />
+            <zone h='100000' id='24' type-v2='layout-basic' w='100000' x='0' y='0'>
+              <zone h='98140' id='23' param='vert' type-v2='layout-flow' w='97538' x='1231' y='930' />
               <zone-style>
                 <format attr='border-color' value='#000000' />
                 <format attr='border-style' value='none' />

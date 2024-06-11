@@ -28,7 +28,7 @@ def create_v_reporting_user(conn):
             u.username
             , af.company_name
             , ROUND(SUM(i.current_bid), 2) AS total_bid
-	        , ROUND(SUM(i.total_cost), 2) AS total_spent
+            , ROUND(SUM(i.total_cost), 2) AS total_spent
             , COUNT(DISTINCT i.item_id) AS items_bought
             --, COUNT(DISTINCT b.bid_id) AS bids_placed
             --, MIN(b.time_of_bid_unix) AS earliest_bid_time
@@ -38,10 +38,10 @@ def create_v_reporting_user(conn):
             --, '' AS closest_snipe
             --, '' AS longest_out_bid_that_won
             , MAX(i.current_bid) AS most_expensive_purchase
-            , COUNT(DISTINCT IIF(i.total_cost BETWEEN 0 AND 1.99, i.item_id, NULL)) AS purchase_count_total_cost_0_to_1_99 -- count of purchases with actual cost of $0-1.99
-            , COUNT(DISTINCT IIF(i.total_cost BETWEEN 2 AND 4.99, i.item_id, NULL)) AS purchase_count_total_cost_2_to_4_99 -- count of purchases with actual cost of $2-4.99
-            , COUNT(DISTINCT IIF(i.current_bid BETWEEN 0 AND 1.99, i.item_id, NULL)) AS purchase_count_bid_0_to_1_99 -- count of purchases with bid amount of $0-1.99
-            , COUNT(DISTINCT IIF(i.current_bid BETWEEN 2 AND 4.99, i.item_id, NULL)) AS purchase_count_bid_2_to_4_99 -- count of purchases with bid amount of $2-4.99
+            , COUNT(DISTINCT IIF(i.total_cost < 2, i.item_id, NULL)) AS purchase_count_total_cost_0_to_1_99 -- count of purchases with actual cost of >$2
+            , COUNT(DISTINCT IIF(i.total_cost < 5, i.item_id, NULL)) AS purchase_count_total_cost_2_to_4_99 -- count of purchases with actual cost of >$5
+            , COUNT(DISTINCT IIF(i.current_bid < 2, i.item_id, NULL)) AS purchase_count_bid_0_to_1_99 -- count of purchases with bid amount of >$2
+            , COUNT(DISTINCT IIF(i.current_bid < 5, i.item_id, NULL)) AS purchase_count_bid_2_to_4_99 -- count of purchases with bid amount of >$5
             --, COUNT(DISTINCT b.item_id) AS items_bid_on
         FROM usernames u
             LEFT JOIN items i on i.highbidder_username = u.username -- specifically join on items where the user won

@@ -25,10 +25,10 @@ SELECT
 	--, '' AS closest_snipe
 	--, '' AS longest_out_bid_that_won
 	, MAX(i.current_bid) AS most_expensive_purchase
-	, COUNT(DISTINCT IIF(i.total_cost BETWEEN 0 AND 1.99, i.item_id, NULL)) AS purchase_count_total_cost_0_to_1_99 -- count of purchases with actual cost of $0-1.99
-	, COUNT(DISTINCT IIF(i.total_cost BETWEEN 2 AND 4.99, i.item_id, NULL)) AS purchase_count_total_cost_2_to_4_99 -- count of purchases with actual cost of $2-4.99
-	, COUNT(DISTINCT IIF(i.current_bid BETWEEN 0 AND 1.99, i.item_id, NULL)) AS purchase_count_bid_0_to_1_99 -- count of purchases with bid amount of $0-1.99
-	, COUNT(DISTINCT IIF(i.current_bid BETWEEN 2 AND 4.99, i.item_id, NULL)) AS purchase_count_bid_2_to_4_99 -- count of purchases with bid amount of $2-4.99
+	, COUNT(DISTINCT IIF(i.total_cost &lt; 2, i.item_id, NULL)) AS purchase_count_total_cost_0_to_1_99 -- count of purchases with actual cost of &gt;$2
+	, COUNT(DISTINCT IIF(i.total_cost &lt; 5, i.item_id, NULL)) AS purchase_count_total_cost_2_to_4_99 -- count of purchases with actual cost of &gt;$5
+	, COUNT(DISTINCT IIF(i.current_bid &lt; 2, i.item_id, NULL)) AS purchase_count_bid_0_to_1_99 -- count of purchases with bid amount of &gt;$2
+	, COUNT(DISTINCT IIF(i.current_bid &lt; 5, i.item_id, NULL)) AS purchase_count_bid_2_to_4_99 -- count of purchases with bid amount of &gt;$5
 	--, COUNT(DISTINCT b.item_id) AS items_bid_on
 FROM usernames u
 	LEFT JOIN items i on i.highbidder_username = u.username -- specifically join on items where the user won
