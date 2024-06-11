@@ -13,31 +13,31 @@ def dump_tables_to_csv(folder_path_for_csvs):
     conn = bf.init_sqlite_connection()
     cursor = conn.cursor()
 
-    # get list of all tables in the database
-    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-    #cursor.execute("SELECT name FROM sqlite_master WHERE type='table' and name not in ('bids', 'images', 'items');")
-    tables = cursor.fetchall()
+    # get list of all tables and views in the database
+    cursor.execute("SELECT name, type FROM sqlite_master WHERE type IN ('table', 'view');")
+    tables_and_views = cursor.fetchall()
 
-    print(f"\nFound {len(tables)} tables in database:")
-    for table in tables:
-        print(table[0])
+    print(f"\nFound {len(tables_and_views)} tables and views in database:")
+    for item in tables_and_views:
+        print(f"{item[0]} ({item[1]})")
 
-    # loop through the tables and dump each to a CSV file
-    for table in tables:
-        table_name = table[0] # extract table name from the tuple
-        print(f"\nWorking on table: {table_name}")
+    # loop through the tables and views and dump each to a CSV file
+    for item in tables_and_views:
+        item_name = item[0]  # extract item name from the tuple
+        item_type = item[1]  # extract item type (table or view)
+        print(f"\nWorking on {item_type}: {item_name}")
 
-        # Fetch all data from the table
+        # Fetch all data from the table or view
         start_time_select_from_db = time.time()
-        cursor.execute(f"SELECT * FROM {table_name}")
+        cursor.execute(f"SELECT * FROM {item_name}")
         data = cursor.fetchall()
-        print(f"Table {table_name} pulled from database. Rows: {len(data)}. Time taken: {time.time() - start_time_select_from_db:.4f} seconds.")
+        print(f"{item_type.capitalize()} {item_name} pulled from database. Rows: {len(data)}. Time taken: {time.time() - start_time_select_from_db:.4f} seconds.")
 
         # get column headers
         column_headers = [description[0] for description in cursor.description]
 
         # define file path for csv
-        csv_file_path = f"{folder_path_for_csvs}{table_name}.csv"
+        csv_file_path = f"{folder_path_for_csvs}{item_name}.csv"
 
         # write data to CSV
         start_time_write_csv = time.time()
@@ -46,7 +46,7 @@ def dump_tables_to_csv(folder_path_for_csvs):
             csv_writer.writerow(column_headers)
             csv_writer.writerows(data)
 
-        print(f"Table {table_name} dumped to {csv_file_path}. Time taken: {time.time() - start_time_write_csv:.4f} seconds.")
+        print(f"{item_type.capitalize()} {item_name} dumped to {csv_file_path}. Time taken: {time.time() - start_time_write_csv:.4f} seconds.")
     
     # close database connection
     print("\nCompleted database dump to CSVs. Closing sqlite connection.")
