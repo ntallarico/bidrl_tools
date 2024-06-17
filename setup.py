@@ -20,3 +20,7 @@ bf.ensure_directory_exists('local_files/auto_bid')
 # set up database by running database_setup.py
 print("\nRunning database setup script.\n")
 os.system('python database_setup.py')
+
+print("\nSetup complete.\n")
+
+
