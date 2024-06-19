@@ -62,18 +62,24 @@ def convert_seconds_to_time_string(seconds):
     minutes, seconds = divmod(seconds, 60)
     time_string = ''
 
-    if days > 0:
-        time_string += f"{days}d, "
+    # if days > 0:
+    #     time_string += f"{days}d, "
+    # if hours > 0:
+    #     time_string += f"{hours}h, "
+    # if minutes > 0:
+    #     time_string += f"{minutes}m, "
+    # if seconds >= 0:
+    #     time_string += f"{seconds}s"
 
-    if hours > 0:
-        time_string += f"{hours}h, "
+    if days >= 1:
+        time_string += f"{days}d, {hours}h"
+    elif hours >= 1:
+        time_string += f"{hours}h, {minutes}m"
+    else:
+        time_string += f"{minutes}m, {seconds}s"
 
-    if minutes > 0:
-        time_string += f"{minutes}m, "
-
-    if seconds >= 0:
-        time_string += f"{seconds}s"
     return time_string
+
 
 
 # return current system time in unix format
@@ -164,7 +170,7 @@ def create_item_objects_from_rows(item_rows_list):
                                 , 'max_desired_bid': max_desired_bid
                                 , 'item_bid_group_id': item_row['item_bid_group_id']
                                 , 'has_autobid_been_placed': 0
-                                , 'items_in_bid_group_to_win': 1
+                                , 'items_in_bid_group_to_win': int(item_row['ibg_items_to_win'])
                                 , 'current_bid': float(0) # set current_bid to 0 so that any checks pass before updating item info, if we were to make any
                                 }
         
@@ -179,7 +185,7 @@ def read_user_input_csv_to_item_objects(browser, auto_bid_folder_path):
 
         file_path = auto_bid_folder_path + filename
 
-        fieldnames = ['end_time_unix', 'auction_id', 'item_id', 'item_bid_group_id', 'description', 'max_desired_bid', 'url']
+        fieldnames = ['end_time_unix', 'auction_id', 'item_id', 'item_bid_group_id', 'ibg_items_to_win', 'description', 'max_desired_bid', 'url']
 
         read_rows = bf.read_items_from_csv(file_path, fieldnames)
         print(f"\nRead {len(read_rows)} rows from file: {filename}.")
@@ -210,7 +216,7 @@ def print_items_status(item_list):
         if is_item_eligible_for_bidding(item):
             remaining_seconds = item.end_time_unix - current_time_unix
             remaining_time_string = convert_seconds_to_time_string(remaining_seconds)
-            length_formatted_remaining_time_string = f"{remaining_time_string:<18}"
+            length_formatted_remaining_time_string = f"{remaining_time_string:<8}"
             if item.items_in_bid_group_won >= item.items_in_bid_group_to_win:
                 length_formatted_max_desired_bid = 'BG_Done' # display indication that we have already won the # of items desired from the bid group
             elif item.max_desired_bid <= item.current_bid:
@@ -218,11 +224,12 @@ def print_items_status(item_list):
             else:
                 length_formatted_max_desired_bid = f"${str(item.max_desired_bid):<6}"
 
-            if len(item.description) > 80:
-                length_formatted_description = item.description[0:77] + '...'
+            if len(item.description) > 63:
+                length_formatted_description = item.description[:30] + '...' + item.description[-30:]
             else:
-                length_formatted_description = f"{str(item.description):<80}"
-            print(f"{length_formatted_remaining_time_string} | {length_formatted_max_desired_bid} | {length_formatted_description}")
+                length_formatted_description = f"{str(item.description):<63}"
+            #print(f"{length_formatted_remaining_time_string} | {length_formatted_max_desired_bid} | {length_formatted_description} | {item.items_in_bid_group_to_win}")
+            print(f"{length_formatted_description} | {length_formatted_remaining_time_string} | {length_formatted_max_desired_bid} | Group: {item.item_bid_group_id} | Qty desired: {item.items_in_bid_group_to_win}")
     print('----------------------------------------------------------------------------------------------------')
 
 
