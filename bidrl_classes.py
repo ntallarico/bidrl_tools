@@ -79,7 +79,7 @@ class Item:
                  , total_cost: float = None
                  , cost_split: str = None
                  , max_desired_bid: float = None
-                 , item_bid_group_id: str = None):  # used to specify which items belong to a set that we only intend to win 1 of
+                 , item_bid_group_id: str = None):  # used to specify which items belong to a set that we only intend to win x of
         if id is not None and not isinstance(id, str):
             raise TypeError(f"Expected id to be str, got {type(id).__name__}")
         if auction_id is not None and not isinstance(auction_id, str):
