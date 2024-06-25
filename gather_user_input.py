@@ -4,7 +4,6 @@ It creates/re-writes/reads a csv file containing all items in the database, allo
 It is then used to read that file and update the user input columns in the items table in the database.
 '''
 
-
 import os
 import csv
 import sqlite3
@@ -29,7 +28,6 @@ def validate_user_input_columns(conn, user_input_columns):
             else:
                 print(f"Error: Column '{column}' does not exist in the items table. Please fix the column name list.")
                 exit(1)
-
 
 def check_file_exists(file_path):
     return os.path.exists(file_path)

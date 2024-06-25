@@ -123,9 +123,9 @@ def sql_database_setup():
             , viewed INTEGER
             , is_favorite INTEGER
             , total_cost REAL
+            , item_bid_group_id TEXT
             , cost_split TEXT
             , max_desired_bid REAL
-            , item_bid_group_id TEXT
             , notes TEXT
         );
     ''')
