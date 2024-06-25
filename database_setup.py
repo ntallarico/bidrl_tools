@@ -130,6 +130,21 @@ def sql_database_setup():
         );
     ''')
 
+    # create items user input table
+    bf.create_table(conn, 'items_user_input', '''
+        CREATE TABLE IF NOT EXISTS items (
+            item_id TEXT PRIMARY KEY
+            , auction_id TEXT
+            , description TEXT
+            , url TEXT
+            , end_time_unix INTEGER
+            , item_bid_group_id TEXT
+            , cost_split TEXT
+            , max_desired_bid REAL
+            , notes TEXT
+        );
+    ''')
+
     # create bids table
     bf.create_table(conn, 'bids', '''
         CREATE TABLE IF NOT EXISTS bids (
