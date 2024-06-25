@@ -163,7 +163,6 @@ def gigascrape():
             auctions = bf.scrape_auctions(browser, affiliate.id)
 
             # keep only auctions that are not already in the database
-            #auctions = [auction for auction in auctions if auction.id not in auction_ids_in_db]
             auctions_already_scraped = 0
             # we do auctions[:] to iterate through a copy, so we can do auctions.remove() while in the loop
             for auction in auctions[:]: 
@@ -189,10 +188,10 @@ def gigascrape():
                     start_time_insert_auction_to_sql = time.time()
                     if bf.insert_entire_auction_to_sql_db(conn, auction) == 0:
                         print("Successfully added to database. Time taken: {:.4f} seconds.".format(time.time() - start_time_insert_auction_to_sql))
+                        auctions_scraped_this_run += 1
                     else:
                         print("Failed to add to database. Exiting.")
                         quit()
-                auctions_scraped_this_run += 1
             
             print(f"\nCompleted full scrape of affiliate {affiliate.company_name}!")
 
