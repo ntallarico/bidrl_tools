@@ -8,11 +8,22 @@ import os
 import csv
 import sqlite3
 import bidrl_functions as bf
+from bidrl_classes import Item
 
-# define the list of user input columns
+# define the list of user input columns. these need to be implemented in the 'Items' class and also exist in the 'items' table in the db
+# we list these columns here to specify which values from the csv to actually update in the db
 user_input_columns = ['cost_split', 'max_desired_bid', 'notes']
 
-def validate_user_input_columns(conn, user_input_columns):
+
+def validate_user_input_columns_in_class(user_input_columns):
+    # Check if these fields are properties in the Items class
+    missing_properties = [col for col in user_input_columns if not hasattr(Item(), col)]
+    if missing_properties:
+        print(f"Error: The following properties are missing in the Items class: {', '.join(missing_properties)}. Please implement them in 'Item' in bidrl_classes.py and try again.")
+        exit(1)
+
+# Check if these fields exist in the items table in the database
+def validate_user_input_columns_in_db(conn, user_input_columns):
     cursor = conn.cursor()
     cursor.execute("PRAGMA table_info(items)")
     columns_info = cursor.fetchall()
@@ -78,7 +89,8 @@ def gather_user_input_main():
     file_path = 'local_files/items_list_for_user_input.csv'
     conn = bf.init_sqlite_connection()
 
-    validate_user_input_columns(conn, user_input_columns)
+    validate_user_input_columns_in_class(user_input_columns)
+    validate_user_input_columns_in_db(conn, user_input_columns)
 
     if check_file_exists(file_path):
         choice = get_user_choice(file_path)
