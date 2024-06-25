@@ -126,6 +126,7 @@ def sql_database_setup():
             , cost_split TEXT
             , max_desired_bid REAL
             , item_bid_group_id TEXT
+            , notes TEXT
         );
     ''')
 
