@@ -123,22 +123,21 @@ def sql_database_setup():
             , viewed INTEGER
             , is_favorite INTEGER
             , total_cost REAL
-            --, item_bid_group_id TEXT
-            --, cost_split TEXT
-            --, max_desired_bid REAL
-            --, notes TEXT
         );
     ''')
 
     # create items user input table
     bf.create_table(conn, 'items_user_input', '''
-        CREATE TABLE IF NOT EXISTS items (
+        CREATE TABLE IF NOT EXISTS items_user_input (
+            -- item identification fields, and description and such for convenience of viewing table
             item_id TEXT PRIMARY KEY
             , auction_id TEXT
             , description TEXT
             , url TEXT
             , end_time_unix INTEGER
+            -- user input fields
             , item_bid_group_id TEXT
+            , ibg_items_to_win INTEGER
             , cost_split TEXT
             , max_desired_bid REAL
             , notes TEXT
