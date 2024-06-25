@@ -64,7 +64,7 @@ try:
 
         # write item data
         for row in rows_to_write:
-            writer.writerow([row['end_time_unix'], row['auction_id'], row['item_id'], row['item_bid_group_id'], row['ibg_items_to_win'], row['description'], '', row['url']])
+            writer.writerow([row['end_time_unix'], row['auction_id'], row['item_id'], row['item_bid_group_id'], row['ibg_items_to_win'], row['description'], row['max_desired_bid'], row['url']])
     print(f"\nFile successfully written: {filename_to_write}")
 except Exception as e:
     print(f"Attempt to write to csv failed.")
