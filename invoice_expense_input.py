@@ -44,15 +44,15 @@ def update_item_cost_split_from_db(invoices):
                 quit()
 
 
-# show the user each item and answer: should item be paid for by [N]ick, [B]ry, or [T]ogether
-def user_decide_item_cost_split(invoices):
-    for invoice in invoices:
-        print(f"\nnew invoice: {invoice.id}")
-        for item in invoice.items:
-            print(f'\n{item.description} - ${round(float(item.current_bid), 2)} - {invoice.date}') # print: bid amount - item description - date
-            print(f'Link: {item.url}')
-            cost_split_response = input("Who bought this item? [n]ick, [b]ry, or [t]ogether: ")
-            item.cost_split = cost_split_response
+# # show the user each item and answer: should item be paid for by [N]ick, [B]ry, or [T]ogether
+# def user_decide_item_cost_split(invoices):
+#     for invoice in invoices:
+#         print(f"\nnew invoice: {invoice.id}")
+#         for item in invoice.items:
+#             print(f'\n{item.description} - ${round(float(item.current_bid), 2)} - {invoice.date}') # print: bid amount - item description - date
+#             print(f'Link: {item.url}')
+#             cost_split_response = input("Who bought this item? [n]ick, [b]ry, or [t]ogether: ")
+#             item.cost_split = cost_split_response
 
 
 # generate google form expense input link for each invoice. populates invoice.expense_input_form_link for each invoice in invoices list
