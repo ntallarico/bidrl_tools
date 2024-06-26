@@ -39,15 +39,16 @@ for auction in open_auctions:
         if item.is_favorite == 1:
             try:
                 rows_to_write.append({
-                    'end_time_unix': item.end_time_unix,
-                    'auction_id': auction.id,
-                    'item_id': item.id,
-                    'item_bid_group_id': item.id,
-                    'ibg_items_to_win': 1,
-                    'description': item.description,
-                    'max_desired_bid': '',  # placeholder for user input
-                    'url': f"=HYPERLINK(\"{item.url}\")" # fit url into formula for excel to recognize it as a clickable hyperlink
-                    #'url': item.url
+                    'end_time_unix': item.end_time_unix
+                    , 'auction_id': auction.id
+                    , 'item_id': item.id
+                    , 'item_bid_group_id': item.id
+                    , 'ibg_items_to_win': 1
+                    , 'description': item.description
+                    , 'max_desired_bid': ''  # placeholder for user input
+                    , 'cost_split': '' # placeholder for user input
+                    , 'url': f"=HYPERLINK(\"{item.url}\")" # fit url into formula for excel to recognize it as a clickable hyperlink
+                    #, 'url': item.url
                 })
                 print(f"Found favorite: {item.description}")
             except Exception as e:
@@ -60,11 +61,13 @@ try:
     with open(filename_to_write, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
 
-        writer.writerow(['end_time_unix', 'auction_id', 'item_id', 'item_bid_group_id', 'ibg_items_to_win', 'description', 'max_desired_bid', 'url']) # write the header, adding "Max Desired Bid"
+        # pull column names from the first row in rows_to_write, then write the first row in the csv with the column names
+        if rows_to_write:
+            writer.writerow(rows_to_write[0].keys())
 
         # write item data
         for row in rows_to_write:
-            writer.writerow([row['end_time_unix'], row['auction_id'], row['item_id'], row['item_bid_group_id'], row['ibg_items_to_win'], row['description'], row['max_desired_bid'], row['url']])
+            writer.writerow(row.values())
     print(f"\nFile successfully written: {filename_to_write}")
 except Exception as e:
     print(f"Attempt to write to csv failed.")
