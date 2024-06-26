@@ -23,6 +23,27 @@ import bidrl_functions as bf
 from bidrl_classes import Item, Invoice
 
 
+# fetch cost_split from the database
+def fetch_cost_split_from_db(item_id, auction_id):
+    conn = bf.init_sqlite_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT cost_split FROM items_user_input WHERE item_id = ? AND auction_id = ?", (item_id, auction_id))
+    result = cursor.fetchone()
+    conn.close()
+    return result[0] if result else None
+
+# update item cost_split from the database
+def update_item_cost_split_from_db(invoices):
+    for invoice in invoices:
+        for item in invoice.items:
+            cost_split = fetch_cost_split_from_db(item.id, invoice.id)
+            if cost_split:
+                item.cost_split = cost_split
+            else:
+                print(f"Error: cost_split not found for item_id {item.id} and auction_id {invoice.id}. Exiting program.")
+                quit()
+
+
 # show the user each item and answer: should item be paid for by [N]ick, [B]ry, or [T]ogether
 def user_decide_item_cost_split(invoices):
     for invoice in invoices:
@@ -131,8 +152,8 @@ def main():
     # tear down browser object
     browser.quit()
 
-    # now that we have all of our invoices scraped and post-processed information, have the user decide cost split for each item
-    user_decide_item_cost_split(invoices)
+    # update item cost_split from the database
+    update_item_cost_split_from_db(invoices)
 
     # generate google form expense input link for each invoice
     generate_expense_input_form_links(invoices)
