@@ -36,11 +36,11 @@ def fetch_cost_split_from_db(item_id, auction_id):
 def update_item_cost_split_from_db(invoices):
     for invoice in invoices:
         for item in invoice.items:
-            cost_split = fetch_cost_split_from_db(item.id, invoice.id)
+            cost_split = fetch_cost_split_from_db(item.id, item.auction_id)
             if cost_split:
                 item.cost_split = cost_split
             else:
-                print(f"Error: cost_split not found for item_id {item.id} and auction_id {invoice.id}. Exiting program.")
+                print(f"Error: cost_split not found for item_id {item.id} and auction_id {item.auction_id}. Exiting program.")
                 quit()
 
 
