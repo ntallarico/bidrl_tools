@@ -172,6 +172,7 @@ def create_item_objects_from_rows(item_rows_list):
                                 , 'has_autobid_been_placed': 0
                                 , 'ibg_items_to_win': int(item_row['ibg_items_to_win'])
                                 , 'current_bid': float(0) # set current_bid to 0 so that any checks pass before updating item info, if we were to make any
+                                , 'cost_split': item_row['cost_split']
                                 }
         
         item_list.append(Item_AutoBid(**temp_item_dict))
@@ -185,9 +186,7 @@ def read_user_input_csv_to_item_objects(browser, auto_bid_folder_path):
 
         file_path = auto_bid_folder_path + filename
 
-        fieldnames = ['end_time_unix', 'auction_id', 'item_id', 'item_bid_group_id', 'ibg_items_to_win', 'description', 'max_desired_bid', 'url']
-
-        read_rows = bf.read_items_from_csv(file_path, fieldnames)
+        read_rows = bf.read_items_from_csv(file_path)
         print(f"\nRead {len(read_rows)} rows from file: {filename}.")
 
         item_list = create_item_objects_from_rows(read_rows)
@@ -283,9 +282,11 @@ def login_refresh(browser, last_login_time, last_login_time_unix):
         logged_in_time = convert_seconds_to_time_string(time_unix() - last_login_time_unix)
         print(f"Login check success. Last login: {last_login_time}. Time remained logged in: {logged_in_time}.")
 
+
 # save information from a list of item objects to the items_user_input table in the database
 def update_items_user_input_table(item_list):
     try:
+        print("\nAttempting to use information read from csv to update items_user_input table in database.")
         conn = bf.init_sqlite_connection()
         cursor = conn.cursor()
 
@@ -296,7 +297,7 @@ def update_items_user_input_table(item_list):
             exists = cursor.fetchone()[0]
 
             # define field names to update in the database
-            field_names = ['item_bid_group_id', 'ibg_items_to_win', 'max_desired_bid', 'cost_split']
+            field_names = ['description', 'url', 'end_time_unix', 'item_bid_group_id', 'ibg_items_to_win', 'max_desired_bid', 'cost_split']
 
             if exists: # if the item exists in the items_user_input db table, then update its fields based on contents of csv
                 cursor.execute(f"""
@@ -311,9 +312,12 @@ def update_items_user_input_table(item_list):
                 """, (item.id, item.auction_id) + tuple(getattr(item, field) for field in field_names))
 
         conn.commit()
+        print("Closing sqlite connection")
         conn.close()
+        print("Success.")
     except Exception as e:
         print(f"Exception occurred in update_items_user_input_table(). Moving forward anyway as this isn't critical for auto_bid.\nException: {e}")
+
 
 def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to account for POST time to API. don't want to extend bid time if we can avoid
          , auto_bid__interval = 5 # how often to check if it is time to bid on each item (and then bid if it is)
