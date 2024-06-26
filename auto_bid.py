@@ -15,14 +15,14 @@ from bidrl_classes import Item, Invoice, Auction
     # the user can specify that multiple items belong to the same group
     # auto_bid will only attempt to win x amount of these items and no more
     # for example: we want to win a bike. 6 bikes are listed on the auction. the user can assign all 6 bikes the same item_bid_group_id
-        # and set items_in_bid_group_to_win to 1, and this script will continue to bid on every bike in the group until exactly 1
+        # and set ibg_items_to_win to 1, and this script will continue to bid on every bike in the group until exactly 1
         # bike has been won by the user's account, and then not bid on any further bikes in the list
 class Item_AutoBid(Item):
     def __init__(self
                  , has_autobid_been_placed: int = None
                  , items_in_bid_group: int = None # num of items in the same bid group
                  , items_in_bid_group_won: int = None # num of items in same group that we won / are winning
-                 , items_in_bid_group_to_win: int = None # num of items in a bid group that we intend to win
+                 , ibg_items_to_win: int = None # num of items in a bid group that we intend to win
                  #, max_desired_bid: float = None
                  #, item_bid_group_id: str = None
                  , *args, **kwargs):
@@ -35,8 +35,8 @@ class Item_AutoBid(Item):
             raise TypeError(f"Expected items_in_bid_group to be int, got {type(id).__name__}")
         if items_in_bid_group_won is not None and not isinstance(items_in_bid_group_won, int):
             raise TypeError(f"Expected items_in_bid_group_won to be int, got {type(id).__name__}")
-        if items_in_bid_group_to_win is not None and not isinstance(items_in_bid_group_to_win, int):
-            raise TypeError(f"Expected items_in_bid_group_to_win to be int, got {type(id).__name__}")
+        if ibg_items_to_win is not None and not isinstance(ibg_items_to_win, int):
+            raise TypeError(f"Expected ibg_items_to_win to be int, got {type(id).__name__}")
         #if max_desired_bid is not None and not isinstance(max_desired_bid, float):
             #raise TypeError(f"Expected max_desired_bid to be float, got {type(max_desired_bid).__name__}")
         #if item_bid_group_id is not None and not isinstance(item_bid_group_id, str):
@@ -45,13 +45,13 @@ class Item_AutoBid(Item):
         self.has_autobid_been_placed = has_autobid_been_placed
         self.items_in_bid_group = items_in_bid_group
         self.items_in_bid_group_won = items_in_bid_group_won
-        self.items_in_bid_group_to_win = items_in_bid_group_to_win
+        self.ibg_items_to_win = ibg_items_to_win
     
     def display_new_fields(self):
         print(f"Still need to bid?: {self.has_autobid_been_placed}")
         print(f"items_in_bid_group: {self.items_in_bid_group}")
         print(f"items_in_bid_group_won: {self.items_in_bid_group}")
-        print(f"items_in_bid_group_to_win: {self.items_in_bid_group}")
+        print(f"ibg_items_to_win: {self.items_in_bid_group}")
         #print(f"Max Desired Bid: {self.max_desired_bid}")
         #print(f"Item Bid Group ID: {self.item_bid_group_id}")
 
@@ -170,7 +170,7 @@ def create_item_objects_from_rows(item_rows_list):
                                 , 'max_desired_bid': max_desired_bid
                                 , 'item_bid_group_id': item_row['item_bid_group_id']
                                 , 'has_autobid_been_placed': 0
-                                , 'items_in_bid_group_to_win': int(item_row['ibg_items_to_win'])
+                                , 'ibg_items_to_win': int(item_row['ibg_items_to_win'])
                                 , 'current_bid': float(0) # set current_bid to 0 so that any checks pass before updating item info, if we were to make any
                                 }
         
@@ -217,7 +217,7 @@ def print_items_status(item_list):
             remaining_seconds = item.end_time_unix - current_time_unix
             remaining_time_string = convert_seconds_to_time_string(remaining_seconds)
             length_formatted_remaining_time_string = f"{remaining_time_string:<8}"
-            if item.items_in_bid_group_won >= item.items_in_bid_group_to_win:
+            if item.items_in_bid_group_won >= item.ibg_items_to_win:
                 length_formatted_max_desired_bid = 'BG_Done' # display indication that we have already won the # of items desired from the bid group
             elif item.max_desired_bid <= item.current_bid:
                 length_formatted_max_desired_bid = 'LOST   '
@@ -228,8 +228,8 @@ def print_items_status(item_list):
                 length_formatted_description = item.description[:30] + '...' + item.description[-30:]
             else:
                 length_formatted_description = f"{str(item.description):<63}"
-            #print(f"{length_formatted_remaining_time_string} | {length_formatted_max_desired_bid} | {length_formatted_description} | {item.items_in_bid_group_to_win}")
-            print(f"{length_formatted_description} | {length_formatted_remaining_time_string} | {length_formatted_max_desired_bid} | Group: {item.item_bid_group_id} | Qty desired: {item.items_in_bid_group_to_win}")
+            #print(f"{length_formatted_remaining_time_string} | {length_formatted_max_desired_bid} | {length_formatted_description} | {item.ibg_items_to_win}")
+            print(f"{length_formatted_description} | {length_formatted_remaining_time_string} | {length_formatted_max_desired_bid} | Group: {item.item_bid_group_id} | Qty desired: {item.ibg_items_to_win}")
     print('----------------------------------------------------------------------------------------------------')
 
 
@@ -253,16 +253,16 @@ def is_item_eligible_for_bidding(item):
 # loop through each item and attempt to place a bid on it if we determine that we should
 # checks to see if time remaining on the item is <= our set seconds_before_closing_to_bid time and is_item_eligible_for_bidding(item) == True
 # if it is eligible and time to bid, then update the item/group info
-    # and check if more than [item.items_in_bid_group_to_win] items in its bid group have not already been won
+    # and check if more than [item.ibg_items_to_win] items in its bid group have not already been won
 def auto_bid(browser, item_list, seconds_before_closing_to_bid, username):
     current_time_unix = time_unix()
     # loop through each item and bid on it if the time remaining on the item is <= our set seconds_before_closing_to_bid time
     for item in item_list:
         remaining_seconds = item.end_time_unix - current_time_unix
-        if remaining_seconds <= seconds_before_closing_to_bid and is_item_eligible_for_bidding(item) and item.items_in_bid_group_won < item.items_in_bid_group_to_win:
+        if remaining_seconds <= seconds_before_closing_to_bid and is_item_eligible_for_bidding(item) and item.items_in_bid_group_won < item.ibg_items_to_win:
             print(f"{remaining_seconds} seconds remaining. Time to pace bid on: {item.description}.")
             update_item_group_info(browser, item_list, username)
-            if item.items_in_bid_group_won < item.items_in_bid_group_to_win:
+            if item.items_in_bid_group_won < item.ibg_items_to_win:
                 bf.bid_on_item(item, item.max_desired_bid, browser)
                 print('')
                 item.has_autobid_been_placed = 1
@@ -283,6 +283,37 @@ def login_refresh(browser, last_login_time, last_login_time_unix):
         logged_in_time = convert_seconds_to_time_string(time_unix() - last_login_time_unix)
         print(f"Login check success. Last login: {last_login_time}. Time remained logged in: {logged_in_time}.")
 
+# save information from a list of item objects to the items_user_input table in the database
+def update_items_user_input_table(item_list):
+    try:
+        conn = bf.init_sqlite_connection()
+        cursor = conn.cursor()
+
+        for item in item_list:
+            cursor.execute("""
+                SELECT COUNT(*) FROM items_user_input WHERE item_id = ? AND auction_id = ?
+            """, (item.id, item.auction_id))
+            exists = cursor.fetchone()[0]
+
+            # define field names to update in the database
+            field_names = ['item_bid_group_id', 'ibg_items_to_win', 'max_desired_bid', 'cost_split']
+
+            if exists: # if the item exists in the items_user_input db table, then update its fields based on contents of csv
+                cursor.execute(f"""
+                    UPDATE items_user_input
+                    SET {', '.join([f"{field} = ?" for field in field_names])}
+                    WHERE item_id = ?
+                """, tuple(getattr(item, field) for field in field_names) + (item.id,))
+            else: # if the item does not exist in the items_user_input db table, then create it using fields in csv
+                cursor.execute(f"""
+                    INSERT INTO items_user_input (item_id, auction_id, {', '.join(field_names)})
+                    VALUES ({', '.join(['?' for _ in range(len(field_names) + 2)])})
+                """, (item.id, item.auction_id) + tuple(getattr(item, field) for field in field_names))
+
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"Exception occurred in update_items_user_input_table(). Moving forward anyway as this isn't critical for auto_bid.\nException: {e}")
 
 def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to account for POST time to API. don't want to extend bid time if we can avoid
          , auto_bid__interval = 5 # how often to check if it is time to bid on each item (and then bid if it is)
@@ -305,6 +336,9 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
     item_list = read_user_input_csv_to_item_objects(browser, auto_bid_folder_path)
 
     update_item_group_info(browser, item_list, username)
+
+    # save inputs from our csv to the database for data archive purposes
+    update_items_user_input_table(item_list)
 
     item_count_with_desired_bid = 0
     item_count_zero_desired_bid = 0
