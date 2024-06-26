@@ -668,14 +668,18 @@ def bid_on_item(item, amount_to_bid, browser):
     return response.json()
     
 
-# requires: file path to csv, list of fieldnames to expect in first row
+# requires: file path to csv, (optional) list of fieldnames to expect in first row. if no list of fieldnames is given, then list will be pulled from first row of csv
 # returns: list of rows read in from csv. each row in list is a dict based on field names
-def read_items_from_csv(filename, fieldnames):
+def read_items_from_csv(filename, fieldnames=None):
     rows = [] # initialize a list to store the rows
 
     # Read the CSV file
     with open(filename, mode='r', newline='', encoding='utf-8') as file:
         reader = csv.DictReader(file)
+        
+        # If no fieldnames are provided, use the fieldnames from the CSV file
+        if fieldnames is None:
+            fieldnames = reader.fieldnames
         
         # Check if the header matches the expected header
         if reader.fieldnames == fieldnames:
