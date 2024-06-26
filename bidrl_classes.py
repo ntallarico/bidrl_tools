@@ -80,7 +80,6 @@ class Item:
                  , item_bid_group_id: str = None # used to specify which items belong to a set that we only intend to win x of
                  , cost_split: str = None
                  , max_desired_bid: float = None
-                 , notes: str = None
                  ):
         if id is not None and not isinstance(id, str):
             raise TypeError(f"Expected id to be str, got {type(id).__name__}")
@@ -122,8 +121,6 @@ class Item:
             raise TypeError(f"Expected cost_split to be str, got {type(cost_split).__name__}")
         if max_desired_bid is not None and not isinstance(max_desired_bid, float):
             raise TypeError(f"Expected max_desired_bid to be float, got {type(max_desired_bid).__name__}")
-        if notes is not None and not isinstance(notes, str):
-            raise TypeError(f"Expected notes to be str, got {type(notes).__name__}")
 
         self.id = id
         self.auction_id = auction_id
@@ -145,7 +142,6 @@ class Item:
         self.item_bid_group_id = item_bid_group_id
         self.cost_split = cost_split
         self.max_desired_bid = max_desired_bid
-        self.notes = notes
 
         # populate total_cost based on current_bid, tax_rate, and buyer_premium if we have all three
         if self.tax_rate is not None and self.buyer_premium is not None and self.current_bid is not None:
@@ -170,7 +166,6 @@ class Item:
         print(f"Item Bid Group ID: {self.item_bid_group_id}")
         print(f"Cost Split: {self.cost_split}")
         print(f"Max Desired Bid: {self.max_desired_bid}")
-        print(f"Notes: {self.notes}")
 
     def display_bids(self):
         for bid in self.bids:
