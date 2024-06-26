@@ -291,25 +291,26 @@ def update_items_user_input_table(item_list):
         cursor = conn.cursor()
 
         for item in item_list:
-            cursor.execute("""
-                SELECT COUNT(*) FROM items_user_input WHERE item_id = ? AND auction_id = ?
-            """, (item.id, item.auction_id))
-            exists = cursor.fetchone()[0]
+            if item.max_desired_bid not in [None, 0]:
+                cursor.execute("""
+                    SELECT COUNT(*) FROM items_user_input WHERE item_id = ? AND auction_id = ?
+                """, (item.id, item.auction_id))
+                exists = cursor.fetchone()[0]
 
-            # define field names to update in the database
-            field_names = ['description', 'url', 'end_time_unix', 'item_bid_group_id', 'ibg_items_to_win', 'max_desired_bid', 'cost_split']
+                # define field names to update in the database
+                field_names = ['description', 'url', 'end_time_unix', 'item_bid_group_id', 'ibg_items_to_win', 'max_desired_bid', 'cost_split']
 
-            if exists: # if the item exists in the items_user_input db table, then update its fields based on contents of csv
-                cursor.execute(f"""
-                    UPDATE items_user_input
-                    SET {', '.join([f"{field} = ?" for field in field_names])}
-                    WHERE item_id = ?
-                """, tuple(getattr(item, field) for field in field_names) + (item.id,))
-            else: # if the item does not exist in the items_user_input db table, then create it using fields in csv
-                cursor.execute(f"""
-                    INSERT INTO items_user_input (item_id, auction_id, {', '.join(field_names)})
-                    VALUES ({', '.join(['?' for _ in range(len(field_names) + 2)])})
-                """, (item.id, item.auction_id) + tuple(getattr(item, field) for field in field_names))
+                if exists: # if the item exists in the items_user_input db table, then update its fields based on contents of csv
+                    cursor.execute(f"""
+                        UPDATE items_user_input
+                        SET {', '.join([f"{field} = ?" for field in field_names])}
+                        WHERE item_id = ?
+                    """, tuple(getattr(item, field) for field in field_names) + (item.id,))
+                else: # if the item does not exist in the items_user_input db table, then create it using fields in csv
+                    cursor.execute(f"""
+                        INSERT INTO items_user_input (item_id, auction_id, {', '.join(field_names)})
+                        VALUES ({', '.join(['?' for _ in range(len(field_names) + 2)])})
+                    """, (item.id, item.auction_id) + tuple(getattr(item, field) for field in field_names))
 
         conn.commit()
         print("Closing sqlite connection")
