@@ -26,6 +26,7 @@ cursor = conn.cursor()
 # drop_rows_with_zero_or_null_max_desired_bid(conn)
 
 
+
 # def fetch_and_insert_items_into_items_user_input():
 #     # Fetch items where highbidder_username = 'ndt'
 #     cursor.execute("SELECT * FROM items WHERE highbidder_username = 'ndt'")
