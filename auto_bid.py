@@ -8,6 +8,7 @@ from config import user_email, user_password
 from datetime import datetime
 import bidrl_functions as bf
 from bidrl_classes import Item, Invoice, Auction
+from openpyxl import load_workbook
 
 
 # define class Item_AutoBid that inherits all fields from Item class and adds additional fields used for auto bid process
@@ -159,13 +160,13 @@ def create_item_objects_from_rows(item_rows_list):
     item_list = [] # list for item objects to return at the end
     for item_row in item_rows_list:
         # check if max_desired_bid is not empty. if it isn't, then convert to float. if it is, then set to None
-        max_desired_bid = float(item_row['max_desired_bid']) if item_row['max_desired_bid'] != '' else None
+        max_desired_bid = float(item_row['max_desired_bid']) if item_row['max_desired_bid'] != '' and item_row['max_desired_bid'] != None else None
 
         # extract data from json into temp dictionary to create item with next
         temp_item_dict = {'id': item_row['item_id']
                                 , 'auction_id': item_row['auction_id']
-                                , 'description': item_row['description']
-                                , 'url': item_row['url']
+                                , 'description': item_row['description'].split('", "')[-1].rstrip('")') # pull description out of hyperlink formula
+                                #, 'url': item_row['url']
                                 , 'end_time_unix': int(item_row['end_time_unix'])
                                 , 'max_desired_bid': max_desired_bid
                                 , 'item_bid_group_id': item_row['item_bid_group_id']
@@ -179,14 +180,29 @@ def create_item_objects_from_rows(item_rows_list):
     return item_list
 
 
-# read favorite_items_to_input_max_bid.csv and return list of item objects for items where max_desired_bid > 0
-def read_user_input_csv_to_item_objects(browser, auto_bid_folder_path):
+# read favorite_items_to_input_max_bid.xlsx and return list of item objects for items where max_desired_bid > 0
+def read_user_input_xlsx_to_item_objects(browser, auto_bid_folder_path):
     try:
-        filename = 'favorite_items_to_input_max_bid.csv'
+        filename = 'favorite_items_to_input_max_bid.xlsx'
 
         file_path = auto_bid_folder_path + filename
 
-        read_rows = bf.read_items_from_csv(file_path)
+        wb = load_workbook(file_path)
+        ws = wb.active
+
+        read_rows = []
+        for row in ws.iter_rows(min_row=2, values_only=True):
+            read_rows.append({
+                'end_time_unix': row[0],
+                'auction_id': row[1],
+                'item_id': row[2],
+                'description': row[3],
+                'max_desired_bid': row[4],
+                'cost_split': row[5],
+                'item_bid_group_id': row[6],
+                'ibg_items_to_win': row[7]
+            })
+
         print(f"\nRead {len(read_rows)} rows from file: {filename}.")
 
         item_list = create_item_objects_from_rows(read_rows)
@@ -197,7 +213,7 @@ def read_user_input_csv_to_item_objects(browser, auto_bid_folder_path):
 
         return item_list
     except Exception as e:
-        print(f"read_user_input_csv_to_item_objects() failed with exception: {e}")
+        print(f"read_user_input_xlsx_to_item_objects() failed with exception: {e}")
         print("Tearing down web object.")
         browser.quit()
         return 1
@@ -338,7 +354,7 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
     print(f"Username: {username}")
 
     # read favorite_items_to_input_max_bid.csv and return list of item objects we intend to bid on
-    item_list = read_user_input_csv_to_item_objects(browser, auto_bid_folder_path)
+    item_list = read_user_input_xlsx_to_item_objects(browser, auto_bid_folder_path)
 
     update_item_group_info(browser, item_list, username)
 
