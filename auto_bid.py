@@ -162,21 +162,19 @@ def create_item_objects_from_rows(item_rows_list):
         # check if max_desired_bid is not empty. if it isn't, then convert to float. if it is, then set to None
         max_desired_bid = float(item_row['max_desired_bid']) if item_row['max_desired_bid'] != '' and item_row['max_desired_bid'] != None else None
 
-        # extract data from json into temp dictionary to create item with next
-        temp_item_dict = {'id': item_row['item_id']
-                                , 'auction_id': item_row['auction_id']
-                                , 'description': item_row['description'].split('", "')[-1].rstrip('")') # pull description out of hyperlink formula
-                                #, 'url': item_row['url']
-                                , 'end_time_unix': int(item_row['end_time_unix'])
-                                , 'max_desired_bid': max_desired_bid
-                                , 'item_bid_group_id': item_row['item_bid_group_id']
-                                , 'has_autobid_been_placed': 0
-                                , 'ibg_items_to_win': int(item_row['ibg_items_to_win'])
-                                , 'current_bid': float(0) # set current_bid to 0 so that any checks pass before updating item info, if we were to make any
-                                , 'cost_split': item_row['cost_split']
-                                }
-        
-        item_list.append(Item_AutoBid(**temp_item_dict))
+        # create item object directly in item_list.append
+        item_list.append(Item_AutoBid(
+            id = item_row['item_id']
+            , auction_id = item_row['auction_id']
+            , description = item_row['description'].split('", "')[-1].rstrip('")') # pull description out of hyperlink formula
+            , end_time_unix = int(item_row['end_time_unix'])
+            , max_desired_bid = max_desired_bid
+            , item_bid_group_id = item_row['item_bid_group_id']
+            , has_autobid_been_placed = 0
+            , ibg_items_to_win = int(item_row['ibg_items_to_win'])
+            , current_bid = float(0) # set current_bid to 0 so that any checks pass before updating item info, if we were to make any
+            , cost_split = item_row['cost_split']
+        ))
     return item_list
 
 
@@ -190,18 +188,12 @@ def read_user_input_xlsx_to_item_objects(browser, auto_bid_folder_path):
         wb = load_workbook(file_path)
         ws = wb.active
 
+        headers = [cell.value for cell in ws[1]] # get headers from the first row
+
         read_rows = []
         for row in ws.iter_rows(min_row=2, values_only=True):
-            read_rows.append({
-                'end_time_unix': row[0],
-                'auction_id': row[1],
-                'item_id': row[2],
-                'description': row[3],
-                'max_desired_bid': row[4],
-                'cost_split': row[5],
-                'item_bid_group_id': row[6],
-                'ibg_items_to_win': row[7]
-            })
+            row_dict = {headers[i]: row[i] for i in range(len(headers))}
+            read_rows.append(row_dict)
 
         print(f"\nRead {len(read_rows)} rows from file: {filename}.")
 
