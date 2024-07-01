@@ -360,9 +360,9 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
     item_count_actually_intend_to_bid = 0
     for item in item_list:
         if item.max_desired_bid == None:
-            item_count_zero_desired_bid += 1
-        elif item.max_desired_bid == 0:
             item_count_no_desired_bid += 1
+        elif item.max_desired_bid == 0:
+            item_count_zero_desired_bid += 1
         else: # item has a max_desired_bid
             item_count_with_desired_bid += 1
             if item.bidding_status == 'Closed':
