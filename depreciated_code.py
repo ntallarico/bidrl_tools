@@ -777,3 +777,27 @@ def parse_invoice_page(browser, invoice_url, earliest_invoice_date):
         tear_down(browser)
 
     return invoice"""
+
+
+"""# read favorite_items_to_input_max_bid.csv and return list of item objects for items where max_desired_bid > 0
+def read_user_input_csv_to_item_objects(browser, auto_bid_folder_path):
+    try:
+        filename = 'favorite_items_to_input_max_bid.csv'
+
+        file_path = auto_bid_folder_path + filename
+
+        read_rows = bf.read_items_from_csv(file_path)
+        print(f"\nRead {len(read_rows)} rows from file: {filename}.")
+
+        item_list = create_item_objects_from_rows(read_rows)
+        print(f"Created {len(item_list)} item objects from read rows.")
+
+        # sort list of items in descending order based on their end time
+        item_list.sort(key=lambda x: x.end_time_unix, reverse=True)
+
+        return item_list
+    except Exception as e:
+        print(f"read_user_input_csv_to_item_objects() failed with exception: {e}")
+        print("Tearing down web object.")
+        browser.quit()
+        return 1"""
