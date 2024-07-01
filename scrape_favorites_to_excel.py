@@ -132,8 +132,8 @@ try:
         "item_bid_group_id": 19.7,
         "ibg_items_to_win": 18.6,
         "description": 100,
-        "max_desired_bid": 8,
-        "cost_split": 4
+        "max_desired_bid": 18,
+        "cost_split": 11
     }
 
     # unsure why, but they come out as aproximately 0.75 smaller than I input, so adding that amount to my indended inputs
