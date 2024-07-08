@@ -16,7 +16,7 @@ Setup:
 	   example, if you live in Indiana, you would likely input:
 	   `home_affiliates = ['56', '60', '44']`
 
-	Example:
+	Example contents of `config.py`:
 	
 	    user_email = 'email@example.com'
 	    user_password = 'exampleP@ssw0rd'
