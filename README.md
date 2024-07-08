@@ -5,13 +5,16 @@ Set of tools for usage of BidRL. Scraping, processing of invoices, etc.
 **This contains python code that will use your actual user account to bid real money on items. This is a constant work in progress. It is not perfect. Please review code carefully and use at your own risk.**
 
 Setup:
-1. Ensure that python is installed.
-2. Create file `config.py` in repo. Populate it according to the below details/example:
+ - Ensure that python is installed.
+ - Create file `config.py` in repo. Populate it according to the below details/example:
 
 	Details:
-		user_email: your email used for logging into bidrl
-	    user_password: your password used for logging into bidrl
-	    home_affiliates = list of IDs for affiliates you care about, each in single quotes and separated by commas, and the whole list surrounded by brackets. run list_affiliates.py for name/ID list. for example, if you live in Indiana, you would likely input: `home_affiliates = ['56', '60', '44']`
+	 - user_email: your email used for logging into bidrl
+	 - user_password: your password used for logging into bidrl
+	 - home_affiliates = list of IDs for affiliates you care about, each in single quotes and separated by commas, and the whole list
+	   surrounded by brackets. run list_affiliates.py for name/ID list. for
+	   example, if you live in Indiana, you would likely input:
+	   `home_affiliates = ['56', '60', '44']`
 
 	Example:
 	
