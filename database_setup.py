@@ -29,7 +29,7 @@ def create_v_reporting_user(conn):
                 , COUNT(DISTINCT b.bid_id) AS bids_placed
                 , MIN(b.time_of_bid_unix) AS earliest_bid_time_unix
                 , MAX(b.time_of_bid_unix) AS latest_bid_time_unix
-                , COUNT(DISTINCT b.item_id) AS items_bid_on_unix
+                , COUNT(DISTINCT b.item_id) AS items_bid_on
             FROM bids b
             GROUP BY
                 username
@@ -48,7 +48,7 @@ def create_v_reporting_user(conn):
             , bi.bids_placed
             , bi.earliest_bid_time_unix
             , bi.latest_bid_time_unix
-            , bi.items_bid_on_unix
+            , bi.items_bid_on
             --, '' AS most_bought_category
             --, '' AS most_spent_category
             --, '' AS closest_snipe
