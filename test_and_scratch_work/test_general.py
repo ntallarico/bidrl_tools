@@ -349,3 +349,45 @@ def test_user_login_urls():
             print("\t\t"+ str(response_json))
 
 #test_user_login_urls()
+
+
+# attempt to bid on an item with credentials stored in config.py instead of logging in first
+def test_bid_on_item_with_creds():
+
+    amount_to_bid = 1.5
+    auction_id = "161030"
+    item_id = "21120614"
+
+    session = requests.Session() # create a session object to persist cookies
+    response = session.get("https://www.bidrl.com/") # make a GET request to get cookies
+
+    '''
+    get_url = 'https://www.bidrl.com/api/users'
+
+    get_data = {
+        "username" : user_email[0:3]
+        , "password" : user_password
+    }
+
+    response = session.get(get_url, params=get_data) # send the GET request with the session that contains the cookies
+    '''
+    
+    post_url = 'https://www.bidrl.com/api/auctions/' + auction_id + '/items/' + item_id + '/bid'
+
+    post_data = {
+        "bid": amount_to_bid
+        , "accept_terms": 1
+        , "username" : user_email[0:3]
+        , "password" : user_password
+    }
+
+    response = session.post(post_url, post_data) # send the POST request with the session that contains the cookies
+
+    print(response.text)
+
+
+    #response.raise_for_status() # ensure the request was successful
+
+    return 0
+
+#test_bid_on_item_with_creds()
