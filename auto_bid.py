@@ -128,6 +128,7 @@ def update_item_info(browser, items):
         print("Success.")
         return 0
     except Exception as e:
+        # return 1 here instead of letting this kill the program because update_item_info is not critical to bidding
         print(f"update_item_info() failed with exception: {e}")
         return 1
     
@@ -137,23 +138,28 @@ def update_item_info(browser, items):
 # if search item is in same bid group as our item, then iterate items_in_bid_group
 # if search item is in the same bid group as our item and we're winning it, then iterate items_in_bid_group_won
 def update_item_group_info(browser, items, username):
-    update_item_info(browser, items)
-    print("Updating item group info.")
-    for item in items:
-        item.items_in_bid_group_won = 0
-        if item.highbidder_username == username:
-            item.items_in_bid_group_won = 1
-        item.items_in_bid_group = 1
-        for item_search in items:
-            # check if this other item is in the same bid group
-            if item.item_bid_group_id == item_search.item_bid_group_id and item.id != item_search.id and item.item_bid_group_id != None and item.item_bid_group_id != '':
-                item.items_in_bid_group += 1
-                # check and see if we already won this other item that is in the same bid group
-                if item_search.highbidder_username == username:
-                    item.items_in_bid_group_won += 1
-        #print(f"{item.description} | {item.items_in_bid_group} | {item.items_in_bid_group_won}")
-    print("Success.")
-    return 0
+    try:
+        update_item_info(browser, items)
+        print("Updating item group info.")
+        for item in items:
+            item.items_in_bid_group_won = 0
+            if item.highbidder_username == username:
+                item.items_in_bid_group_won = 1
+            item.items_in_bid_group = 1
+            for item_search in items:
+                # check if this other item is in the same bid group
+                if item.item_bid_group_id == item_search.item_bid_group_id and item.id != item_search.id and item.item_bid_group_id != None and item.item_bid_group_id != '':
+                    item.items_in_bid_group += 1
+                    # check and see if we already won this other item that is in the same bid group
+                    if item_search.highbidder_username == username:
+                        item.items_in_bid_group_won += 1
+            #print(f"{item.description} | {item.items_in_bid_group} | {item.items_in_bid_group_won}")
+        print("Success.")
+        return 0
+    except Exception as e:
+        # return 1 here instead of letting this kill the program because update_item_group_info is not critical to bidding
+        print(f"update_item_group_info() failed with exception: {e}")
+        return 1
 
 
 def create_item_objects_from_rows(item_rows_list):
@@ -335,82 +341,86 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
          , update_item_info__interval = 60 * 60 # keep this reasonable - actually submits a request to bidrl
          ):
 
-    auto_bid_folder_path = 'local_files/auto_bid/'
-    bf.ensure_directory_exists(auto_bid_folder_path)
-    
-    # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
-    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
-    last_login_time_string = time_formatted()
-    last_login_time_unix = time_unix()
-    username = get_username(browser)
-    print(f"Username: {username}")
-
-    # read favorite_items_to_input_max_bid.csv and return list of item objects we intend to bid on
-    item_list = read_user_input_xlsx_to_item_objects(browser, auto_bid_folder_path)
-
-    update_item_group_info(browser, item_list, username)
-
-    # save inputs from our csv to the database for data archive purposes
-    update_items_user_input_table(item_list)
-
-    item_count_with_desired_bid = 0
-    item_count_zero_desired_bid = 0
-    item_count_no_desired_bid = 0
-    item_count_closed = 0
-    item_count_actually_intend_to_bid = 0
-    for item in item_list:
-        if item.max_desired_bid == None:
-            item_count_no_desired_bid += 1
-        elif item.max_desired_bid == 0:
-            item_count_zero_desired_bid += 1
-        else: # item has a max_desired_bid
-            item_count_with_desired_bid += 1
-            if item.bidding_status == 'Closed':
-                item_count_closed += 1
-            else:
-                item_count_actually_intend_to_bid += 1
-
-    print(f"\nItems without max_desired_bid: {item_count_no_desired_bid}")
-    print(f"Items with 0 max_desired_bid: {item_count_zero_desired_bid}")
-    print(f"Items with max_desired_bid: {item_count_with_desired_bid}")
-    print(f"Items with max_desired_bid that already closed: {item_count_closed}")
-    print(f"\nWe intend to bid on {item_count_actually_intend_to_bid} items, {seconds_before_closing_to_bid} seconds before they close, checking every {auto_bid__interval} seconds.\n")
-
-    # set x__last_run_time to 0 to run immediately when loop processes
-    # set to time_unix() to wait x__interval amount of seconds first
-    auto_bid__last_run_time = 0
-    login_refresh__last_run_time = 0
-    print_items_status__last_run_time = 0
-    update_item_info__last_run_time = time_unix()
-
     try:
-        # loop until KeyboardInterrupt, testing if it has been x_function__interval seconds since last run of x_function()
-        # if it has been, run x_function(), then test the next function and its corresponding times
-        while True:
-            # update_item_info()
-            if time_unix() - update_item_info__last_run_time >= update_item_info__interval:
-                update_item_info(browser, item_list)
-                update_item_info__last_run_time = time_unix()
+        auto_bid_folder_path = 'local_files/auto_bid/'
+        bf.ensure_directory_exists(auto_bid_folder_path)
+        
+        # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
+        browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+        last_login_time_string = time_formatted()
+        last_login_time_unix = time_unix()
+        username = get_username(browser)
+        print(f"Username: {username}")
 
-            # login_refresh()
-            if time_unix() - login_refresh__last_run_time >= login_refresh__interval:
-                login_refresh(browser, last_login_time_string, last_login_time_unix)
-                login_refresh__last_run_time = time_unix()
+        # read favorite_items_to_input_max_bid.csv and return list of item objects we intend to bid on
+        item_list = read_user_input_xlsx_to_item_objects(browser, auto_bid_folder_path)
 
-            # print_items_status()
-            if time_unix() - print_items_status__last_run_time >= print_items_status__interval:
-                print_items_status(item_list)
-                print_items_status__last_run_time = time_unix()
+        update_item_group_info(browser, item_list, username)
 
-            # auto_bid()
-            if time_unix() - auto_bid__last_run_time >= auto_bid__interval:
-                auto_bid(browser, item_list, seconds_before_closing_to_bid, username)
-                auto_bid__last_run_time = time_unix()
+        # save inputs from our csv to the database for data archive purposes
+        update_items_user_input_table(item_list)
 
-            time.sleep(1)
-    finally:
-        print("Loop interrupted. Tearing down browser object and exiting program.")
-        browser.quit()
+        item_count_with_desired_bid = 0
+        item_count_zero_desired_bid = 0
+        item_count_no_desired_bid = 0
+        item_count_closed = 0
+        item_count_actually_intend_to_bid = 0
+        for item in item_list:
+            if item.max_desired_bid == None:
+                item_count_no_desired_bid += 1
+            elif item.max_desired_bid == 0:
+                item_count_zero_desired_bid += 1
+            else: # item has a max_desired_bid
+                item_count_with_desired_bid += 1
+                if item.bidding_status == 'Closed':
+                    item_count_closed += 1
+                else:
+                    item_count_actually_intend_to_bid += 1
+
+        print(f"\nItems without max_desired_bid: {item_count_no_desired_bid}")
+        print(f"Items with 0 max_desired_bid: {item_count_zero_desired_bid}")
+        print(f"Items with max_desired_bid: {item_count_with_desired_bid}")
+        print(f"Items with max_desired_bid that already closed: {item_count_closed}")
+        print(f"\nWe intend to bid on {item_count_actually_intend_to_bid} items, {seconds_before_closing_to_bid} seconds before they close, checking every {auto_bid__interval} seconds.\n")
+
+        # set x__last_run_time to 0 to run immediately when loop processes
+        # set to time_unix() to wait x__interval amount of seconds first
+        auto_bid__last_run_time = 0
+        login_refresh__last_run_time = 0
+        print_items_status__last_run_time = 0
+        update_item_info__last_run_time = time_unix()
+
+        try:
+            # loop until KeyboardInterrupt, testing if it has been x_function__interval seconds since last run of x_function()
+            # if it has been, run x_function(), then test the next function and its corresponding times
+            while True:
+                # update_item_info()
+                if time_unix() - update_item_info__last_run_time >= update_item_info__interval:
+                    update_item_info(browser, item_list)
+                    update_item_info__last_run_time = time_unix()
+
+                # login_refresh()
+                if time_unix() - login_refresh__last_run_time >= login_refresh__interval:
+                    login_refresh(browser, last_login_time_string, last_login_time_unix)
+                    login_refresh__last_run_time = time_unix()
+
+                # print_items_status()
+                if time_unix() - print_items_status__last_run_time >= print_items_status__interval:
+                    print_items_status(item_list)
+                    print_items_status__last_run_time = time_unix()
+
+                # auto_bid()
+                if time_unix() - auto_bid__last_run_time >= auto_bid__interval:
+                    auto_bid(browser, item_list, seconds_before_closing_to_bid, username)
+                    auto_bid__last_run_time = time_unix()
+
+                time.sleep(1)
+        finally:
+            print("Loop interrupted.")
+            bf.tear_down(browser)
+    except Exception as e:
+        print(f"Exception occurred in auto_bid_main().\nException: {e}")
+        bf.tear_down(browser)
 
 
 if __name__ == "__main__":

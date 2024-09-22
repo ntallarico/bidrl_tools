@@ -1,0 +1,1 @@
+python .\generate_auction_link_list.py
