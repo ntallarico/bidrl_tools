@@ -328,6 +328,11 @@ def match_transactions_to_invoices(transactions
 
 def get_processed_bidrl_invoices(oldest_transaction_date):
     print(f"\nGetting BidRL invoices from {oldest_transaction_date} to present.")
+
+    if oldest_transaction_date is None:
+        print("\nOldest transaction date is None. Exiting program.")
+        quit()
+    
     # get logged in webdriver instance using imported credentials from config.py
     browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless') # use imported credentials from config.py
 
