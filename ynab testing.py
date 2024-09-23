@@ -2,6 +2,8 @@ import requests
 import json
 from config import ynab_api_token, ynab_budget_id, ynab_category_dict
 
+# reference: https://api.ynab.com/v1#/
+
 
 """
 Retrieves and prints the YNAB budgets using the YNAB API.
