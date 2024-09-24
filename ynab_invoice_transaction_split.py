@@ -1,7 +1,7 @@
 import requests
 import json
 from config import user_email, user_password, ynab_api_token, ynab_budget_id, ynab_category_dict
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import bidrl_functions as bf
 from bidrl_classes import Item, Invoice
 from typing import Union
@@ -214,7 +214,7 @@ def update_invoices_total_cost(invoices):
         total_cost = 0
         for item in invoice.items:
             total_cost += item.total_cost
-        invoice.total_cost = total_cost
+        invoice.total_cost = round(total_cost, 2)
 
 # fetch cost_split from the database
 def fetch_cost_split_from_db(conn, item_id, auction_id):
@@ -496,6 +496,10 @@ def print_invoices(invoices):
 
 
 def ynab_invoice_transaction_split_main():
+    # define number of days that the transaction date and invoice date can be different and still be considered a match
+    # program will also look back this number of days past the oldest invoice date
+    date_match_tolerance_def = 3
+
     # print out all Uncategorized transactions with the payee "BidRL SC"
     transactions = get_ynab_transactions('BidRL SC', 'uncategorized')
 
@@ -505,6 +509,8 @@ def ynab_invoice_transaction_split_main():
     # get the oldest transaction date
     oldest_transaction_date = get_oldest_transaction_date(transactions)
     print(f"\nOldest transaction date: {oldest_transaction_date}")
+    oldest_transaction_date -= timedelta(days=date_match_tolerance_def)
+    print(f"\nSubtracted date_match_tolerance from oldest_transaction_date. New oldest_transaction_date: {oldest_transaction_date}")
 
     # scrape invoices from bidrl
     invoices = get_processed_bidrl_invoices(oldest_transaction_date)
@@ -513,7 +519,11 @@ def ynab_invoice_transaction_split_main():
     print_invoices(invoices)
 
     # match transactions to invoices
-    match_transactions_to_invoices(transactions, invoices, date_match_tolerance = 2, cost_match_tolerance = 0.02, verbose=True)
+    match_transactions_to_invoices(transactions
+                                   , invoices
+                                   , date_match_tolerance = date_match_tolerance_def
+                                   , cost_match_tolerance = 0.02
+                                   , verbose=True)
 
     # display the transactions
     print_transactions(transactions)
@@ -526,6 +536,9 @@ def ynab_invoice_transaction_split_main():
 
     # after splits are processed, submit them to ynab
     submit_splits_to_ynab(transactions)
+
+    # wait until user presses a key to exit
+    input("Press any key to exit.")
 
 
 
