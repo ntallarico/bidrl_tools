@@ -892,30 +892,36 @@ def scrape_and_insert_all_affiliates_to_sql_db(conn):
 
 # requires a sqlite connection object and an Auction object full of items, each full of bids
 # inserts the auction, all items, and all items' bids into the sql database
+# if the auction or any of its items already exist in the sql database, they will be dropped and reinserted
 # rolls back the transaction if any error occurs, so either all the data gets inserted or none of it does
 def insert_entire_auction_to_sql_db(conn, auction_obj):
     try:
         conn.execute('BEGIN') # start transaction
         
-        #start_time_insert_auction = time.time()
+        # Check if auction exists and delete if found
+        auction_exists = conn.execute("SELECT 1 FROM auctions WHERE auction_id = ?", (auction_obj.id,)).fetchone()
+        if auction_exists:
+            print(f"Existing auction found with auction_id {auction_obj.id}. Deleting auction and its components.")
+            # must delete in order [images, bids], then items, then auction so that the queries work
+            conn.execute("DELETE FROM images WHERE item_id IN (SELECT item_id FROM items WHERE auction_id = ?)", (auction_obj.id,))
+            conn.execute("DELETE FROM bids WHERE item_id IN (SELECT item_id FROM items WHERE auction_id = ?)", (auction_obj.id,))
+            conn.execute("DELETE FROM items WHERE auction_id = ?", (auction_obj.id,))
+            conn.execute("DELETE FROM auctions WHERE auction_id = ?", (auction_obj.id,))
+
+        # Insert auction
         insert_auction_to_sql_db(conn, auction_obj)
-        #print("Auction inserted. Time taken: {:.4f} seconds.".format(time.time() - start_time_insert_auction))
 
         for item in auction_obj.items:
-
-            #start_time_insert_item = time.time()
+            # Insert item
             insert_item_to_sql_db(conn, item)
-            #print("Item inserted. Time taken: {:.4f} seconds.".format(time.time() - start_time_insert_item))
 
-            #start_time_insert_bids = time.time()
             for bid in item.bids:
+                # Insert bid
                 insert_bid_to_sql_db(conn, bid)
-            #print("Bids inserted. Time taken: {:.4f} seconds.".format(time.time() - start_time_insert_bids))
 
-            #start_time_insert_images = time.time()
             for image in item.images:
+                # Insert image
                 insert_image_to_sql_db(conn, image)
-            #print("Images inserted. Time taken: {:.4f} seconds.".format(time.time() - start_time_insert_images))
         
         conn.commit() # commit the transaction if everything is successful
         return 0

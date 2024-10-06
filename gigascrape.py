@@ -1,5 +1,5 @@
 '''
-This script scrapes all everything (affiliate info, acution info, item info, etc) from
+This script scrapes everything (affiliate info, acution info, item info, etc) from
 all affiliates listed by ID in home_affiliates list in config.py
 '''
 
@@ -123,8 +123,9 @@ def verify_auction_object_complete(auction_obj, items_removed = 0):
 # plan:
 #   1. get list of affiliates.
 #   2. for each affiliate, get list of auctions.
-#   3. get list of auction_ids from the sql database and remove any that appear from the list of auctions.
-#       this ensures we are not spending time scraping auction/item data that has already been scraped.
+#   3. get list of auction_ids with closed status from the sql database and remove any that appear from the list of auctions.
+#       - this ensures we are not spending time scraping auction/item data that has already been scraped.
+#       - we only pull closed auctions to remove from the list because we want to re-scrape any auctions we previously scraped when live
 #   3. for each auction, get list of items.
 #   4. every time we scrape an auction and its items, verify the auction object is complete, then add to the database.
 def gigascrape():
@@ -136,8 +137,8 @@ def gigascrape():
     bf.scrape_and_insert_all_affiliates_to_sql_db(conn)
     conn.commit()
 
-    # get all auction_ids from sql database so we can skip scraping auctions that have already been scraped
-    cursor.execute("SELECT auction_id FROM auctions")
+    # get all closed auction_ids from sql database so we can skip scraping completed auctions that have already been scraped
+    cursor.execute("SELECT auction_id FROM auctions WHERE status = 'closed'")
     auctions_in_db = cursor.fetchall()
     # extract auction_id from each row and store in a list
     auction_ids_in_db = [auction['auction_id'] for auction in auctions_in_db]
