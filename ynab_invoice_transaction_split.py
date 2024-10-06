@@ -233,8 +233,8 @@ def update_item_cost_split_from_db(invoices):
             if cost_split:
                 item.cost_split = cost_split
             else:
-                print(f"Error: cost_split not found for item_id {item.id} and auction_id {item.auction_id}. Exiting program.")
-                quit()
+                print(f"cost_split not found for item_id {item.id} and auction_id {item.auction_id}.")
+                item.cost_split = 'not_found'
     conn.close()
 
 # takes the dict ynab_category_dict, polls the api for category ids, then returns a new dict with the
@@ -380,6 +380,7 @@ def split_transactions(transactions):
                     category_id = category_id_mapping[cost_split_value]
                 else:
                     category_id = None
+                    print(f"cost_split value for item {item.id} not found in category_id_mapping. Value: {cost_split_value}")
 
                 memo = f"{item.description}        {item.url}"
                 
@@ -387,9 +388,11 @@ def split_transactions(transactions):
                     'amount': int(split_amount * -1000)
                     #, 'payee_id': ''
                     #, 'payee_name': ''
-                    , 'category_id': category_id
                     , 'memo': memo
                 }
+                # only add category_id if it is not None (situations where cost_split is unmapped or not found in db)
+                if category_id is not None:
+                    split['category_id'] = category_id
 
                 splits.append(split)
                 
