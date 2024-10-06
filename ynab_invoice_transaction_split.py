@@ -226,7 +226,7 @@ def fetch_cost_split_from_db(conn, item_id, auction_id):
 # update item cost_split from the database
 def update_item_cost_split_from_db(invoices):
     print("Updating item cost_split from the database.")
-    conn = bf.init_sqlite_connection()
+    conn = bf.init_sqlite_connection(path = 'local_files/auto_bid/', database = 'bidrl_user_input')
     for invoice in invoices:
         for item in invoice.items:
             cost_split = fetch_cost_split_from_db(conn, item.id, item.auction_id)

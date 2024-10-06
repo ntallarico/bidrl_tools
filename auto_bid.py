@@ -301,7 +301,7 @@ def login_refresh(browser, last_login_time, last_login_time_unix):
 def update_items_user_input_table(item_list):
     try:
         print("\nAttempting to use information read from csv to update items_user_input table in database.")
-        conn = bf.init_sqlite_connection()
+        conn = bf.init_sqlite_connection(path = 'local_files/auto_bid/', database = 'bidrl_user_input')
         cursor = conn.cursor()
 
         for item in item_list:

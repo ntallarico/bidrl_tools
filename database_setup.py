@@ -70,6 +70,8 @@ def sql_database_setup():
     conn = bf.init_sqlite_connection()
     cursor = conn.cursor()
 
+    conn_user_input_db = bf.init_sqlite_connection(path = 'local_files/auto_bid/', database = 'bidrl_user_input')
+
 
     ##### tables #####
 
@@ -126,24 +128,6 @@ def sql_database_setup():
         );
     ''')
 
-    # create items user input table
-    bf.create_table(conn, 'items_user_input', '''
-        CREATE TABLE IF NOT EXISTS items_user_input (
-            -- item identification fields, and description and such for convenience of viewing table
-            item_id TEXT PRIMARY KEY
-            , auction_id TEXT
-            , description TEXT
-            , url TEXT
-            , end_time_unix INTEGER
-            -- user input fields
-            , item_bid_group_id TEXT
-            , ibg_items_to_win INTEGER
-            , cost_split TEXT
-            , max_desired_bid REAL
-            , notes TEXT
-        );
-    ''')
-
     # create bids table
     bf.create_table(conn, 'bids', '''
         CREATE TABLE IF NOT EXISTS bids (
@@ -186,6 +170,24 @@ def sql_database_setup():
             , image_height INTEGER
             , image_width INTEGER
             , PRIMARY KEY (item_id, image_url)
+        );
+    ''')
+
+    # create items user input table in separate user input database
+    bf.create_table(conn_user_input_db, 'items_user_input', '''
+        CREATE TABLE IF NOT EXISTS items_user_input (
+            -- item identification fields, and description and such for convenience of viewing table
+            item_id TEXT PRIMARY KEY
+            , auction_id TEXT
+            , description TEXT
+            , url TEXT
+            , end_time_unix INTEGER
+            -- user input fields
+            , item_bid_group_id TEXT
+            , ibg_items_to_win INTEGER
+            , cost_split TEXT
+            , max_desired_bid REAL
+            , notes TEXT
         );
     ''')
 
