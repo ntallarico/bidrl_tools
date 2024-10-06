@@ -284,17 +284,21 @@ def auto_bid(browser, item_list, seconds_before_closing_to_bid, username):
 
 
 def login_refresh(browser, last_login_time, last_login_time_unix):
-    print(f"Checking login status ({time_formatted()}).")
-    if bf.check_if_login_success(browser) != 0:
-        print("Login check failed!")
-        print("Tearing down webdriver, initiating new webdriver, and starting login process.")
-        browser.quit()
-        browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
-        last_login_time = time_formatted()
-        last_login_time_unix = time_unix()
-    else:
-        logged_in_time = convert_seconds_to_time_string(time_unix() - last_login_time_unix)
-        print(f"Login check success. Last login: {last_login_time}. Time remained logged in: {logged_in_time}.")
+    try:
+        print(f"Checking login status ({time_formatted()}).")
+        if bf.check_if_login_success(browser) != 0:
+            print("Login check failed!")
+            print("Tearing down webdriver, initiating new webdriver, and starting login process.")
+            browser.quit()
+            browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+            last_login_time = time_formatted()
+            last_login_time_unix = time_unix()
+        else:
+            logged_in_time = convert_seconds_to_time_string(time_unix() - last_login_time_unix)
+            print(f"Login check success. Last login: {last_login_time}. Time remained logged in: {logged_in_time}.")
+    except Exception as e:
+        print(f"Exception occurred in login_refresh().\nException: {e}")
+        bf.tear_down(browser)
 
 
 # save information from a list of item objects to the items_user_input table in the database
@@ -340,6 +344,8 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
          , login_refresh__interval = 60 # keep this reasonable - actually submits a request to bidrl
          , update_item_info__interval = 60 * 60 # keep this reasonable - actually submits a request to bidrl
          ):
+
+    browser = None # establish browser variable so that the check in 'finally' doesn't throw an error
 
     try:
         auto_bid_folder_path = 'local_files/auto_bid/'
@@ -417,12 +423,14 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
                 time.sleep(1)
         finally:
             print("Loop interrupted.")
-            bf.tear_down(browser)
+            if browser: bf.tear_down(browser)
     except Exception as e:
         print(f"Exception occurred in auto_bid_main().\nException: {e}")
-        bf.tear_down(browser)
+        if browser: bf.tear_down(browser)
+    finally:
+        if browser: bf.tear_down(browser)
 
 
 if __name__ == "__main__":
-  auto_bid_main()
+    auto_bid_main()
 

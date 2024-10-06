@@ -17,18 +17,24 @@ from config import home_affiliates#, user_email, user_password, sql_server_name,
 
 
 def init_webdriver(headless = ''):
-    print("\nAttempting to initialize webdriver")
-    if headless == 'headless':
-        firefox_options = Options()
-        firefox_options.add_argument("--headless")
-        browser = Firefox(options=firefox_options) # initialize Firefox browser webdriver using seleniumrequests library using headless Firefox options
-        print('Firefox webdriver initialized in headless mode')
-    else:
-        browser = Firefox() # initialize Firefox browser webdriver using seleniumrequests library
-        print('Firefox webdriver initialized')
-        browser.set_window_position(0, 0)
-        browser.maximize_window()
-    return browser
+    browser = None
+    try:
+        print("\nAttempting to initialize webdriver")
+        if headless == 'headless':
+            firefox_options = Options()
+            firefox_options.add_argument("--headless")
+            browser = Firefox(options=firefox_options) # initialize Firefox browser webdriver using seleniumrequests library using headless Firefox options
+            print('Firefox webdriver initialized in headless mode')
+        else:
+            browser = Firefox() # initialize Firefox browser webdriver using seleniumrequests library
+            print('Firefox webdriver initialized')
+            browser.set_window_position(0, 0)
+            browser.maximize_window()
+        return browser
+    except Exception as e:
+        print(f"init_webdriver() failed with exception: {e}")
+        if browser:
+            tear_down(browser)
 
 
 # attempt to load and log in to bidrl
@@ -37,7 +43,7 @@ def try_login(browser, login_name, login_password):
     time.sleep(0.5)
     try:
         userName = browser.find_element(By.NAME, 'username')
-        password = browser.find_element(By.NAME, 'password')
+        #password = browser.find_element(By.NAME, 'password')
 
         #put all elements with tag name "button" into a list
         button_elements = browser.find_elements(By.TAG_NAME, 'button')
@@ -74,26 +80,28 @@ def check_if_login_success(browser):
 def get_logged_in_webdriver(login_name, login_password, headless = ''):
     browser = init_webdriver(headless)
 
-    attempts = 5 # number of times to attempt to login before giving up
-    for n in range (1, attempts + 1):
-        print(f"Attempt {n} to log in to account: {login_name}")
-        try_login_result = try_login(browser, login_name, login_password) # run try_login function, set try_login_result to 0 or 1 depending on success
-        if try_login_result == 1:
-            print('Login failed: error in attempting to find elements of login form or execute login steps.')
-            time.sleep(1)
-        elif check_if_login_success(browser) == 1:
-            print('Login failed: username or password incorrect.')
-            time.sleep(1)
-        elif check_if_login_success(browser) == 2:
-            print('check_if_login_success() failed to properly complete execution.')
-            time.sleep(1)
-        else:
-            print('Login succeeded!')
-            return browser
-    print(f'Gave up attempt to log in after {attempts} attempts. Exiting program.')
-    browser.quit()
-    quit() # exit current python script
-
+    try:
+        attempts = 5 # number of times to attempt to login before giving up
+        for n in range (1, attempts + 1):
+            print(f"Attempt {n} to log in to account: {login_name}")
+            try_login_result = try_login(browser, login_name, login_password) # run try_login function, set try_login_result to 0 or 1 depending on success
+            if try_login_result == 1:
+                print('Login failed: error in attempting to find elements of login form or execute login steps.')
+                time.sleep(1)
+            elif check_if_login_success(browser) == 1:
+                print('Login failed: username or password incorrect.')
+                time.sleep(1)
+            elif check_if_login_success(browser) == 2:
+                print('check_if_login_success() failed to properly complete execution.')
+                time.sleep(1)
+            else:
+                print('Login succeeded!')
+                return browser
+        print(f'Gave up attempt to log in after {attempts} attempts. Exiting program.')
+        tear_down(browser)
+    except Exception as e:
+        print(f"get_logged_in_webdriver() failed with exception: {e}")
+        tear_down(browser)
 
 # wait for browser to completely load webpage before moving on
 # requires initialized webdriver and name of an element to wait to see
