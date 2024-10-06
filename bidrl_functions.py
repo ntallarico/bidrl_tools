@@ -705,11 +705,12 @@ def init_sql_connection(sql_server_name, sql_database_name, sql_admin_username, 
     return conn
 
 
-# return sqlite database connection object. defaults to "bidrl.db" unless specified
+# return sqlite database connection object. defaults to "bidrl" unless specified
 # this will create the file if it does not already exist
-def init_sqlite_connection(database = 'bidrl.db'):
-    print(f"Initializing sqlite connection to database: {database}")
-    conn = sqlite3.connect(f'local_files/{database}')
+def init_sqlite_connection(database = 'bidrl'):
+    database_file_name = database + '.db'
+    print(f"Initializing sqlite connection to database: {database_file_name}")
+    conn = sqlite3.connect(f'local_files/{database_file_name}')
     conn.row_factory = sqlite3.Row
     return conn
 
