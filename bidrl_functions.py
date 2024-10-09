@@ -15,18 +15,24 @@ import pyodbc
 import sqlite3
 from config import home_affiliates#, user_email, user_password, sql_server_name, sql_database_name, sql_admin_username, sql_admin_password
 
-
-def init_webdriver(headless = ''):
+def init_webdriver(headless='', webdriver_identifier = None):
     browser = None
     try:
         print("\nAttempting to initialize webdriver")
+        firefox_options = Options()
+
+        # if a webdriver_identifier is specified, then add it as a custom command-line argument
+        # this can be used later to identify specific instances of firefox
+        # example: used in auto-bid orchestration to label firefox instances created by auto_bid.py so that
+            # auto_bid_orchestrator.py can monitor counts of these instances and clean up leaks
+        if webdriver_identifier: firefox_options.add_argument(f"--custom-identifier={webdriver_identifier}")
+
         if headless == 'headless':
-            firefox_options = Options()
             firefox_options.add_argument("--headless")
-            browser = Firefox(options=firefox_options) # initialize Firefox browser webdriver using seleniumrequests library using headless Firefox options
+            browser = Firefox(options=firefox_options)  # initialize Firefox browser webdriver using seleniumrequests library using headless Firefox options
             print('Firefox webdriver initialized in headless mode')
         else:
-            browser = Firefox() # initialize Firefox browser webdriver using seleniumrequests library
+            browser = Firefox(options=firefox_options)  # initialize Firefox browser webdriver using seleniumrequests library
             print('Firefox webdriver initialized')
             browser.set_window_position(0, 0)
             browser.maximize_window()
@@ -35,7 +41,6 @@ def init_webdriver(headless = ''):
         print(f"init_webdriver() failed with exception: {e}")
         if browser:
             tear_down(browser)
-
 
 # attempt to load and log in to bidrl
 def try_login(browser, login_name, login_password):
@@ -60,7 +65,6 @@ def try_login(browser, login_name, login_password):
     except:
         return 1
 
-
 # returns 0 if login success, 1 if failure, and 2 if the function itself failed
 # we may need a better way of determining login success at some point, but for now, this works
 # as of now, if login fails the page returned starts with "<!doctype html>" instead of "<!DOCTYPE html>"
@@ -75,10 +79,9 @@ def check_if_login_success(browser):
         print(f"check_if_login_success() failed with exception: {e}")
         return 2
 
-
 # this function initializes and returns a webdriver object that has been logged in to bidrl.com with credentials supplied in config.py
-def get_logged_in_webdriver(login_name, login_password, headless = ''):
-    browser = init_webdriver(headless)
+def get_logged_in_webdriver(login_name, login_password, headless = '', webdriver_identifier = None):
+    browser = init_webdriver(headless, webdriver_identifier = webdriver_identifier)
 
     try:
         attempts = 5 # number of times to attempt to login before giving up

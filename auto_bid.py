@@ -282,6 +282,10 @@ def auto_bid(browser, item_list, seconds_before_closing_to_bid, username):
             else:
                 print(f"Already won {item.items_in_bid_group_won} items in bid group!")
 
+# return webdriver instance configured for use in auto_bid operation
+# headless, with special identifier "auto_bid" so that we can monitor instances in auto_bid_orchestrator.py
+def get_logged_in_webdriver_for_auto_bid():
+    return bf.get_logged_in_webdriver(user_email, user_password, headless = 'headless', webdriver_identifier = 'auto_bid')
 
 def login_refresh(browser, last_login_time, last_login_time_unix):
     try:
@@ -290,7 +294,7 @@ def login_refresh(browser, last_login_time, last_login_time_unix):
             print("Login check failed!")
             print("Tearing down webdriver, initiating new webdriver, and starting login process.")
             browser.quit()
-            browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+            browser = get_logged_in_webdriver_for_auto_bid()
             last_login_time = time_formatted()
             last_login_time_unix = time_unix()
         else:
@@ -352,7 +356,7 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
         bf.ensure_directory_exists(auto_bid_folder_path)
         
         # get an initialized web driver that has logged in to bidrl with credentials stored in config.py
-        browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless')
+        browser = get_logged_in_webdriver_for_auto_bid()
         last_login_time_string = time_formatted()
         last_login_time_unix = time_unix()
         username = get_username(browser)
