@@ -47,7 +47,7 @@ def count_firefox_instances_by_identifier(webdriver_identifier):
     return count
 
 def run_auto_bid():
-
+    # must be the same identifier used in auto_bid.py to label create firefox instances
     webdriver_identifier = 'auto_bid'
 
     print("\nPreventing machine from sleeping.")
