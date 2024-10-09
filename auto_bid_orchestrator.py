@@ -77,7 +77,7 @@ def run_auto_bid():
             # count firefox instances currently open by auto_bid.py. if it is above a threshold, then kill auto_bid.py
             # for reference, get_logged_in_webdriver() should generate 2 "instances"
             auto_bid_firefox_instance_count = count_firefox_instances_by_identifier(webdriver_identifier)
-            print(f"auto_bid firefox instance count: {auto_bid_firefox_instance_count}")
+            #print(f"auto_bid firefox instance count: {auto_bid_firefox_instance_count}")
             if auto_bid_firefox_instance_count > 4: # arbitrarily chose 4 instead of the 2 that we expect to see. for wiggle room I guess?
                 print(f"Too many auto_bid Firefox instances open ({auto_bid_firefox_instance_count}).")
                 print(f"Killing all child processes of auto_bid.py process with PID: {pid}")
