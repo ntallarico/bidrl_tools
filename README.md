@@ -1,12 +1,13 @@
 # bidrl_tools
 
 Set of tools for usage of BidRL. Scraping, processing of invoices, etc.
+Contains some optional integrations with YNAB budgetting software.
 
 **This contains python code that will use your actual user account to bid real money on items. This is a constant work in progress. It is not perfect. Please review code carefully and use at your own risk.**
 
 Setup:
  - Ensure that python is installed.
- - Create file `config.py` in repo. Populate it according to the below details/example:
+ - Create file `config.py` in repo. Populate it according to the below details/example. YNAB components are completely optional and all scripts will skip integration if not defined.
 
 	Details:
 	 - user_email: your email used for logging into bidrl
@@ -15,12 +16,18 @@ Setup:
 	   surrounded by brackets. run list_affiliates.py for name/ID list. for
 	   example, if you live in Indiana, you would likely input:
 	   `home_affiliates = ['56', '60', '44']`
+	  - ynab_api_token = your ynab api token if you have a YNAB account and want to use these features
+	  - ynab_budget_id = the budget id of your ynab budget. optional
+	  - ynab_category_dict = mapping of your ynab category names to the values you place in cost_split column of the auto_bid spreadsheet. optional
 
-	Example contents of `config.py`:
+	Example:
 	
 	    user_email = 'email@example.com'
 	    user_password = 'exampleP@ssw0rd'
 	    home_affiliates = ['56', '60', '44']
+	    ynab_api_token  =  'hafdhowQMl31Aqqj103FbfTgaeg234yHH11'
+		ynab_budget_id  =  'f2050f-baf4f22e7f-f24y2-b2j422u2b-aaa'
+		ynab_category_dict  = {'d': 'Decorations', 'f': 'Fun Money'}
 
 4. Run `setup.py`
 
