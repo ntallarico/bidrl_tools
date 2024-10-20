@@ -118,8 +118,7 @@ This function sends a GET request to the YNAB API to fetch all budgets
 associated with the account. It uses the API token stored in ynab_api_token
 for authentication.
 """
-def get_ynab_budgets():
-    
+def get_ynab_budgets():    
     # Define the API endpoint and headers
     url = "https://api.ynab.com/v1/budgets"
     headers = {
@@ -325,24 +324,27 @@ def match_transactions_to_invoices(transactions
         if not match_found:
             print(f"No match found for transaction with amount {transaction.amount} and date {transaction.date}.")
             print("Consider adjusting date_match_tolerance or cost_match_tolerance.")
-            print("Exiting program.")
-            quit()
-
+            raise Exception("No match found for transaction")
+        
 def get_processed_bidrl_invoices(oldest_transaction_date):
     print(f"\nGetting BidRL invoices from {oldest_transaction_date} to present.")
 
     if oldest_transaction_date is None:
-        print("\nOldest transaction date is None. Exiting program.")
-        quit()
+        print("\nOldest transaction date is None.")
+        raise Exception("Oldest transaction date is None")
     
-    # get logged in webdriver instance using imported credentials from config.py
-    browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless') # use imported credentials from config.py
+    browser = None
+    try:
+        # get logged in webdriver instance using imported credentials from config.py
+        browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless') # use imported credentials from config.py
 
-    # get list of Invoice objects. goes back only as far as the date contained in start_date_obj
-    invoices = bf.get_invoices(browser, oldest_transaction_date)
+        # get list of Invoice objects. goes back only as far as the date contained in start_date_obj
+        invoices = bf.get_invoices(browser, oldest_transaction_date)
 
-    # tear down browser object
-    browser.quit()
+        # tear down browser object
+        browser.quit()
+    finally:
+        if browser: browser.quit()
 
     print(f"\nFound {len(invoices)} invoices. Proceeding to process them.")
 
@@ -403,8 +405,7 @@ def split_transactions(transactions):
             print(f"Splits: {transaction.subtransactions}")
         else:
             print(f"No invoice found for transaction with amount {transaction.amount} and date {transaction.date}.")
-            print("Exiting program.")
-            quit()
+            raise Exception("No invoice found for transaction")
 
 def check_split_transactions(transactions):
     print("\nChecking splits for transactions to ensure they are correct before submitting to YNAB.")
@@ -421,13 +422,12 @@ def check_split_transactions(transactions):
                 print(f"Mismatch found for transaction {transaction.id}.")
                 print(f"Transaction amount: {transaction_amount}")
                 print(f"Sum of subtransaction amounts: {subtransactions_sum}")
-                print("Exiting program.")
-                quit()
+                raise Exception("Mismatch found for transaction")
             
             print(f"Transaction {transaction.id} with amount {transaction.amount} and date {transaction.date} determined to be correct.")
         else:
             print(f"No splits found for transaction {transaction.id}. Exiting program.")
-            quit()
+            raise Exception("No splits found for transaction")
 
 # submit splits to ynab
 def submit_splits_to_ynab(transactions):
@@ -472,7 +472,7 @@ def submit_splits_to_ynab(transactions):
                 print(response.text)
         else:
             print(f"No splits found for transaction {transaction.id}. Exiting program.")
-            quit()
+            raise Exception("No splits found for transaction")
 
 
 # Display information about each transaction
@@ -501,60 +501,61 @@ def print_invoices(invoices):
 
 
 def ynab_invoice_transaction_split_main():
-    # define number of days that the transaction date and invoice date can be different and still be considered a match
-    # program will also look back this number of days past the oldest invoice date
-    date_match_tolerance_def = 5
+    try:
+        # define number of days that the transaction date and invoice date can be different and still be considered a match
+        # program will also look back this number of days past the oldest invoice date
+        date_match_tolerance_def = 5
 
-    # pull down all Uncategorized transactions with the payee "BidRL SC"
-    transactions = get_ynab_transactions('BidRL SC', 'uncategorized')
+        # pull down all Uncategorized transactions with the payee "BidRL SC"
+        transactions = get_ynab_transactions('BidRL SC', 'uncategorized')
 
-    # if no transactions are found, quit
-    if transactions == []:
-        print ("No uncategorized transactions found with payee 'BidRL SC'.")
-        quit()
+        # if no transactions are found, quit
+        if transactions == []:
+            print ("No uncategorized transactions found with payee 'BidRL SC'.")
+            return
 
-    # display the transactions
-    print_transactions(transactions)
+        # display the transactions
+        print_transactions(transactions)
 
-    # get the oldest transaction date
-    oldest_transaction_date = get_oldest_transaction_date(transactions)
-    print(f"\nOldest transaction date: {oldest_transaction_date}")
-    oldest_transaction_date -= timedelta(days=date_match_tolerance_def)
-    print(f"\nSubtracted date_match_tolerance from oldest_transaction_date. New oldest_transaction_date: {oldest_transaction_date}")
+        # get the oldest transaction date
+        oldest_transaction_date = get_oldest_transaction_date(transactions)
+        print(f"\nOldest transaction date: {oldest_transaction_date}")
+        oldest_transaction_date -= timedelta(days=date_match_tolerance_def)
+        print(f"\nSubtracted date_match_tolerance from oldest_transaction_date. New oldest_transaction_date: {oldest_transaction_date}")
 
-    # scrape invoices from bidrl
-    invoices = get_processed_bidrl_invoices(oldest_transaction_date)
+        # scrape invoices from bidrl
+        invoices = get_processed_bidrl_invoices(oldest_transaction_date)
 
-    # display the invoices
-    print_invoices(invoices)
+        # display the invoices
+        print_invoices(invoices)
 
-    # match transactions to invoices
-    match_transactions_to_invoices(transactions
-                                   , invoices
-                                   , date_match_tolerance = date_match_tolerance_def
-                                   , cost_match_tolerance = 0.02
-                                   , verbose=True)
+        # match transactions to invoices
+        match_transactions_to_invoices(transactions
+                                    , invoices
+                                    , date_match_tolerance = date_match_tolerance_def
+                                    , cost_match_tolerance = 0.02
+                                    , verbose=True)
 
-    # display the transactions
-    print_transactions(transactions)
+        # display the transactions
+        print_transactions(transactions)
 
-    # process transaction-invoice matches into splits
-    split_transactions(transactions)
+        # process transaction-invoice matches into splits
+        split_transactions(transactions)
 
-    # check the splits to ensure correctness before submitting to YNAB
-    check_split_transactions(transactions)
+        # check the splits to ensure correctness before submitting to YNAB
+        check_split_transactions(transactions)
 
-    # after splits are processed, submit them to ynab
-    submit_splits_to_ynab(transactions)
-
-    # wait until user presses a key to exit
-    input("Press any key to exit.")
-
+        # after splits are processed, submit them to ynab
+        submit_splits_to_ynab(transactions)
+    except Exception as e:
+        print(f"ynab_invoice_transaction_split_main() failed with exception: {e}")
+        return
 
 
 
 if __name__ == "__main__":
     ynab_invoice_transaction_split_main()
+    input("Press any key to close.")
 
 
 

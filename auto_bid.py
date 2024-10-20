@@ -9,6 +9,7 @@ from datetime import datetime
 import bidrl_functions as bf
 from bidrl_classes import Item, Invoice, Auction
 from openpyxl import load_workbook
+from ynab_invoice_transaction_split import ynab_invoice_transaction_split_main
 
 
 # define class Item_AutoBid that inherits all fields from Item class and adds additional fields used for auto bid process
@@ -304,7 +305,6 @@ def login_refresh(browser, last_login_time, last_login_time_unix):
         print(f"Exception occurred in login_refresh().\nException: {e}")
         bf.tear_down(browser)
 
-
 # save information from a list of item objects to the items_user_input table in the database
 def update_items_user_input_table(item_list):
     try:
@@ -341,12 +341,49 @@ def update_items_user_input_table(item_list):
     except Exception as e:
         print(f"Exception occurred in update_items_user_input_table(). Moving forward anyway as this isn't critical for auto_bid.\nException: {e}")
 
+# if ynab_api_token and item up for bid next is not too close, run ynab_invoice_transaction_split_main() to split any uncategorized
+# bidrl ynab transactions. by default, will not run if next item is up for bidding within 30 mins
+def ynab_trans_split(item_list, desired_distance_from_next_bid_time = 30 * 60):
+    try:
+        # first check if ynab stuff is defined in config file. if it isn't, then pass
+        try:
+            from config import ynab_api_token
+        except ImportError:
+            ynab_api_token = None
+
+        if not ynab_api_token:
+            #print("\nynab_api_token is not defined in config.py. Skipping YNAB transaction split.")
+            return
+        else:
+            print("\nynab_api_token found in config.py. proceeding with ynab_trans_split()")
+
+        # look at all items and find the number of seconds until the next item is up for bid
+        print("Checking time until next bid")
+        current_time_unix = time_unix()
+        min_remaining_seconds = float('inf')
+        for item in item_list:
+            remaining_seconds = item.end_time_unix - current_time_unix
+            if is_item_eligible_for_bidding(item) and item.items_in_bid_group_won < item.ibg_items_to_win:
+                if remaining_seconds < min_remaining_seconds:
+                    min_remaining_seconds = remaining_seconds
+        print(f"Remaining seconds: {min_remaining_seconds}")
+        
+        if min_remaining_seconds > desired_distance_from_next_bid_time:
+            print(f"Proceeding with ynab_invoice_transaction_split_main()")
+            ynab_invoice_transaction_split_main()
+        else:
+            print(f"Skipping ynab_invoice_transaction_split_main()")
+            return
+    except Exception as e:
+        print(f"ynab_trans_split() failed with exception: {e}")
+        return
 
 def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to account for POST time to API. don't want to extend bid time if we can avoid
          , auto_bid__interval = 5 # how often to check if it is time to bid on each item (and then bid if it is)
          , print_items_status__interval = 60 # how often to print times remaining for all items
          , login_refresh__interval = 60 # keep this reasonable - actually submits a request to bidrl
          , update_item_info__interval = 60 * 60 # keep this reasonable - actually submits a request to bidrl
+         , ynab_trans_split__interval = 60 * 30 # how often to check if ynab has any uncategorized transactions to split
          ):
 
     browser = None # establish browser variable so that the check in 'finally' doesn't throw an error
@@ -399,6 +436,7 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
         login_refresh__last_run_time = 0
         print_items_status__last_run_time = 0
         update_item_info__last_run_time = time_unix()
+        ynab_trans_split__last_run_time = 0
 
         try:
             # loop until KeyboardInterrupt, testing if it has been x_function__interval seconds since last run of x_function()
@@ -423,6 +461,11 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
                 if time_unix() - auto_bid__last_run_time >= auto_bid__interval:
                     auto_bid(browser, item_list, seconds_before_closing_to_bid, username)
                     auto_bid__last_run_time = time_unix()
+
+                # ynab_trans_split()
+                if time_unix() - ynab_trans_split__last_run_time >= ynab_trans_split__interval:
+                    ynab_trans_split(item_list)
+                    ynab_trans_split__last_run_time = time_unix()
 
                 time.sleep(1)
         finally:
