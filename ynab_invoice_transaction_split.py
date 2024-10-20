@@ -143,6 +143,8 @@ def get_ynab_budgets():
 # scrape list of transactions from ynab
 # payee is the name of the payee to filter by, categorized is 'all', 'categorized', or 'uncategorized'
 def get_ynab_transactions(payee=None, categorized='all'):
+    print(f"Attempting to pull '{categorized}' transactions from YNAB with payee '{payee}'")
+
     # Define the API endpoint and headers
     url = f"https://api.ynab.com/v1/budgets/{ynab_budget_id}/transactions"
     headers = {
@@ -501,10 +503,15 @@ def print_invoices(invoices):
 def ynab_invoice_transaction_split_main():
     # define number of days that the transaction date and invoice date can be different and still be considered a match
     # program will also look back this number of days past the oldest invoice date
-    date_match_tolerance_def = 3
+    date_match_tolerance_def = 5
 
-    # print out all Uncategorized transactions with the payee "BidRL SC"
+    # pull down all Uncategorized transactions with the payee "BidRL SC"
     transactions = get_ynab_transactions('BidRL SC', 'uncategorized')
+
+    # if no transactions are found, quit
+    if transactions == []:
+        print ("No uncategorized transactions found with payee 'BidRL SC'.")
+        quit()
 
     # display the transactions
     print_transactions(transactions)
