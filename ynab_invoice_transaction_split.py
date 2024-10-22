@@ -5,8 +5,7 @@ from datetime import datetime, date, timedelta
 import bidrl_functions as bf
 from bidrl_classes import Item, Invoice
 from typing import Union
-
-# reference: https://api.ynab.com/v1#/
+import re
 
 class Transaction:
     def __init__(self
@@ -28,7 +27,8 @@ class Transaction:
                  , payee_name: str = None
                  , category_name: str = None
                  , subtransactions: list = None
-                 , bidrl_invoice: Invoice = None):
+                 , bidrl_invoice: Invoice = None
+                 , matched_bidrl_invoice_id: str = None):
         
         self._check_type('id', id, str)
         self._check_type('date', date, (str, date))
@@ -50,6 +50,7 @@ class Transaction:
         self._check_type('category_name', category_name, str)
         self._check_type('subtransactions', subtransactions, list)
         self._check_type('bidrl_invoice', bidrl_invoice, Invoice)
+        self._check_type('matched_bidrl_invoice_id', matched_bidrl_invoice_id, str)
 
         self.id = id
         self.date = self._convert_to_date(date)
@@ -71,6 +72,7 @@ class Transaction:
         self.category_name = category_name
         self.subtransactions = subtransactions
         self.bidrl_invoice = bidrl_invoice
+        self.matched_bidrl_invoice_id = matched_bidrl_invoice_id
 
     def _check_type(self, name, value, expected_type):
         if value is not None and not isinstance(value, expected_type):
@@ -108,6 +110,7 @@ class Transaction:
             print("BidRL Invoice: None")
         else:
             print(f"BidRL Invoice ID: {self.bidrl_invoice.id}")
+        print(f"Matched BidRL Invoice ID: {self.matched_bidrl_invoice_id}")
 
 
 
@@ -203,11 +206,41 @@ def get_ynab_transactions(payee=None, categorized='all'):
         print(f"Error: {response.status_code}")
         print(response.text)
 
+# takes in a list of transactions, then finds the invoice id
+def extract_invoice_ids_from_ynab_bidrl_transaction_memos(transactions):
+    print("Attempting to extract a bidrl transaction id from memos of each transaction and its subtransactions")
+
+    # Define the regex pattern to find "| Invoice " followed by digits
+    # parentheses define the capturing group, which is the series of digits defined by: \d+
+    pattern = re.compile(r"\|\sInvoice (\d+)")
+
+    for transaction in transactions:
+        # search for the pattern in the memo field of the transaction itself, in case it is a single-item transaction that has no subtransactions
+        if transaction.memo:
+            match = pattern.search(transaction.memo)
+            if match:
+                transaction.matched_bidrl_invoice_id = match.group(1)
+                continue
+
+        # if main transaction memo doesn't contain a match, or if there is no memo for the main transaction, then search subtransactions
+        if transaction.subtransactions:
+            for subtransaction in transaction.subtransactions:
+                # Search for the pattern in the memo field
+                match = pattern.search(subtransaction['memo'])
+                if match:
+                    # Extract the invoice ID and set it to the transaction's matched_bidrl_invoice_id
+                    transaction.matched_bidrl_invoice_id = match.group(1)
+                    break  # Stop searching this transaction once the invoice ID is found
+    
+    # count the number of transactions with a matched_bidrl_invoice_id
+    matched_count = sum(1 for transaction in transactions if transaction.matched_bidrl_invoice_id is not None)
+    print(f"{matched_count} out of {len(transactions)} transactions have a matched_bidrl_invoice_id.")
+
 # get the oldest transaction date, returned as a datetime object
 def get_oldest_transaction_date(transactions):
     if not transactions:
         return None
-    oldest_transaction = min(transactions, key=lambda x: x.date)
+    oldest_transaction = min((t for t in transactions), key=lambda x: x.date)
     return oldest_transaction.date
 
 def update_invoices_total_cost(invoices):
@@ -301,10 +334,17 @@ def match_transactions_to_invoices(transactions
     # so that we do not match the same transaction or invoice more than once
     matched_transaction_ids = set()
     matched_invoice_ids = set()
-    
+
+    # add all matched_bidrl_invoice_ids found in transactions to matched_invoice_ids so that we do not attempt to match those to new transactions
     for transaction in transactions:
-        if transaction.id in matched_transaction_ids:
+        if transaction.matched_bidrl_invoice_id:
+            matched_invoice_ids.add(transaction.matched_bidrl_invoice_id)
+
+    for transaction in transactions:
+        # skip any transaction already matched, and skip any transaction that is not uncategorized
+        if transaction.id in matched_transaction_ids or transaction.category_id is not None:
             continue
+
         if verbose: print(f"\nAttempting to find match for transaction with amount {transaction.amount} and date {transaction.date}.")
         match_found = False
         for invoice in invoices:
@@ -325,11 +365,13 @@ def match_transactions_to_invoices(transactions
             print(f"No match found for transaction with amount {transaction.amount} and date {transaction.date}.")
             print("Consider adjusting date_match_tolerance or cost_match_tolerance.")
             raise Exception("No match found for transaction")
-        
-def get_processed_bidrl_invoices(oldest_transaction_date):
-    print(f"\nGetting BidRL invoices from {oldest_transaction_date} to present.")
 
-    if oldest_transaction_date is None:
+# returns list of invoices scraped from bidrl from an oldest transaction date (minus a defined amount to go back past that)
+def get_processed_bidrl_invoices(oldest_transaction_date, date_backsearch_offset):
+    adj_oldest_transaction_date = oldest_transaction_date - timedelta(days=date_backsearch_offset)
+    print(f"\nGetting BidRL invoices from {adj_oldest_transaction_date} to present (oldest_transaction_date - date_backsearch_offset({date_backsearch_offset})).")
+
+    if adj_oldest_transaction_date is None:
         print("\nOldest transaction date is None.")
         raise Exception("Oldest transaction date is None")
     
@@ -339,9 +381,10 @@ def get_processed_bidrl_invoices(oldest_transaction_date):
         browser = bf.get_logged_in_webdriver(user_email, user_password, 'headless') # use imported credentials from config.py
 
         # get list of Invoice objects. goes back only as far as the date contained in start_date_obj
-        invoices = bf.get_invoices(browser, oldest_transaction_date)
+        invoices = bf.get_invoices(browser, adj_oldest_transaction_date)
 
         # tear down browser object
+        print("Completed scraping of invoices. Tearing down webdriver object...")
         browser.quit()
     finally:
         if browser: browser.quit()
@@ -386,7 +429,7 @@ def split_transactions(transactions):
                     category_id = None
                     print(f"cost_split value for item {item.id} not found in category_id_mapping. Value: {cost_split_value}")
 
-                memo = f"{item.description}        {item.url}"
+                memo = f"{item.description} | Invoice {transaction.bidrl_invoice.id} |          {item.url}"
                 
                 split = {
                     'amount': int(split_amount * -1000)
@@ -442,7 +485,7 @@ def submit_splits_to_ynab(transactions):
                 "transaction": {
                     "amount": int(transaction.amount * -1000),
                     "date": transaction.date.strftime('%Y-%m-%d'),
-                    "memo": transaction.memo,
+                    #"memo": transaction.memo,
                     "cleared": transaction.cleared,
                     "approved": transaction.approved,
                     "flag_color": transaction.flag_color,
@@ -484,6 +527,7 @@ def print_transactions(transactions):
         print(f"Category Name: {transaction_instance.category_name}")
         print(f"Date: {transaction_instance.date}")
         print(f"Amount: {transaction_instance.amount}")
+        print(f"matched_bidrl_invoice_id: {transaction_instance.matched_bidrl_invoice_id}")
         #print(f"Account Name: {transaction_instance.account_name}")
         #print(f"Memo: {transaction_instance.memo}")
         if transaction_instance.bidrl_invoice is None:
@@ -503,31 +547,34 @@ def print_invoices(invoices):
 def ynab_invoice_transaction_split_main():
     try:
         # define number of days that the transaction date and invoice date can be different and still be considered a match
-        # program will also look back this number of days past the oldest invoice date
-        date_match_tolerance_def = 5
+        date_match_tolerance_def = 15
 
-        # pull down all Uncategorized transactions with the payee "BidRL SC"
-        transactions = get_ynab_transactions('BidRL SC', 'uncategorized')
+        # pull down all transactions with the payee "BidRL SC"
+        transactions = get_ynab_transactions('BidRL SC')
 
         # if no transactions are found, quit
         if transactions == []:
-            print ("No uncategorized transactions found with payee 'BidRL SC'.")
+            print ("No transactions found with payee 'BidRL SC'.")
             return
+        
+        # go through each transaction, attempt to extract the invoice id from subtransaction memos, and set matched_bidrl_invoice_id
+        extract_invoice_ids_from_ynab_bidrl_transaction_memos(transactions)
+
+        # get list of uncategorized transactions
+        uncat_transactions = [transaction for transaction in transactions if transaction.category_id is None]
 
         # display the transactions
         print_transactions(transactions)
 
         # get the oldest transaction date
-        oldest_transaction_date = get_oldest_transaction_date(transactions)
-        print(f"\nOldest transaction date: {oldest_transaction_date}")
-        oldest_transaction_date -= timedelta(days=date_match_tolerance_def)
-        print(f"\nSubtracted date_match_tolerance from oldest_transaction_date. New oldest_transaction_date: {oldest_transaction_date}")
+        oldest_transaction_date = get_oldest_transaction_date(uncat_transactions)
+        print(f"\nOldest uncategorized transaction date: {oldest_transaction_date}")
 
-        # scrape invoices from bidrl
-        invoices = get_processed_bidrl_invoices(oldest_transaction_date)
+        # scrape invoices from bidrl. go back 15 days past oldest uncategorized transaction date
+        invoices = get_processed_bidrl_invoices(oldest_transaction_date, date_backsearch_offset = 15)
 
         # display the invoices
-        print_invoices(invoices)
+        #print_invoices(invoices)
 
         # match transactions to invoices
         match_transactions_to_invoices(transactions
@@ -536,17 +583,20 @@ def ynab_invoice_transaction_split_main():
                                     , cost_match_tolerance = 0.02
                                     , verbose=True)
 
+        # update list of uncategorized transactions after matching to invoices
+        uncat_transactions = [transaction for transaction in transactions if transaction.category_id is None]
+
         # display the transactions
-        print_transactions(transactions)
+        print_transactions(uncat_transactions)
 
         # process transaction-invoice matches into splits
-        split_transactions(transactions)
+        split_transactions(uncat_transactions)
 
         # check the splits to ensure correctness before submitting to YNAB
-        check_split_transactions(transactions)
+        check_split_transactions(uncat_transactions)
 
         # after splits are processed, submit them to ynab
-        submit_splits_to_ynab(transactions)
+        submit_splits_to_ynab(uncat_transactions)
     except Exception as e:
         print(f"ynab_invoice_transaction_split_main() failed with exception: {e}")
         return
