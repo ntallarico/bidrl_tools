@@ -552,15 +552,17 @@ def ynab_invoice_transaction_split_main():
         # pull down all transactions with the payee "BidRL SC"
         transactions = get_ynab_transactions('BidRL SC')
 
+        # get list of uncategorized transactions
+        uncat_transactions = [transaction for transaction in transactions if transaction.category_id is None]
+
         # if no transactions are found, quit
-        if transactions == []:
-            print ("No transactions found with payee 'BidRL SC'.")
+        if uncat_transactions == []:
+            print ("No uncategorized transactions found with payee 'BidRL SC'.")
             return
         
         # go through each transaction, attempt to extract the invoice id from subtransaction memos, and set matched_bidrl_invoice_id
         extract_invoice_ids_from_ynab_bidrl_transaction_memos(transactions)
-
-        # get list of uncategorized transactions
+        # update list of uncategorized transactions
         uncat_transactions = [transaction for transaction in transactions if transaction.category_id is None]
 
         # display the transactions
