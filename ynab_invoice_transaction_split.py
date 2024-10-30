@@ -582,7 +582,7 @@ def ynab_invoice_transaction_split_main():
         match_transactions_to_invoices(transactions
                                     , invoices
                                     , date_match_tolerance = date_match_tolerance_def
-                                    , cost_match_tolerance = 0.02
+                                    , cost_match_tolerance = 0.025
                                     , verbose=True)
 
         # update list of uncategorized transactions after matching to invoices
