@@ -1,3 +1,4 @@
+import sys
 import subprocess
 import psutil
 import time
@@ -54,7 +55,9 @@ def run_auto_bid():
     prevent_sleep()
 
     # start auto_bid.py and get the process ID
-    process = subprocess.Popen(['python', 'auto_bid.py'])
+    # 'sys.executable' ensures auto_bid.py is started using the python executible this script was started with
+        # this ensures that auto_bid.py is started using the python executible in our virtual environment
+    process = subprocess.Popen([sys.executable, 'auto_bid.py'])
     pid = process.pid
     print(f"\nStarted auto_bid.py with PID: {pid}")
 
@@ -70,7 +73,7 @@ def run_auto_bid():
 
                 # Restart auto_bid.py
                 print("\nRestarting auto_bid.py")
-                process = subprocess.Popen(['python', 'auto_bid.py'])
+                process = subprocess.Popen([sys.executable, 'auto_bid.py'])
                 pid = process.pid
                 print(f"Restarted auto_bid.py with new PID: {pid}")
 
