@@ -196,15 +196,15 @@ new plan
 auto_bid handles most of this stuff anyway. I just need to update it to work more off of the database.
 
 --- make script that simply takes the excel and updates the database
-    - this exclusively brings into the database: item_id, auciton_id, and user input fields like
+    --- this exclusively brings into the database: item_id, auciton_id, and user input fields like
         max_desired_bid, cost_split, item_bid_group_id, and ibg_items_to_win
-        - we want to update only the values in the database for each item that will not change when the next step updates the rest of the item info
+        --- we want to update only the values in the database for each item that will not change when the next step updates the rest of the item info
 
 - update auto_bid.py to read only from the database, not from excel
-    - have it read from the database super often
-    - have it also write all its thoughts on an item to the database. BG_Won and such. I think
-    - basically read and write about all items from the database instead of reading from excell and maintaining lists
-    - have auto_bid.py run the excel_to_db script at the beginning of its execution
+    - have it update user input info from the database for each item. do this super often
+    - update item info (for just the next upcoming item) multiple times quickly when it's x minutes away
+    --- update database every time we update item info
+    --- have auto_bid.py run the excel_to_db script at the beginning of its execution
 
 - write the webapp display portion. so that the script can just run all the stuff and the webapp does the displaying
 
