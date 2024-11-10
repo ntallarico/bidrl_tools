@@ -120,67 +120,15 @@ def read_user_input_xlsx_to_item_objects(auto_bid_folder_path):
         print(f"read_user_input_xlsx_to_item_objects() failed with exception: {e}")
         return 1
 
-# save information from a list of item objects to the appropriate table in the database
-def update_items_user_input_table(item_list, table_name = 'auto_bid_itemuserinput', verbose = False):
-    try:
-        print(F"\nAttempting to use information read from csv to update {table_name} table in database.")
-        conn = bf.init_sqlite_connection(path = 'local_files/auto_bid/', database = 'auto_bid')
-        cursor = conn.cursor()
-
-        for item in item_list:
-            if verbose: print(f"looking at item: {item.description}")
-            cursor.execute(F"""
-                SELECT COUNT(*) FROM {table_name} WHERE item_id = ? AND auction_id = ?
-            """, (item.id, item.auction_id))
-            exists = cursor.fetchone()[0]
-            if verbose: print(f"exists: {exists}")
-
-            # define field names to update in the database. write just to the user input fields
-            field_names = ['item_bid_group_id', 'ibg_items_to_win', 'max_desired_bid', 'cost_split']
-
-            if exists: # if the item exists in the db table, then update its fields based on contents of csv
-                if verbose: print(f"item exists in db. updating item info for: {item.description}")
-                cursor.execute(f"""
-                    UPDATE {table_name}
-                    SET {', '.join([f"{field} = ?" for field in field_names])}
-                    WHERE item_id = ?
-                """, tuple(getattr(item, field) for field in field_names) + (item.id,))
-            else: # if the item does not exist in the db table, then create it using fields in csv
-                if verbose: print(f"item does not exist in db. inserting: {item.description}")
-                cursor.execute(f"""
-                    INSERT INTO {table_name} (item_id, auction_id, {', '.join(field_names)})
-                    VALUES ({', '.join(['?' for _ in range(len(field_names) + 2)])})
-                """, (item.id, item.auction_id) + tuple(getattr(item, field) for field in field_names))
-
-        conn.commit()
-        print("Closing sqlite connection")
-        conn.close()
-        print("Success.")
-    except Exception as e:
-        print(f"Exception occurred in update_items_user_input_table(): {e}")
-
-def get_item_counts(item_list):
-    item_counts = {
-        'item_count_with_desired_bid': 0,
-        'item_count_zero_desired_bid': 0,
-        'item_count_no_desired_bid': 0,
-        'item_count_closed': 0,
-        'item_count_actually_intend_to_bid': 0
-    }
-    for item in item_list:
-        if item.max_desired_bid == None:
-            item_counts['item_count_no_desired_bid'] += 1
-        elif item.max_desired_bid == 0:
-            item_counts['item_count_zero_desired_bid'] += 1
-        else: # item has a max_desired_bid
-            item_counts['item_count_with_desired_bid'] += 1
-            if item.bidding_status == 'Closed':
-                item_counts['item_count_closed'] += 1
-            else:
-                item_counts['item_count_actually_intend_to_bid'] += 1
-    return item_counts
-
-
+def xlsx_update_db_itemuserinput_table(item_list):
+    bf.update_db_itemuserinput_table(item_list
+                                    , db_path = 'local_files/auto_bid/'
+                                    , db_name = 'auto_bid'
+                                    , table_name = 'auto_bid_itemuserinput'
+                                    , field_names = ['item_bid_group_id', 'ibg_items_to_win', 'max_desired_bid', 'cost_split']
+                                    , verbose = False
+                                    )
+    
 def update_db_with_user_input_csv_main():
     try:
         auto_bid_folder_path = 'local_files/auto_bid/'
@@ -190,10 +138,10 @@ def update_db_with_user_input_csv_main():
         item_list = read_user_input_xlsx_to_item_objects(auto_bid_folder_path)
 
         # save inputs from our csv to the database for data archive purposes
-        update_items_user_input_table(item_list)
+        xlsx_update_db_itemuserinput_table(item_list)
 
         # calculate item counts and print report
-        item_counts = get_item_counts(item_list)
+        item_counts = bf.get_item_counts(item_list)
         print(f"\nItems without max_desired_bid: {item_counts['item_count_no_desired_bid']}")
         print(f"Items with 0 max_desired_bid: {item_counts['item_count_zero_desired_bid']}")
         print(f"Items with max_desired_bid: {item_counts['item_count_with_desired_bid']}")
