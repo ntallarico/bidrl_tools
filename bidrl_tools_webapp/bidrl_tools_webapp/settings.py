@@ -81,13 +81,17 @@ WSGI_APPLICATION = 'bidrl_tools_webapp.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'default': { # use this for all django-interal stuff. will be included in github
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-        #'NAME': BASE_DIR.parent / 'local_files' / 'bidrl.db',
-    }
+    },
+    'bidrl_db': { # use this to store all actual content from the webapp. this will not by included in github for user privacy
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR.parent / 'local_files' / 'auto_bid' / 'auto_bid.db',
+    },
 }
 
+DATABASE_ROUTERS = ['db_router.AppDBRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -182,4 +186,25 @@ plan
 - two services needed
     - bidrl_to_db_updater
     - auto_bid
+"""
+
+"""
+new plan
+
+auto_bid handles most of this stuff anyway. I just need to update it to work more off of the database.
+
+- make script that simply takes the excel and updates the database
+
+- update auto_bid.py to read only from the database, not from excel
+    - have it read from the database super often
+    - have it also write all its thoughts on an item to the database. BG_Won and such. I think
+    - basically read and write about all items from the database instead of reading from excell and maintaining lists
+    - have auto_bid.py run the excel_to_db script at the beginning of its execution
+
+- write the webapp display portion. so that the script can just run all the stuff and the webapp does the displaying
+
+- develop a webform for the user input which writes to the database on submit
+
+- then have auto_bid.py no longer call the excel_to_db script. and it's fully equipped to read user input from the database
+
 """

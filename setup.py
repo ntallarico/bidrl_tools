@@ -28,6 +28,16 @@ def install_requirements():
     pip_executable = os.path.join('venv', 'Scripts', 'pip') if os.name == 'nt' else os.path.join('venv', 'bin', 'pip')
     subprocess.check_call([pip_executable, 'install', '-r', 'requirements.txt'])
 
+def run_django_migrations():
+    # Path to the manage.py script
+    manage_py_path = os.path.join('bidrl_tools_webapp', 'manage.py')
+    python_executable = os.path.join('venv', 'Scripts', 'python') if os.name == 'nt' else os.path.join('venv', 'bin', 'python')
+
+    # Run Django migrations
+    print("\nRunning Django migrations.\n")
+    subprocess.check_call([python_executable, manage_py_path, 'makemigrations'])
+    subprocess.check_call([python_executable, manage_py_path, 'migrate', '--database=default'])
+    subprocess.check_call([python_executable, manage_py_path, 'migrate', '--database=bidrl_db'])
 
 def main():
     # create virtual environment and install dependencies first
@@ -45,6 +55,9 @@ def main():
     print("\nRunning database setup script.\n")
     python_executable = os.path.join('venv', 'Scripts', 'python') if os.name == 'nt' else os.path.join('venv', 'bin', 'python')
     subprocess.check_call([python_executable, 'database_setup.py'])
+
+    # Run Django migrations
+    run_django_migrations()
 
     print("\nSetup complete.\n")
 

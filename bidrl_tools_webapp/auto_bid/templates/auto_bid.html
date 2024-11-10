@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>auto_bid page</title>
+</head>
+<body>
+    <h1>This is the auto_bid page!</h1>
+    <h3>all open favorite items (according to auto_bid.db):</h3>
+    <ul>
+        {% for item in all_open_items %}
+            <li>ID: {{ item.item_id }} | Desc: {{ item.description }}</li>
+        {% endfor %}
+    </ul>
+    <h3>all closed favorite items (according to auto_bid.db):</h3>
+    <ul>
+        {% for item in all_closed_items %}
+            <li>ID: {{ item.item_id }} | Desc: {{ item.description }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
