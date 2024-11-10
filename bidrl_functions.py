@@ -718,7 +718,7 @@ def init_sql_connection(sql_server_name, sql_database_name, sql_admin_username, 
 
 # return sqlite database connection object. defaults to "local_files/bidrl.db" unless specified in path and database parameters
 # this will create the file if it does not already exist
-def init_sqlite_connection(path = 'local_files/', database = 'bidrl'):
+def init_sqlite_connection(path = 'local_files/', database = 'bidrl', verbose = True):
     database_file_name = database + '.db'
     print(f"Initializing sqlite connection to database: {database_file_name}")
     conn = sqlite3.connect(f'{path}{database_file_name}')
