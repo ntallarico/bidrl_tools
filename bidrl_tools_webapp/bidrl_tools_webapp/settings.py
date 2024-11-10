@@ -201,7 +201,7 @@ auto_bid handles most of this stuff anyway. I just need to update it to work mor
         --- we want to update only the values in the database for each item that will not change when the next step updates the rest of the item info
 
 - update auto_bid.py to read only from the database, not from excel
-    - have it update user input info from the database for each item. do this super often
+    --- have it update user input info from the database for each item. do this super often
     - update item info (for just the next upcoming item) multiple times quickly when it's x minutes away
     --- update database every time we update item info
     --- have auto_bid.py run the excel_to_db script at the beginning of its execution
