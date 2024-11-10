@@ -20,6 +20,7 @@ Setup:
 	  - ynab_budget_id = the budget id of your ynab budget. optional
 	  - ynab_category_dict = mapping of your ynab category names to the values you place in cost_split column of the auto_bid spreadsheet. optional
 	  - todoist_api_token = your Todoist API token if you have a Todoist account and want to use these features
+	  - DJANGO_SECRET_KEY = secret key for Django security. Make this up yourself!
 
 	Example:
 	
@@ -30,6 +31,7 @@ Setup:
 		ynab_budget_id  =  'f2050f-baf4f22e7f-f24y2-b2j422u2b-aaa'
 		ynab_category_dict  = {'d': 'Decorations', 'f': 'Fun Money'}
 		todoist_api_token  = 'dsfuyh92f8776g207tr2uehf02ifh20783h'
+		DJANGO_SECRET_KEY = 'fj;ir)#RY@B0327t32y503@f224lk864a'
 
 4. Run `setup.py`
 
