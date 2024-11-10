@@ -125,6 +125,7 @@ def update_item_info(browser, items):
                     item.highbidder_username = new_item.highbidder_username
                     item.bidding_status = new_item.bidding_status
                     item.current_bid = new_item.current_bid
+                    item.url = new_item.url
 
         print("Success.")
         return 0
