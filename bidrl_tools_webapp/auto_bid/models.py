@@ -13,7 +13,18 @@ class ItemUserInput(models.Model):
     notes = models.TextField(null=True, blank=True)
     items_in_bid_group = models.IntegerField(null=True, blank=True)
     items_in_bid_group_won = models.IntegerField(null=True, blank=True)
+    current_bid = models.FloatField(null=True, blank=True)
+    highbidder_username = models.TextField(null=True, blank=True)
+    bidding_status = models.TextField(null=True, blank=True)
+    #tax_rate = models.FloatField(null=True, blank=True)
+    #buyer_premium = models.FloatField(null=True, blank=True)
+    #lot_number = models.TextField(null=True, blank=True)
+    #is_favorite = models.IntegerField(null=True, blank=True)
+    #bid_count = models.IntegerField(null=True, blank=True)
+    #viewed = models.IntegerField(null=True, blank=True)
+    #total_cost = models.FloatField(null=True, blank=True)
 
+    
 # class Affiliate(models.Model):
 #     affiliate_id = models.CharField(max_length=255, primary_key=True)
 #     logo = models.TextField(null=True, blank=True)

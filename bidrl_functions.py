@@ -975,9 +975,9 @@ def update_db_itemuserinput_table(item_list
                                   , db_name = 'auto_bid'
                                   , table_name = 'auto_bid_itemuserinput'
                                   # define field names of the item to update. any not listed will not be written to the db
-                                  , field_names = ['description', 'url', 'end_time_unix', 'item_bid_group_id'
-                                                   , 'ibg_items_to_win', 'max_desired_bid', 'cost_split'
-                                                   , 'items_in_bid_group', 'items_in_bid_group_won']
+                                  , field_names = ['description', 'url', 'end_time_unix', 'item_bid_group_id', 'ibg_items_to_win'
+                                                   , 'max_desired_bid', 'cost_split', 'items_in_bid_group', 'items_in_bid_group_won'
+                                                   , 'current_bid', 'highbidder_username', 'bidding_status']
                                   , verbose = False
                                   ):
     try:
