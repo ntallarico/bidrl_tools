@@ -364,3 +364,50 @@ class Image:
     def display(self):
         print(f"Image ID: {self.item_id}, URL: {self.image_url}, Height: {self.image_height}, Width: {self.image_width}")
 
+
+
+
+# define class Item_AutoBid that inherits all fields from Item class and adds additional fields used for auto bid process
+# adds fields related to the concept of an item bid group. These are used in the implementation of the following functionality:
+    # the user can specify that multiple items belong to the same group
+    # auto_bid will only attempt to win x amount of these items and no more
+    # for example: we want to win a bike. 6 bikes are listed on the auction. the user can assign all 6 bikes the same item_bid_group_id
+        # and set ibg_items_to_win to 1, and this script will continue to bid on every bike in the group until exactly 1
+        # bike has been won by the user's account, and then not bid on any further bikes in the list
+class Item_AutoBid(Item):
+    def __init__(self
+                 , has_autobid_been_placed: int = None
+                 , items_in_bid_group: int = None # num of items in the same bid group
+                 , items_in_bid_group_won: int = None # num of items in same group that we won / are winning
+                 , ibg_items_to_win: int = None # num of items in a bid group that we intend to win
+                 #, max_desired_bid: float = None
+                 #, item_bid_group_id: str = None
+                 , *args, **kwargs):
+        
+        super().__init__(*args, **kwargs) # call the constructor of the base Item class
+
+        if has_autobid_been_placed is not None and not isinstance(has_autobid_been_placed, int):
+            raise TypeError(f"Expected has_autobid_been_placed to be int, got {type(id).__name__}")
+        if items_in_bid_group is not None and not isinstance(items_in_bid_group, int):
+            raise TypeError(f"Expected items_in_bid_group to be int, got {type(id).__name__}")
+        if items_in_bid_group_won is not None and not isinstance(items_in_bid_group_won, int):
+            raise TypeError(f"Expected items_in_bid_group_won to be int, got {type(id).__name__}")
+        if ibg_items_to_win is not None and not isinstance(ibg_items_to_win, int):
+            raise TypeError(f"Expected ibg_items_to_win to be int, got {type(id).__name__}")
+        #if max_desired_bid is not None and not isinstance(max_desired_bid, float):
+            #raise TypeError(f"Expected max_desired_bid to be float, got {type(max_desired_bid).__name__}")
+        #if item_bid_group_id is not None and not isinstance(item_bid_group_id, str):
+            #raise TypeError(f"Expected item_bid_group_id to be str, got {type(item_bid_group_id).__name__}")
+        
+        self.has_autobid_been_placed = has_autobid_been_placed
+        self.items_in_bid_group = items_in_bid_group
+        self.items_in_bid_group_won = items_in_bid_group_won
+        self.ibg_items_to_win = ibg_items_to_win
+    
+    def display_new_fields(self):
+        print(f"Still need to bid?: {self.has_autobid_been_placed}")
+        print(f"items_in_bid_group: {self.items_in_bid_group}")
+        print(f"items_in_bid_group_won: {self.items_in_bid_group}")
+        print(f"ibg_items_to_win: {self.items_in_bid_group}")
+        #print(f"Max Desired Bid: {self.max_desired_bid}")
+        #print(f"Item Bid Group ID: {self.item_bid_group_id}")

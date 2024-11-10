@@ -195,7 +195,10 @@ new plan
 
 auto_bid handles most of this stuff anyway. I just need to update it to work more off of the database.
 
-- make script that simply takes the excel and updates the database
+--- make script that simply takes the excel and updates the database
+    - this exclusively brings into the database: item_id, auciton_id, and user input fields like
+        max_desired_bid, cost_split, item_bid_group_id, and ibg_items_to_win
+        - we want to update only the values in the database for each item that will not change when the next step updates the rest of the item info
 
 - update auto_bid.py to read only from the database, not from excel
     - have it read from the database super often

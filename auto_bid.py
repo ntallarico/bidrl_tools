@@ -7,56 +7,10 @@ import time
 from config import user_email, user_password
 from datetime import datetime
 import bidrl_functions as bf
-from bidrl_classes import Item, Invoice, Auction
-from openpyxl import load_workbook
+from bidrl_classes import Item_AutoBid #, Item, Invoice, Auction
+#from openpyxl import load_workbook
 from ynab_invoice_transaction_split import ynab_invoice_transaction_split_main
-
-
-# define class Item_AutoBid that inherits all fields from Item class and adds additional fields used for auto bid process
-# adds fields related to the concept of an item bid group. These are used in the implementation of the following functionality:
-    # the user can specify that multiple items belong to the same group
-    # auto_bid will only attempt to win x amount of these items and no more
-    # for example: we want to win a bike. 6 bikes are listed on the auction. the user can assign all 6 bikes the same item_bid_group_id
-        # and set ibg_items_to_win to 1, and this script will continue to bid on every bike in the group until exactly 1
-        # bike has been won by the user's account, and then not bid on any further bikes in the list
-class Item_AutoBid(Item):
-    def __init__(self
-                 , has_autobid_been_placed: int = None
-                 , items_in_bid_group: int = None # num of items in the same bid group
-                 , items_in_bid_group_won: int = None # num of items in same group that we won / are winning
-                 , ibg_items_to_win: int = None # num of items in a bid group that we intend to win
-                 #, max_desired_bid: float = None
-                 #, item_bid_group_id: str = None
-                 , *args, **kwargs):
-        
-        super().__init__(*args, **kwargs) # call the constructor of the base Item class
-
-        if has_autobid_been_placed is not None and not isinstance(has_autobid_been_placed, int):
-            raise TypeError(f"Expected has_autobid_been_placed to be int, got {type(id).__name__}")
-        if items_in_bid_group is not None and not isinstance(items_in_bid_group, int):
-            raise TypeError(f"Expected items_in_bid_group to be int, got {type(id).__name__}")
-        if items_in_bid_group_won is not None and not isinstance(items_in_bid_group_won, int):
-            raise TypeError(f"Expected items_in_bid_group_won to be int, got {type(id).__name__}")
-        if ibg_items_to_win is not None and not isinstance(ibg_items_to_win, int):
-            raise TypeError(f"Expected ibg_items_to_win to be int, got {type(id).__name__}")
-        #if max_desired_bid is not None and not isinstance(max_desired_bid, float):
-            #raise TypeError(f"Expected max_desired_bid to be float, got {type(max_desired_bid).__name__}")
-        #if item_bid_group_id is not None and not isinstance(item_bid_group_id, str):
-            #raise TypeError(f"Expected item_bid_group_id to be str, got {type(item_bid_group_id).__name__}")
-        
-        self.has_autobid_been_placed = has_autobid_been_placed
-        self.items_in_bid_group = items_in_bid_group
-        self.items_in_bid_group_won = items_in_bid_group_won
-        self.ibg_items_to_win = ibg_items_to_win
-    
-    def display_new_fields(self):
-        print(f"Still need to bid?: {self.has_autobid_been_placed}")
-        print(f"items_in_bid_group: {self.items_in_bid_group}")
-        print(f"items_in_bid_group_won: {self.items_in_bid_group}")
-        print(f"ibg_items_to_win: {self.items_in_bid_group}")
-        #print(f"Max Desired Bid: {self.max_desired_bid}")
-        #print(f"Item Bid Group ID: {self.item_bid_group_id}")
-
+from update_db_with_user_input_csv import update_db_with_user_input_csv_main
 
 def convert_seconds_to_time_string(seconds):
     days, seconds = divmod(seconds, 86400)  # 60 seconds * 60 minutes * 24 hours
@@ -114,6 +68,7 @@ def update_item_info(browser, items):
         new_items = []
         # fast scrape all items from all auctions in list
         for auction_id in auction_ids:
+            print(f"Scraping item info for auction_id: {auction_id}")
             scraped_items = bf.scrape_items_fast(browser, auction_id, get_images = 'false')
             new_items.extend(scraped_items) # union lists together into new_items
         
@@ -126,6 +81,7 @@ def update_item_info(browser, items):
                     item.bidding_status = new_item.bidding_status
                     item.current_bid = new_item.current_bid
                     item.url = new_item.url
+                    item.description = new_item.description
 
         print("Success.")
         return 0
@@ -163,66 +119,52 @@ def update_item_group_info(browser, items, username):
         print(f"update_item_group_info() failed with exception: {e}")
         return 1
 
-
-def create_item_objects_from_rows(item_rows_list):
-    item_list = [] # list for item objects to return at the end
-    for item_row in item_rows_list:
-        # check if max_desired_bid is not empty. if it isn't, then convert to float. if it is, then set to None
-        max_desired_bid = float(item_row['max_desired_bid']) if item_row['max_desired_bid'] != '' and item_row['max_desired_bid'] != None else None
-
-        # create item object directly in item_list.append
-        item_list.append(Item_AutoBid(
-            id = item_row['item_id']
-            , auction_id = item_row['auction_id']
-            , description = item_row['description'].split('", "')[-1].rstrip('")') # pull description out of hyperlink formula
-            , end_time_unix = int(item_row['end_time_unix'])
-            , max_desired_bid = max_desired_bid
-            , item_bid_group_id = item_row['item_bid_group_id']
-            , has_autobid_been_placed = 0
-            , ibg_items_to_win = int(item_row['ibg_items_to_win'])
-            , current_bid = float(0) # set current_bid to 0 so that any checks pass before updating item info, if we were to make any
-            , cost_split = item_row['cost_split']
-        ))
-    return item_list
-
-
-# read favorite_items_to_input_max_bid.xlsx and return list of item objects for items where max_desired_bid > 0
-def read_user_input_xlsx_to_item_objects(browser, auto_bid_folder_path):
+# connects to database table where our item user input is stored and pulls rows where either end_time_unix > current time,
+    # or end_time_unix does not exist
+# returns list of Item_AutoBid objects created by information in the rows
+def get_items_list_from_db(db_path = 'local_files/auto_bid/', db_name = 'auto_bid', table_name = 'auto_bid_itemuserinput'):
     try:
-        filename = 'favorite_items_to_input_max_bid.xlsx'
+        # Connect to the SQLite database
+        conn = bf.init_sqlite_connection(path = db_path, database = db_name)
+        cursor = conn.cursor()
 
-        file_path = auto_bid_folder_path + filename
+        # SQL query to select items where end_time_unix is greater than the current time or is NULL
+        # also pull down any item that is missing a description or url, so that it gets updated in the database
+        query = F"""
+        SELECT * FROM {table_name}
+        WHERE end_time_unix > ?
+            OR end_time_unix IS NULL
+            OR description IS NULL
+            OR url IS NULL
+        """
+        cursor.execute(query, (int(time.time()),))
+        
+        # Fetch all matching rows and close connection
+        item_rows = cursor.fetchall()
+        conn.close()
 
-        wb = load_workbook(file_path)
-        ws = wb.active
+        item_objects = []
+        for item in item_rows:
+            item_objects.append(Item_AutoBid(
+                id = item['item_id'],
+                auction_id = item['auction_id'],
+                description = item['description'],
+                end_time_unix = item['end_time_unix'],
+                max_desired_bid = item['max_desired_bid'] if item['max_desired_bid'] else None,
+                item_bid_group_id = item['item_bid_group_id'] if item['item_bid_group_id'] else None,
+                has_autobid_been_placed = 0, # not currently in database (11.10.24)
+                ibg_items_to_win = item['ibg_items_to_win'] if item['ibg_items_to_win'] else None,
+                #current_bid = item['current_bid'], # not currently in database (11.10.24)
+                cost_split = item['cost_split'] if item['cost_split'] else None
+            ))
 
-        headers = [cell.value for cell in ws[1]] # get headers from the first row
-
-        read_rows = []
-        for row in ws.iter_rows(min_row=2, values_only=True):
-            row_dict = {headers[i]: row[i] for i in range(len(headers))}
-            read_rows.append(row_dict)
-
-        print(f"\nRead {len(read_rows)} rows from file: {filename}.")
-
-        item_list = create_item_objects_from_rows(read_rows)
-        print(f"Created {len(item_list)} item objects from read rows.")
-
-        # sort list of items in descending order based on their end time
-        item_list.sort(key=lambda x: x.end_time_unix, reverse=True)
-
-        return item_list
+        return item_objects
     except Exception as e:
-        print(f"read_user_input_xlsx_to_item_objects() failed with exception: {e}")
-        print("Tearing down web object.")
-        browser.quit()
-        return 1
-
+        print(f"get_items_list_from_db() failed with exception: {e}")
 
 def get_username(browser):
     username = bf.get_session(browser)['user_name']
     return username
-
 
 def print_items_status(item_list):
     print('\n----------------------------------------------------------------------------------------------------')
@@ -256,6 +198,7 @@ def print_items_status(item_list):
     # auto_bid() has not already placed a bid on this item
 # keep this function just referencing local stuff (no calls to bidrl). we run this rapidly and often
 def is_item_eligible_for_bidding(item):
+    #print(item.description, item.bidding_status, item.max_desired_bid, item.has_autobid_been_placed)
     if item.bidding_status != 'Closed' \
         and item.max_desired_bid != None \
         and item.max_desired_bid != 0 \
@@ -263,7 +206,6 @@ def is_item_eligible_for_bidding(item):
         return True
     else:
         return False
-
 
 # loop through each item and attempt to place a bid on it if we determine that we should
 # checks to see if time remaining on the item is <= our set seconds_before_closing_to_bid time and is_item_eligible_for_bidding(item) == True
@@ -306,41 +248,15 @@ def login_refresh(browser, last_login_time, last_login_time_unix):
         print(f"Exception occurred in login_refresh().\nException: {e}")
         bf.tear_down(browser)
 
-# save information from a list of item objects to the items_user_input table in the database
-def update_items_user_input_table(item_list):
-    try:
-        print("\nAttempting to use information read from csv to update items_user_input table in database.")
-        conn = bf.init_sqlite_connection(path = 'local_files/auto_bid/', database = 'bidrl_user_input')
-        cursor = conn.cursor()
+def auto_bid_update_db_itemuserinput_table(item_list):
+    bf.update_db_itemuserinput_table(item_list
+                                    , db_path = 'local_files/auto_bid/'
+                                    , db_name = 'auto_bid'
+                                    , table_name = 'auto_bid_itemuserinput'
+                                    , field_names = ['description', 'url', 'end_time_unix']
+                                    , verbose = False
+                                    )
 
-        for item in item_list:
-            if item.max_desired_bid not in [None, 0]:
-                cursor.execute("""
-                    SELECT COUNT(*) FROM items_user_input WHERE item_id = ? AND auction_id = ?
-                """, (item.id, item.auction_id))
-                exists = cursor.fetchone()[0]
-
-                # define field names to update in the database
-                field_names = ['description', 'url', 'end_time_unix', 'item_bid_group_id', 'ibg_items_to_win', 'max_desired_bid', 'cost_split']
-
-                if exists: # if the item exists in the items_user_input db table, then update its fields based on contents of csv
-                    cursor.execute(f"""
-                        UPDATE items_user_input
-                        SET {', '.join([f"{field} = ?" for field in field_names])}
-                        WHERE item_id = ?
-                    """, tuple(getattr(item, field) for field in field_names) + (item.id,))
-                else: # if the item does not exist in the items_user_input db table, then create it using fields in csv
-                    cursor.execute(f"""
-                        INSERT INTO items_user_input (item_id, auction_id, {', '.join(field_names)})
-                        VALUES ({', '.join(['?' for _ in range(len(field_names) + 2)])})
-                    """, (item.id, item.auction_id) + tuple(getattr(item, field) for field in field_names))
-
-        conn.commit()
-        print("Closing sqlite connection")
-        conn.close()
-        print("Success.")
-    except Exception as e:
-        print(f"Exception occurred in update_items_user_input_table(). Moving forward anyway as this isn't critical for auto_bid.\nException: {e}")
 
 # if ynab_api_token and item up for bid next is not too close, run ynab_invoice_transaction_split_main() to split any uncategorized
 # bidrl ynab transactions. by default, will not run if next item is up for bidding within 30 mins
@@ -390,6 +306,10 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
     browser = None # establish browser variable so that the check in 'finally' doesn't throw an error
 
     try:
+        # Run the 'user input to db updater' script to update the db with all item_id, auction_id, and user input fields from the user input sheet
+        # this will eventually get removed when we change the user input to be written to the db from webapp
+        update_db_with_user_input_csv_main()
+
         auto_bid_folder_path = 'local_files/auto_bid/'
         bf.ensure_directory_exists(auto_bid_folder_path)
         
@@ -400,36 +320,20 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
         username = get_username(browser)
         print(f"Username: {username}")
 
-        # read favorite_items_to_input_max_bid.csv and return list of item objects we intend to bid on
-        item_list = read_user_input_xlsx_to_item_objects(browser, auto_bid_folder_path)
+        # read items list in from database
+        item_list = get_items_list_from_db()
 
         update_item_group_info(browser, item_list, username)
 
-        # save inputs from our csv to the database for data archive purposes
-        update_items_user_input_table(item_list)
+        # save updated data to itemuserinput table
+        auto_bid_update_db_itemuserinput_table(item_list)
 
-        item_count_with_desired_bid = 0
-        item_count_zero_desired_bid = 0
-        item_count_no_desired_bid = 0
-        item_count_closed = 0
-        item_count_actually_intend_to_bid = 0
-        for item in item_list:
-            if item.max_desired_bid == None:
-                item_count_no_desired_bid += 1
-            elif item.max_desired_bid == 0:
-                item_count_zero_desired_bid += 1
-            else: # item has a max_desired_bid
-                item_count_with_desired_bid += 1
-                if item.bidding_status == 'Closed':
-                    item_count_closed += 1
-                else:
-                    item_count_actually_intend_to_bid += 1
-
-        print(f"\nItems without max_desired_bid: {item_count_no_desired_bid}")
-        print(f"Items with 0 max_desired_bid: {item_count_zero_desired_bid}")
-        print(f"Items with max_desired_bid: {item_count_with_desired_bid}")
-        print(f"Items with max_desired_bid that already closed: {item_count_closed}")
-        print(f"\nWe intend to bid on {item_count_actually_intend_to_bid} items, {seconds_before_closing_to_bid} seconds before they close, checking every {auto_bid__interval} seconds.\n")
+        # calculate item counts and print report
+        item_counts = bf.get_item_counts(item_list)
+        print(f"\nItems without max_desired_bid: {item_counts['item_count_no_desired_bid']}")
+        print(f"Items with 0 max_desired_bid: {item_counts['item_count_zero_desired_bid']}")
+        print(f"Items with max_desired_bid: {item_counts['item_count_with_desired_bid']}")
+        print(f"Items with max_desired_bid that already closed: {item_counts['item_count_closed']}")
 
         # set x__last_run_time to 0 to run immediately when loop processes
         # set to time_unix() to wait x__interval amount of seconds first

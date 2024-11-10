@@ -9,7 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-from bidrl_classes import Item, Invoice, Auction, Bid, Affiliate, Image
+from bidrl_classes import Item, Invoice, Auction, Bid, Affiliate, Image, Item_AutoBid
 from bs4 import BeautifulSoup
 import pyodbc
 import sqlite3
@@ -965,3 +965,72 @@ def ensure_directory_exists(directory_path):
         os.makedirs(directory_path)
     else:
         print(f"Directory exists.")
+
+
+# save information from a list of item objects to the appropriate table in the database
+# requires: item_list where each item has an item_id and auction_id populated at a minimum
+# changes: updates items in sql table with info in item_list. if item in item_list is not present in table, it is inserted
+def update_db_itemuserinput_table(item_list
+                                  , db_path = 'local_files/auto_bid/'
+                                  , db_name = 'auto_bid'
+                                  , table_name = 'auto_bid_itemuserinput'
+                                  # define field names of the item to update. any not listed will not be written to the db
+                                  , field_names = ['description', 'url', 'end_time_unix', 'item_bid_group_id', 'ibg_items_to_win', 'max_desired_bid', 'cost_split']
+                                  , verbose = False
+                                  ):
+    try:
+        print(F"\nAttempting to use item_list data to update '{table_name}' table in database '{db_name}'.")
+        conn = init_sqlite_connection(path = db_path, database = db_name)
+        cursor = conn.cursor()
+
+        for item in item_list:
+            if verbose: print(f"looking at item: {item.description}")
+            cursor.execute(F"""
+                SELECT COUNT(*) FROM {table_name} WHERE item_id = ? AND auction_id = ?
+            """, (item.id, item.auction_id))
+            exists = cursor.fetchone()[0]
+            if verbose: print(f"exists: {exists}")
+
+
+            if exists: # if the item exists in the db table, then update its fields based on contents of csv
+                if verbose: print(f"item exists in db. updating item info for: {item.description}")
+                cursor.execute(f"""
+                    UPDATE {table_name}
+                    SET {', '.join([f"{field} = ?" for field in field_names])}
+                    WHERE item_id = ?
+                """, tuple(getattr(item, field) for field in field_names) + (item.id,))
+            else: # if the item does not exist in the db table, then create it using fields in csv
+                if verbose: print(f"item does not exist in db. inserting: {item.description}")
+                cursor.execute(f"""
+                    INSERT INTO {table_name} (item_id, auction_id, {', '.join(field_names)})
+                    VALUES ({', '.join(['?' for _ in range(len(field_names) + 2)])})
+                """, (item.id, item.auction_id) + tuple(getattr(item, field) for field in field_names))
+
+        conn.commit()
+        print("Closing sqlite connection")
+        conn.close()
+        print("Success.")
+    except Exception as e:
+        print(f"Exception occurred in update_items_user_input_table(): {e}")
+
+# takes in a list of items and returns a dict of counts reporting its contents
+def get_item_counts(item_list):
+    item_counts = {
+        'item_count_with_desired_bid': 0,
+        'item_count_zero_desired_bid': 0,
+        'item_count_no_desired_bid': 0,
+        'item_count_closed': 0,
+        'item_count_actually_intend_to_bid': 0
+    }
+    for item in item_list:
+        if item.max_desired_bid == None:
+            item_counts['item_count_no_desired_bid'] += 1
+        elif item.max_desired_bid == 0:
+            item_counts['item_count_zero_desired_bid'] += 1
+        else: # item has a max_desired_bid
+            item_counts['item_count_with_desired_bid'] += 1
+            if item.bidding_status == 'Closed':
+                item_counts['item_count_closed'] += 1
+            else:
+                item_counts['item_count_actually_intend_to_bid'] += 1
+    return item_counts
