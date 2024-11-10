@@ -1,5 +1,19 @@
 from django.db import models
 
+class ItemUserInput(models.Model):
+    item_id = models.CharField(max_length=255, primary_key=True)
+    auction_id = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    url = models.TextField(null=True, blank=True)
+    end_time_unix = models.IntegerField(null=True, blank=True)
+    item_bid_group_id = models.TextField(null=True, blank=True)
+    ibg_items_to_win = models.IntegerField(null=True, blank=True)
+    cost_split = models.TextField(null=True, blank=True)
+    max_desired_bid = models.FloatField(null=True, blank=True)
+    notes = models.TextField(null=True, blank=True)
+    items_in_bid_group = models.IntegerField(null=True, blank=True)
+    items_in_bid_group_won = models.IntegerField(null=True, blank=True)
+
 # class Affiliate(models.Model):
 #     affiliate_id = models.CharField(max_length=255, primary_key=True)
 #     logo = models.TextField(null=True, blank=True)
@@ -67,15 +81,3 @@ from django.db import models
 #     image_url = models.TextField()
 #     image_height = models.IntegerField(null=True, blank=True)
 #     image_width = models.IntegerField(null=True, blank=True)
-
-class ItemUserInput(models.Model):
-    item_id = models.CharField(max_length=255, primary_key=True)
-    auction_id = models.TextField(null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
-    url = models.TextField(null=True, blank=True)
-    end_time_unix = models.IntegerField(null=True, blank=True)
-    item_bid_group_id = models.TextField(null=True, blank=True)
-    ibg_items_to_win = models.IntegerField(null=True, blank=True)
-    cost_split = models.TextField(null=True, blank=True)
-    max_desired_bid = models.FloatField(null=True, blank=True)
-    notes = models.TextField(null=True, blank=True)
