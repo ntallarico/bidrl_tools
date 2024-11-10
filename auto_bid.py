@@ -18,15 +18,6 @@ def convert_seconds_to_time_string(seconds):
     minutes, seconds = divmod(seconds, 60)
     time_string = ''
 
-    # if days > 0:
-    #     time_string += f"{days}d, "
-    # if hours > 0:
-    #     time_string += f"{hours}h, "
-    # if minutes > 0:
-    #     time_string += f"{minutes}m, "
-    # if seconds >= 0:
-    #     time_string += f"{seconds}s"
-
     if days >= 1:
         time_string += f"{days}d, {hours}h"
     elif hours >= 1:
@@ -36,12 +27,9 @@ def convert_seconds_to_time_string(seconds):
 
     return time_string
 
-
-
 # return current system time in unix format
 def time_unix():
     return int(time.time())
-
 
 # return system format in format "4/29 11:15am"
 def time_formatted():
@@ -49,9 +37,8 @@ def time_formatted():
     format_1 = system_time.strftime("%m/%d/%y %I:%M%p").lower() # format system time as desired
     format_2 = format_1.lstrip("0").replace("/0", "/") # remove leading zeros
     return format_2
-
-
-# updates select item info in a list of item objects
+    
+# updates select item info from the bidrl in a list of item objects
 # requires: webdriver object, list of item objects
 # returns: nothing
 # changes: item objects in list
@@ -76,12 +63,12 @@ def update_item_info(browser, items):
         for item in items:
             for new_item in new_items:
                 if new_item.id == item.id:
+                    item.description = new_item.description
+                    item.url = new_item.url
                     item.end_time_unix = new_item.end_time_unix
                     item.highbidder_username = new_item.highbidder_username
                     item.bidding_status = new_item.bidding_status
                     item.current_bid = new_item.current_bid
-                    item.url = new_item.url
-                    item.description = new_item.description
 
         print("Success.")
         return 0
@@ -89,7 +76,6 @@ def update_item_info(browser, items):
         # return 1 here instead of letting this kill the program because update_item_info is not critical to bidding
         print(f"update_item_info() failed with exception: {e}")
         return 1
-    
 
 # updates item info pertaining to item bid groups
 # loops through list of items, then loops through another list of items for searching
@@ -97,6 +83,7 @@ def update_item_info(browser, items):
 # if search item is in the same bid group as our item and we're winning it, then iterate items_in_bid_group_won
 def update_item_group_info(browser, items, username):
     try:
+        start_time = time.time()
         update_item_info(browser, items)
         print("Updating item group info.")
         for item in items:
@@ -112,7 +99,15 @@ def update_item_group_info(browser, items, username):
                     if item_search.highbidder_username == username:
                         item.items_in_bid_group_won += 1
             #print(f"{item.description} | {item.items_in_bid_group} | {item.items_in_bid_group_won}")
-        print("Success.")
+        print("Successfully updated item group info")
+        print("Attempting to update database")
+        auto_bid_update_db_itemuserinput_table(items)
+
+        # sort items list by end_time_unix
+        items.sort(key=lambda x: x.end_time_unix, reverse=False)
+
+        runtime = round(time.time() - start_time, 2)
+        print(f"update_item_group_info runtime: {runtime} seconds")
         return 0
     except Exception as e:
         # return 1 here instead of letting this kill the program because update_item_group_info is not critical to bidding
@@ -121,11 +116,16 @@ def update_item_group_info(browser, items, username):
 
 # connects to database table where our item user input is stored and pulls rows where either end_time_unix > current time,
     # or end_time_unix does not exist
-# returns list of Item_AutoBid objects created by information in the rows
-def get_items_list_from_db(db_path = 'local_files/auto_bid/', db_name = 'auto_bid', table_name = 'auto_bid_itemuserinput'):
+# updates our provided items_list with any changes in user input fields or addition of new items
+# if no items_list is supplied, then it will generate one
+# this returns the items_list but it also just updates it. no need to do items_list = update_..()
+def update_items_list_from_db(items_list = [], db_path = 'local_files/auto_bid/', db_name = 'auto_bid', table_name = 'auto_bid_itemuserinput'):
     try:
+        print("Updating item list from database")
+        start_time = time.time()
+
         # Connect to the SQLite database
-        conn = bf.init_sqlite_connection(path = db_path, database = db_name)
+        conn = bf.init_sqlite_connection(path = db_path, database = db_name, verbose = False)
         cursor = conn.cursor()
 
         # SQL query to select items where end_time_unix is greater than the current time or is NULL
@@ -143,52 +143,73 @@ def get_items_list_from_db(db_path = 'local_files/auto_bid/', db_name = 'auto_bi
         item_rows = cursor.fetchall()
         conn.close()
 
-        item_objects = []
+        item_objects_from_db = []
         for item in item_rows:
-            item_objects.append(Item_AutoBid(
-                id = item['item_id'],
-                auction_id = item['auction_id'],
-                description = item['description'],
-                end_time_unix = item['end_time_unix'],
-                max_desired_bid = item['max_desired_bid'] if item['max_desired_bid'] else None,
-                item_bid_group_id = item['item_bid_group_id'] if item['item_bid_group_id'] else None,
-                has_autobid_been_placed = 0, # not currently in database (11.10.24)
-                ibg_items_to_win = item['ibg_items_to_win'] if item['ibg_items_to_win'] else None,
-                #current_bid = item['current_bid'], # not currently in database (11.10.24)
-                cost_split = item['cost_split'] if item['cost_split'] else None
+            item_objects_from_db.append(Item_AutoBid(
+                id = item['item_id']
+                , auction_id = item['auction_id']
+                , description = item['description']
+                , end_time_unix = item['end_time_unix']
+                , max_desired_bid = item['max_desired_bid'] if item['max_desired_bid'] else None
+                , item_bid_group_id = item['item_bid_group_id'] if item['item_bid_group_id'] else None
+                , has_autobid_been_placed = 0 # not stored in database
+                , ibg_items_to_win = item['ibg_items_to_win'] if item['ibg_items_to_win'] else None
+                , cost_split = item['cost_split'] if item['cost_split'] else None
+                , items_in_bid_group = item['items_in_bid_group'] if item['items_in_bid_group'] else None
+                , items_in_bid_group_won = item['items_in_bid_group_won'] if item['items_in_bid_group_won'] else 0
+                , current_bid = item['current_bid'] if item['current_bid'] else float(0)
+                , highbidder_username = item['highbidder_username'] if item['highbidder_username'] else None
+                , bidding_status = item['bidding_status'] if item['bidding_status'] else None
             ))
 
-        return item_objects
+        # Update items_list with values from item_objects_from_db
+        items_list_dict = {item.id: item for item in items_list}
+        fields_to_update = ['item_bid_group_id', 'ibg_items_to_win', 'cost_split', 'max_desired_bid']
+        for item_obj in item_objects_from_db:
+            if item_obj.id in items_list_dict:
+                item_in_list = items_list_dict[item_obj.id]
+                # Update specified fields if they differ
+                for field in fields_to_update:
+                    if getattr(item_in_list, field) != getattr(item_obj, field):
+                        setattr(item_in_list, field, getattr(item_obj, field))
+            else:
+                # Add new item if not found in items_list
+                items_list.append(item_obj)
+
+        print(f"update_items_list_from_db() runtime: {round(time.time() - start_time, 2)} seconds")
+        return items_list
     except Exception as e:
-        print(f"get_items_list_from_db() failed with exception: {e}")
+        print(f"update_items_list_from_db() failed with exception: {e}")
 
 def get_username(browser):
     username = bf.get_session(browser)['user_name']
     return username
 
 def print_items_status(item_list):
-    print('\n----------------------------------------------------------------------------------------------------')
-    current_time_unix = time_unix()
-    for item in item_list:
-        if is_item_eligible_for_bidding(item):
-            remaining_seconds = item.end_time_unix - current_time_unix
-            remaining_time_string = convert_seconds_to_time_string(remaining_seconds)
-            length_formatted_remaining_time_string = f"{remaining_time_string:<8}"
-            if item.items_in_bid_group_won >= item.ibg_items_to_win:
-                length_formatted_max_desired_bid = 'BG_Done' # display indication that we have already won the # of items desired from the bid group
-            elif item.max_desired_bid <= item.current_bid:
-                length_formatted_max_desired_bid = 'LOST   '
-            else:
-                length_formatted_max_desired_bid = f"${str(item.max_desired_bid):<6}"
+    try:
+        print('\n----------------------------------------------------------------------------------------------------')
+        current_time_unix = time_unix()
+        for item in item_list:
+            if is_item_eligible_for_bidding(item):
+                remaining_seconds = item.end_time_unix - current_time_unix
+                remaining_time_string = convert_seconds_to_time_string(remaining_seconds)
+                length_formatted_remaining_time_string = f"{remaining_time_string:<8}"
+                if item.items_in_bid_group_won >= item.ibg_items_to_win:
+                    length_formatted_max_desired_bid = 'BG_Done' # display indication that we have already won the # of items desired from the bid group
+                elif item.max_desired_bid <= item.current_bid:
+                    length_formatted_max_desired_bid = 'LOST   '
+                else:
+                    length_formatted_max_desired_bid = f"${str(item.max_desired_bid):<6}"
 
-            if len(item.description) > 63:
-                length_formatted_description = item.description[:30] + '...' + item.description[-30:]
-            else:
-                length_formatted_description = f"{str(item.description):<63}"
-            #print(f"{length_formatted_remaining_time_string} | {length_formatted_max_desired_bid} | {length_formatted_description} | {item.ibg_items_to_win}")
-            print(f"{length_formatted_description} | {length_formatted_remaining_time_string} | {length_formatted_max_desired_bid} | Group: {item.item_bid_group_id} | Qty desired: {item.ibg_items_to_win}")
-    print('----------------------------------------------------------------------------------------------------')
-
+                if len(item.description) > 63:
+                    length_formatted_description = item.description[:30] + '...' + item.description[-30:]
+                else:
+                    length_formatted_description = f"{str(item.description):<63}"
+                #print(f"{length_formatted_remaining_time_string} | {length_formatted_max_desired_bid} | {length_formatted_description} | {item.ibg_items_to_win}")
+                print(f"{length_formatted_description} | {length_formatted_remaining_time_string} | {length_formatted_max_desired_bid} | Group: {item.item_bid_group_id} | Qty desired: {item.ibg_items_to_win}")
+        print('----------------------------------------------------------------------------------------------------')
+    except Exception as e:
+        print(f"print_items_status() failed with exception: {e}")
 
 # returns True if item is eligible for bidding. checks if:
     # item is not already closed
@@ -222,6 +243,8 @@ def auto_bid(browser, item_list, seconds_before_closing_to_bid, username):
             if item.items_in_bid_group_won < item.ibg_items_to_win:
                 bf.bid_on_item(item, item.max_desired_bid, browser)
                 print('')
+                # mark that script placed bid. relevent during the time between bid placement and item closure
+                    # so that the script does not try to keep placing the bid because it reads that it is otherwise elegible and time to bid
                 item.has_autobid_been_placed = 1
             else:
                 print(f"Already won {item.items_in_bid_group_won} items in bid group!")
@@ -249,13 +272,18 @@ def login_refresh(browser, last_login_time, last_login_time_unix):
         bf.tear_down(browser)
 
 def auto_bid_update_db_itemuserinput_table(item_list):
+    print("Attempting to update database with item info")
+    start_time = time.time()
     bf.update_db_itemuserinput_table(item_list
                                     , db_path = 'local_files/auto_bid/'
                                     , db_name = 'auto_bid'
                                     , table_name = 'auto_bid_itemuserinput'
-                                    , field_names = ['description', 'url', 'end_time_unix']
+                                    , field_names = ['description', 'url', 'end_time_unix', 'items_in_bid_group', 'items_in_bid_group_won'
+                                                     , 'current_bid', 'highbidder_username', 'bidding_status']
                                     , verbose = False
                                     )
+    runtime = round(time.time() - start_time, 2)
+    print(f"auto_bid_update_db_itemuserinput_table runtime: {runtime} seconds")
 
 
 # if ynab_api_token and item up for bid next is not too close, run ynab_invoice_transaction_split_main() to split any uncategorized
@@ -299,8 +327,9 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
          , auto_bid__interval = 5 # how often to check if it is time to bid on each item (and then bid if it is)
          , print_items_status__interval = 60 # how often to print times remaining for all items
          , login_refresh__interval = 60 # keep this reasonable - actually submits a request to bidrl
-         , update_item_info__interval = 60 * 60 # keep this reasonable - actually submits a request to bidrl
+         , update_item_info__interval = 60 * 30 # keep this reasonable - actually submits a request to bidrl
          , ynab_trans_split__interval = 60 * 30 # how often to check if ynab has any uncategorized transactions to split
+         , update_items_list_from_db__interval = 60 * 1 # how often to check db for item changes or additions and update items list. can run often
          ):
 
     browser = None # establish browser variable so that the check in 'finally' doesn't throw an error
@@ -317,39 +346,35 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
         browser = get_logged_in_webdriver_for_auto_bid()
         last_login_time_string = time_formatted()
         last_login_time_unix = time_unix()
+
         username = get_username(browser)
         print(f"Username: {username}")
 
         # read items list in from database
-        item_list = get_items_list_from_db()
-
-        update_item_group_info(browser, item_list, username)
-
-        # save updated data to itemuserinput table
-        auto_bid_update_db_itemuserinput_table(item_list)
-
-        # calculate item counts and print report
-        item_counts = bf.get_item_counts(item_list)
-        print(f"\nItems without max_desired_bid: {item_counts['item_count_no_desired_bid']}")
-        print(f"Items with 0 max_desired_bid: {item_counts['item_count_zero_desired_bid']}")
-        print(f"Items with max_desired_bid: {item_counts['item_count_with_desired_bid']}")
-        print(f"Items with max_desired_bid that already closed: {item_counts['item_count_closed']}")
+        item_list = update_items_list_from_db()
 
         # set x__last_run_time to 0 to run immediately when loop processes
         # set to time_unix() to wait x__interval amount of seconds first
         auto_bid__last_run_time = 0
         login_refresh__last_run_time = 0
         print_items_status__last_run_time = 0
-        update_item_info__last_run_time = time_unix()
+        update_item_info__last_run_time = 0
         ynab_trans_split__last_run_time = 0
+        update_items_list_from_db__last_run_time = time_unix()
 
         try:
             # loop until KeyboardInterrupt, testing if it has been x_function__interval seconds since last run of x_function()
             # if it has been, run x_function(), then test the next function and its corresponding times
             while True:
-                # update_item_info()
+                # update_items_list_from_db()
+                if time_unix() - update_items_list_from_db__last_run_time >= update_items_list_from_db__interval:
+                    update_items_list_from_db(item_list)
+                    update_items_list_from_db__last_run_time = time_unix()
+
+                # update_item_group_info(). run immediately after pulling the items list to update its info
                 if time_unix() - update_item_info__last_run_time >= update_item_info__interval:
-                    update_item_info(browser, item_list)
+                    # this also runs update_item_info() and auto_bid_update_db_itemuserinput_table()
+                    update_item_group_info(browser, item_list, username)
                     update_item_info__last_run_time = time_unix()
 
                 # login_refresh()
