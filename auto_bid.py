@@ -38,6 +38,11 @@ def time_formatted():
     format_2 = format_1.lstrip("0").replace("/0", "/") # remove leading zeros
     return format_2
     
+# sort items list by end_time_unix
+def sort_items_list(items):
+    items.sort(key=lambda x: x.end_time_unix, reverse=True)
+    return 0
+    
 # updates select item info from the bidrl in a list of item objects
 # requires: webdriver object, list of item objects
 # returns: nothing
@@ -69,6 +74,8 @@ def update_item_info(browser, items):
                     item.highbidder_username = new_item.highbidder_username
                     item.bidding_status = new_item.bidding_status
                     item.current_bid = new_item.current_bid
+
+        sort_items_list(items)
 
         print("Success.")
         return 0
@@ -103,8 +110,7 @@ def update_item_group_info(browser, items, username):
         print("Attempting to update database")
         auto_bid_update_db_itemuserinput_table(items)
 
-        # sort items list by end_time_unix
-        items.sort(key=lambda x: x.end_time_unix, reverse=False)
+        sort_items_list(items)
 
         runtime = round(time.time() - start_time, 2)
         print(f"update_item_group_info runtime: {runtime} seconds")
@@ -175,6 +181,8 @@ def update_items_list_from_db(items_list = [], db_path = 'local_files/auto_bid/'
             else:
                 # Add new item if not found in items_list
                 items_list.append(item_obj)
+
+        sort_items_list(items_list)
 
         print(f"update_items_list_from_db() runtime: {round(time.time() - start_time, 2)} seconds")
         return items_list
@@ -322,8 +330,27 @@ def ynab_trans_split(item_list, desired_distance_from_next_bid_time = 30 * 60):
     except Exception as e:
         print(f"ynab_trans_split() failed with exception: {e}")
         return
+    
+# checks to see if the next item up for bidding is less than time_from_item_close seconds away
+# if it is, then we update item info from bidrl
+# this function exists so that we can call it super often and update item info rapidly as the close time of an item approaches
+def update_item_info_if_next_item_is_close(items_list, time_from_item_close, browser, username):
+    try:
+        # Check the first item in the sorted items_list
+        if items_list:
+            next_eligible_item = min((item for item in items_list if is_item_eligible_for_bidding(item)), key=lambda x: x.end_time_unix, default=None)
+            remaining_time = next_eligible_item.end_time_unix - time_unix()
+            # If the remaining time is less than time_from_item_close, update item group info
+            if remaining_time < time_from_item_close:
+                print(f"next item is up for bidding in less than {time_from_item_close} seconds. updating item info from bidrl")
+                update_item_group_info(browser, items_list, username)
+    except Exception as e:
+        print(f"check_and_update_item_group_info() failed with exception: {e}")
+
 
 def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to account for POST time to API. don't want to extend bid time if we can avoid
+         , time_from_item_close_to_start_quickly_updating = 60 * 5 # how long out from the next item closing should we start rapidly updating item info
+         , update_if_next_item_soon__interval = 10 # how often to quickly update item info once we're close to it closeing. 'close' defined by time_from_item_close_to_start_quickly_updating
          , auto_bid__interval = 5 # how often to check if it is time to bid on each item (and then bid if it is)
          , print_items_status__interval = 60 # how often to print times remaining for all items
          , login_refresh__interval = 60 # keep this reasonable - actually submits a request to bidrl
@@ -361,6 +388,7 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
         update_item_info__last_run_time = 0
         ynab_trans_split__last_run_time = 0
         update_items_list_from_db__last_run_time = time_unix()
+        update_if_next_item_soon__last_run_time = 0
 
         try:
             # loop until KeyboardInterrupt, testing if it has been x_function__interval seconds since last run of x_function()
@@ -391,6 +419,11 @@ def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to accoun
                 if time_unix() - auto_bid__last_run_time >= auto_bid__interval:
                     auto_bid(browser, item_list, seconds_before_closing_to_bid, username)
                     auto_bid__last_run_time = time_unix()
+
+                # update_item_info_if_next_item_is_close()
+                if time_unix() - update_if_next_item_soon__last_run_time >= update_if_next_item_soon__interval:
+                    update_item_info_if_next_item_is_close(item_list, time_from_item_close_to_start_quickly_updating, browser, username)
+                    update_if_next_item_soon__last_run_time = time_unix()
 
                 # ynab_trans_split()
                 if time_unix() - ynab_trans_split__last_run_time >= ynab_trans_split__interval:
