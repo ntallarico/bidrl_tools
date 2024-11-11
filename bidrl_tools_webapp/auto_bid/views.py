@@ -25,7 +25,6 @@ def convert_seconds_to_time_string(seconds):
     if days >= 1:
         time_string += f"{days}d, {hours}h"
     elif hours >= 1:
-        #
         time_string += f"{hours}h, {minutes}m, {seconds}s"
     else:
         time_string += f"{minutes}m, {seconds}s"
