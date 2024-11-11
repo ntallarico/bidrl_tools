@@ -391,3 +391,32 @@ def test_bid_on_item_with_creds():
     return 0
 
 #test_bid_on_item_with_creds()
+
+
+
+
+def update_max_desired_bid():
+    conn = bf.init_sqlite_connection(path='local_files/auto_bid/', database='auto_bid', verbose=False)
+    cursor = conn.cursor()
+
+    try:
+        while True:
+            update_query = """
+            UPDATE auto_bid_itemuserinput
+            SET max_desired_bid = CASE 
+                WHEN max_desired_bid = 11 THEN 2
+                ELSE 11
+            END
+            WHERE item_id = 21593389;
+            """
+            cursor.execute(update_query)
+            conn.commit()
+            print(f"Updated max_desired_bid for item_id 21593389")
+
+            time.sleep(2)
+    except Exception as e:
+        print(f"Exception occurred: {e}")
+    finally:
+        conn.close()
+
+#update_max_desired_bid()

@@ -22,12 +22,42 @@
             background-color: #42454a; /* Slightly darker background for headers */
         }
     </style>
+    <script>
+        function fetchData() {
+            fetch('/fetch-data/')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector('#open-items-table tbody');
+                    tbody.innerHTML = ''; // Clear existing rows
+
+                    data.all_open_items.forEach(item => {
+                        const row = document.createElement('tr');
+                        if (item.is_lost) {
+                            row.style.color = '#565858';
+                        }
+
+                        row.innerHTML = `
+                            <td>${item.description}</td>
+                            <td>${item.remaining_time_string}</td>
+                            <td>${item.max_desired_bid}</td>
+                            <td>${item.item_bid_group_id}</td>
+                            <td>${item.ibg_items_to_win}</td>
+                            <td>${item.current_bid}</td>
+                            <td>${item.highbidder_username}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                });
+        }
+
+        setInterval(fetchData, 1000); // Poll every 1 second(s)
+    </script>
 </head>
 <body>
     <h1>This is the auto_bid page!</h1>
 
     <h3>Open items:</h3>
-    <table>
+    <table id="open-items-table">
         <thead>
             <tr>
                 <th>Description</th>

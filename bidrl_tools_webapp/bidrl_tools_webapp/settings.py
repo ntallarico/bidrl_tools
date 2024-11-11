@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'auto_bid',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -76,7 +77,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'bidrl_tools_webapp.wsgi.application'
-
+ASGI_APPLICATION = 'bidrl_tools_webapp.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -212,5 +213,14 @@ auto_bid handles most of this stuff anyway. I just need to update it to work mor
 - develop a webform for the user input which writes to the database on submit
 
 - then have auto_bid.py no longer call the excel_to_db script. and it's fully equipped to read user input from the database
+
+"""
+
+"""
+I think I can have a script that reads the database for any row where is_bidrl_data_locked_in is false, and then
+fast scrapes the auctions those items are included in and updates the database.
+this sounds extremely lightweight. like a second of runtime. I feel like I could run this ever 10 seconds or something.
+
+then maybe I could have auto_bid run this every 10 seconds or whatever we want
 
 """
