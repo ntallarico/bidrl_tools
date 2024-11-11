@@ -3,20 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <title>auto_bid page</title>
+    <style>
+        body {
+            background-color: #313338;
+            color: white; /* Set text to be white by default */
+            font-family: Arial, sans-serif; /* Change font to Arial */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse; /* Ensure borders are collapsed into a single border */
+        }
+        th, td {
+            border: 1px solid #565858; /* Add borders to table cells */
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #42454a; /* Slightly darker background for headers */
+        }
+    </style>
 </head>
 <body>
     <h1>This is the auto_bid page!</h1>
-    <h3>all open favorite items (according to auto_bid.db):</h3>
-    <ul>
-        {% for item in all_open_items %}
-            <li>ID: {{ item.item_id }} | Desc: {{ item.description }}</li>
-        {% endfor %}
-    </ul>
-    <h3>all closed favorite items (according to auto_bid.db):</h3>
-    <ul>
-        {% for item in all_closed_items %}
-            <li>ID: {{ item.item_id }} | Desc: {{ item.description }}</li>
-        {% endfor %}
-    </ul>
+
+    <h3>Open items:</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Remaining Time</th>
+                <th>Desired Bid</th>
+                <th>Item Group #</th>
+                <th>Qty Desired</th>
+                <th>Current Bid</th>
+                <th>Username</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in all_open_items %}
+            <tr {% if item.is_lost %}style="color: #565858;"{% endif %}>
+                <td>{{ item.description }}</td>
+                <td>{{ item.remaining_time_string }}</td>
+                <td>{{ item.max_desired_bid }}</td>
+                <td>{{ item.item_bid_group_id }}</td>
+                <td>{{ item.ibg_items_to_win }}</td>
+                <td>{{ item.current_bid }}</td>
+                <td>{{ item.highbidder_username }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Past items:</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Sold</th>
+                <th>Desired Bid</th>
+                <th>Item Group #</th>
+                <th>Qty Desired</th>
+                <th>Current Bid</th>
+                <th>Username</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in all_closed_items %}
+            <tr {% if item.is_lost %}style="color: #565858;"{% endif %}>
+                <td>{{ item.description }}</td>
+                <td>{{ item.sold_date }}</td>
+                <td>{{ item.max_desired_bid }}</td>
+                <td>{{ item.item_bid_group_id }}</td>
+                <td>{{ item.ibg_items_to_win }}</td>
+                <td>{{ item.current_bid }}</td>
+                <td>{{ item.highbidder_username }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>

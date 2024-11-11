@@ -2,13 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Django auto_bid app</title>
+    <title>index page - auto_bid app</title>
 </head>
 <body>
-    <h1>data</h1>
+    <h2>well if it isnt the index.html page in the auto_bid app folder...</h2>
+
+    <h3>here's all the urls that are part of this project:</h3>
+    <ul>
+        {% for url in urls %}
+            <li><a href="{{ url }}">{{ url }}</a></li>
+        {% endfor %}
+    </ul>
+    
+    <h3>here's all the items stored in the database in a bulleted list:</h3>
     <ul>
         {% for item in data %}
-            <li>{{ item.item_id }}: {{ item.description }}</li>
+            <li>ID {{ item.item_id }}: {{ item.description }}</li>
         {% endfor %}
     </ul>
 </body>
