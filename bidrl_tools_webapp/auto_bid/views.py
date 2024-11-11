@@ -9,8 +9,8 @@ from django.urls import URLPattern, URLResolver, get_resolver
 bidrl_tools_directory = Path(__file__).resolve().parent.parent.parent
 sys.path.append(str(bidrl_tools_directory))
 
-from config import user_name, local_ip_address
-
+from config import user_name
+import bidrl_functions as bf
 
 ### helper functions ###
 
@@ -51,6 +51,7 @@ def index(request):
     data = ItemUserInput.objects.all()
     # Extract all URL patterns
     raw_urls = get_all_url_patterns(get_resolver().url_patterns)
+    local_ip_address = bf.get_local_ip()
     urls = [f'http://{local_ip_address}:8000/' + url for url in raw_urls]
     return render(request, 'index.html', {'data': data, 'urls': urls})
 

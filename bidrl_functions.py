@@ -14,6 +14,7 @@ from bs4 import BeautifulSoup
 import pyodbc
 import sqlite3
 from config import home_affiliates#, user_email, user_password, sql_server_name, sql_database_name, sql_admin_username, sql_admin_password
+import socket
 
 def init_webdriver(headless='', webdriver_identifier = None):
     browser = None
@@ -1036,3 +1037,15 @@ def get_item_counts(item_list):
             else:
                 item_counts['item_count_actually_intend_to_bid'] += 1
     return item_counts
+
+def get_local_ip():
+    # Create a socket connection to a public DNS server
+    # This doesn't actually connect to the internet, but helps determine the local IP
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # Use a public DNS server IP and port
+        s.connect(("8.8.8.8", 80))
+        local_ip = s.getsockname()[0]
+    finally:
+        s.close()
+    return local_ip

@@ -19,7 +19,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # add parent directory (repository directory) to the path so that config file can be read
 sys.path.append(str(BASE_DIR.parent))
 
-from config import DJANGO_SECRET_KEY, local_ip_address
+from config import DJANGO_SECRET_KEY
+import bidrl_functions as bf
 
 
 # Quick-start development settings - unsuitable for production
@@ -31,7 +32,7 @@ SECRET_KEY = DJANGO_SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [local_ip_address, 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', bf.get_local_ip()]
 
 
 # Application definition
