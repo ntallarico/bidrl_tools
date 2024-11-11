@@ -9,9 +9,7 @@ from django.urls import URLPattern, URLResolver, get_resolver
 bidrl_tools_directory = Path(__file__).resolve().parent.parent.parent
 sys.path.append(str(bidrl_tools_directory))
 
-from config import user_name
-
-
+from config import user_name, local_ip_address
 
 
 ### helper functions ###
@@ -23,8 +21,10 @@ def convert_seconds_to_time_string(seconds):
     time_string = ''
 
     if days >= 1:
-        time_string += f"{days}d, {hours}h"
+        #time_string += f"{days}d, {hours}h"
+        time_string += f"{days}d, {hours}h, {minutes}m, {seconds}s"
     elif hours >= 1:
+        #time_string += f"{hours}h, {minutes}m"
         time_string += f"{hours}h, {minutes}m, {seconds}s"
     else:
         time_string += f"{minutes}m, {seconds}s"
@@ -51,7 +51,7 @@ def index(request):
     data = ItemUserInput.objects.all()
     # Extract all URL patterns
     raw_urls = get_all_url_patterns(get_resolver().url_patterns)
-    urls = ['http://127.0.0.1:8000/' + url for url in raw_urls]
+    urls = [f'http://{local_ip_address}:8000/' + url for url in raw_urls]
     return render(request, 'index.html', {'data': data, 'urls': urls})
 
 def auto_bid_view(request):

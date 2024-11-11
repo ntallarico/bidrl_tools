@@ -1,3 +1,3 @@
 call .\venv\Scripts\activate
 
-python .\bidrl_tools_webapp\manage.py runserver
+python .\launch_webapp.py
