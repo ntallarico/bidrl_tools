@@ -40,7 +40,11 @@ def time_formatted():
     
 # sort items list by end_time_unix
 def sort_items_list(items):
-    items.sort(key=lambda x: x.end_time_unix, reverse=True)
+    try:
+        items.sort(key=lambda x: x.end_time_unix, reverse=True)
+    except Exception as e:
+        print(f"sort_items_list() failed with exception: {e}")
+        return 1
     return 0
     
 # updates select item info from the bidrl in a list of item objects
@@ -186,7 +190,7 @@ def update_items_list_from_db(items_list = [], db_path = 'local_files/auto_bid/'
                 # Add new item if not found in items_list
                 items_list.append(item_obj)
 
-        sort_items_list(items_list)
+        #sort_items_list(items_list)
 
         print(f"update_items_list_from_db() runtime: {round(time.time() - start_time, 2)} seconds")
         return items_list
