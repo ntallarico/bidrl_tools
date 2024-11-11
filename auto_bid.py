@@ -120,8 +120,8 @@ def update_item_group_info(browser, items, username):
         print(f"update_item_group_info() failed with exception: {e}")
         return 1
 
-# connects to database table where our item user input is stored and pulls rows where either end_time_unix > current time,
-    # or end_time_unix does not exist
+# connects to database table where our item user input is stored and pulls rows where end_time_unix > current time
+    # (or where one of the bidrl scrape-populated fields is empty, meaning it hasn't been scraped and needs to be)
 # updates our provided items_list with any changes in user input fields or addition of new items
 # if no items_list is supplied, then it will generate one
 # this returns the items_list but it also just updates it. no need to do items_list = update_..()
@@ -141,7 +141,11 @@ def update_items_list_from_db(items_list = [], db_path = 'local_files/auto_bid/'
         WHERE end_time_unix > ?
             OR end_time_unix IS NULL
             OR description IS NULL
-            OR url IS NULL
+            OR items_in_bid_group IS NULL
+            OR items_in_bid_group_won IS NULL
+            OR bidding_status IS NULL
+            OR current_bid IS NULL
+            OR (highbidder_username IS NULL and current_bid > 0)
         """
         cursor.execute(query, (int(time.time()),))
         
@@ -339,13 +343,14 @@ def update_item_info_if_next_item_is_close(items_list, time_from_item_close, bro
         # Check the first item in the sorted items_list
         if items_list:
             next_eligible_item = min((item for item in items_list if is_item_eligible_for_bidding(item)), key=lambda x: x.end_time_unix, default=None)
-            remaining_time = next_eligible_item.end_time_unix - time_unix()
-            # If the remaining time is less than time_from_item_close, update item group info
-            if remaining_time < time_from_item_close:
-                print(f"next item is up for bidding in less than {time_from_item_close} seconds. updating item info from bidrl")
-                update_item_group_info(browser, items_list, username)
+            if next_eligible_item:
+                remaining_time = next_eligible_item.end_time_unix - time_unix()
+                # If the remaining time is less than time_from_item_close, update item group info
+                if remaining_time < time_from_item_close:
+                    print(f"next item is up for bidding in less than {time_from_item_close} seconds. updating item info from bidrl")
+                    update_item_group_info(browser, items_list, username)
     except Exception as e:
-        print(f"check_and_update_item_group_info() failed with exception: {e}")
+        print(f"update_item_info_if_next_item_is_close() failed with exception: {e}")
 
 
 def auto_bid_main(seconds_before_closing_to_bid = 120 + 5 # add 5 secs to account for POST time to API. don't want to extend bid time if we can avoid
