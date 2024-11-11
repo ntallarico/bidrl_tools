@@ -11,6 +11,7 @@ Setup:
 
 	Details:
 	 - user_email: your email used for logging into bidrl
+	 - user_name: your bidrl username
 	 - user_password: your password used for logging into bidrl
 	 - home_affiliates = list of IDs for affiliates you care about, each in single quotes and separated by commas, and the whole list
 	   surrounded by brackets. run list_affiliates.py for name/ID list. for
@@ -25,6 +26,7 @@ Setup:
 	Example:
 	
 	    user_email = 'email@example.com'
+	    user_name = 'ExampleGuy93'
 	    user_password = 'exampleP@ssw0rd'
 	    home_affiliates = ['56', '60', '44']
 	    ynab_api_token  =  'hafdhowQMl31Aqqj103FbfTgaeg234yH1'
