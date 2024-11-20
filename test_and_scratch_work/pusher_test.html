@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pusher Bid Updates</title>
+    <!-- Include the Pusher library from the CDN -->
+    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+    <style>
+        #updates {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            max-width: 400px;
+        }
+        .item-update {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bid Updates</h1>
+    <div id="updates">Waiting for updates...</div>
+
+    <script>
+        // List of item IDs to subscribe to
+        const itemIds = ['21632089', '21632030', '21653006', '21658813', '21658814', '21653007']; // Add more item IDs as needed
+
+        // Initialize Pusher
+        const pusher = new Pusher('8a9aa527c32e9ca02b0f', {
+            cluster: 'us3',
+            encrypted: true
+        });
+
+        // Function to create a new div for each item
+        function createItemDiv(itemId) {
+            const div = document.createElement('div');
+            div.id = `item-${itemId}`;
+            div.className = 'item-update';
+            div.innerHTML = `<h3>Item ${itemId}</h3><p>Waiting for updates...</p>`;
+            document.getElementById('updates').appendChild(div);
+        }
+
+        // Subscribe to each channel and bind to the 'bid' event
+        itemIds.forEach(itemId => {
+            createItemDiv(itemId);
+            const channel = pusher.subscribe(`www.bidrl.com-item-${itemId}`);
+
+            channel.bind('bid', function(data) {
+                const bidData = typeof data === 'string' ? JSON.parse(data) : data;
+
+                const bidInfo = `
+                    <strong>Current Bid:</strong> $${bidData.item.current_bid}<br>
+                    <strong>High Bidder:</strong> ${bidData.item.highbidder_username}<br>
+                    <strong>Bid Count:</strong> ${bidData.item.bid_count}<br>
+                    <strong>Minimum Bid:</strong> $${bidData.item.minimum_bid}<br>
+                    <strong>End Time:</strong> ${new Date(bidData.item.end_time * 1000).toLocaleString()}
+                `;
+
+                document.getElementById(`item-${itemId}`).innerHTML = `<h3>Item ${itemId}</h3>${bidInfo}`;
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+<!-- 
+
+variables used here
+- config.pusher_domain = "www.bidrl.com"
+- config.pusher_cluster = "us3"
+- config.pusher_api_key = "8a9aa527c32e9ca02b0f"
+
+
+
+channel
+- e.pusher.subscribe(config.pusher_domain + "-item-" + i.id)
+- bindings:
+    - "minimum_bid"
+    - "bid"
+    - "pusher:subscription_succeeded"
+    - "state_change"
+
+broadcast_message_channel
+- t.pusher.subscribe(config.pusher_domain + "-broadcast_clerk_message-" + t.auction.id)
+- bindings: "broadcast_clerk_message"
+
+user_message_channel
+- t.pusher.subscribe(config.pusher_domain + "-clerk_message-" + t.auction.id + "-" + t.current_user)
+- bindings: "clerk_message"
+
+bid_increment_channel
+- t.pusher.subscribe(config.pusher_domain + "-bid_increment-" + t.auction.id)
+- bindings: "bid_increment"
+
+bid_removed_channel
+- t.pusher.subscribe(config.pusher_domain + "-bid_removed-" + t.auction.id + "-" + t.current_user)
+- bindings: "bid_removed"
+
+adjust_price_channel
+- t.pusher.subscribe(config.pusher_domain + "-adjust_price-" + t.auction.id)
+- bindings: "adjust_price"
+
+new_high_bid_channel
+- t.pusher.subscribe(config.pusher_domain + "-new_high_bid-" + t.auction.id)
+- bindings: "new_high_bid"
+
+auction_completed_channel
+- t.pusher.subscribe(config.pusher_domain + "-auction_completed-" + t.auction.id)
+- bindings: "auction_completed"
+
+live_channel
+- t.pusher.subscribe(config.pusher_domain + "-liveonline-" + t.auction.id)
+- bindings:
+    - "group"
+    - "open_lot"
+    - "modal_open"
+    - "pass_lot"
+    - "unsell_lot"
+    - "bid_lot"
+    - "sold_lot"
+    - "hold_lot"
+    - "reopen_lot"
+    - "bid_group"
+    - "bid_process_all"
+    - "bid_processed"
+    - "session_expire"
+    - "pending_sale_status"
+
+quality_selection_channel
+- t.pusher.subscribe(config.pusher_domain + "-live_quantity_selection-" + t.auction.id + "-" + t.current_user)
+- bindings: "live_quantity_selection"
+
+choice_lot_selection_channel
+- t.pusher.subscribe(config.pusher_domain + "-bidder_choice_lot_selection-" + t.auction.id + "-" + t.current_user)
+- bindings: "bidder_choice_lot_selection"
+
+stream_change_channel
+- t.pusher.subscribe(config.pusher_domain + "-stream-" + t.auction.id)
+- bindings: "namechange"
+
+auction.channel
+- e.pusher.subscribe(config.pusher_domain + "-auction-" + t.auction.id)
+- bindings: "new_item"
+
+
+
+
+
+t.pusher = new Pusher(config.pusher_api_key,{
+            cluster: config.pusher_cluster,
+            disableStats: !0,
+            pong_timeout: 2e4,
+            activity_timeout: 1e4
+        });
+
+
+
+
+
+
+t.keep_alive = a(function() {
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "/api/sessiontouch",
+            async: !1,
+            success: function(e) {}
+        })
+    }, 114e4),
+
+
+
+
+
+var n = "/aucbeat/pusher/liveonline-" + t.auction.id + ".json";
+
+
+
+
+
+-->
