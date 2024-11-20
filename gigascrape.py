@@ -200,7 +200,6 @@ def gigascrape():
         browser.quit()
     finally:
         browser.quit()
-        input("Press any key to exit...")
 
 
 if __name__ == "__main__":
