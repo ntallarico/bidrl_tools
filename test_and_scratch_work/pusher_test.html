@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pusher Bid Updates</title>
+    <title>BidRL Pusher Test</title>
     <!-- Include the Pusher library from the CDN -->
     <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
     <style>
@@ -13,25 +13,35 @@
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            max-width: 400px;
+            max-width: 800px;
         }
-        .item-update {
+        .item-update, .auction-update {
             margin-bottom: 20px;
         }
     </style>
 </head>
-<body>
-    <h1>Bid Updates</h1>
-    <div id="updates">Waiting for updates...</div>
+<body></body>
+    <h1>BidRL Pusher Test</h1>
+    <div id="updates"></div>
 
     <script>
-        // List of item IDs to subscribe to
-        const itemIds = ['21632089', '21632030', '21653006', '21658813', '21658814', '21653007']; // Add more item IDs as needed
+        const pusher_domain = "www.bidrl.com"
+        const pusher_cluster = "us3"
+        const pusher_api_key = "8a9aa527c32e9ca02b0f"
+
+        // List of item IDs
+        const itemIds = ['21653237', '21632030', '21653006', '21658813', '21658814', '21653007'];
+
+        // List of auction IDs
+        const auctionIds = ['164354', '164247'];
 
         // Initialize Pusher
-        const pusher = new Pusher('8a9aa527c32e9ca02b0f', {
-            cluster: 'us3',
-            encrypted: true
+        const pusher = new Pusher(pusher_api_key, {
+            cluster: pusher_cluster,
+            encrypted: true,
+            disableStats: !0,
+            pong_timeout: 2e4,
+            activity_timeout: 1e4
         });
 
         // Function to create a new div for each item
@@ -39,27 +49,203 @@
             const div = document.createElement('div');
             div.id = `item-${itemId}`;
             div.className = 'item-update';
-            div.innerHTML = `<h3>Item ${itemId}</h3><p>Waiting for updates...</p>`;
+            div.innerHTML = `
+                <ul>
+                    <li>Item ${itemId}
+                        <ul id="item_bid-${itemId}">
+                            <li>Waiting for bid update...</li>
+                        </ul>
+                        <ul id="item_minimum_bid-${itemId}">
+                            <li>Waiting for minimum_bid update...</li>
+                        </ul>
+                        <ul id="item_state_change-${itemId}">
+                            <li>Waiting for state_change update...</li>
+                        </ul>
+                    </li>
+                </ul>`;
             document.getElementById('updates').appendChild(div);
         }
 
-        // Subscribe to each channel and bind to the 'bid' event
+        // Function to create a new div for each auction
+        function createAuctionDiv(auctionId) {
+            const div = document.createElement('div');
+            div.id = `auction-${auctionId}`;
+            div.className = 'auction-update';
+            div.innerHTML = `
+                <ul>
+                    <li>Auction ${auctionId}
+                        <ul id="auction_new_high_bid-${auctionId}">
+                            <li>Waiting for new_high_bid update...</li>
+                        </ul>
+                        <ul id="auction_broadcast_clerk_message-${auctionId}">
+                            <li>Waiting for broadcast_clerk_message update...</li>
+                        </ul>
+                        <ul id="auction_bid_increment-${auctionId}">
+                            <li>Waiting for bid_increment update...</li>
+                        </ul>
+                        <ul id="auction_adjust_price-${auctionId}">
+                            <li>Waiting for adjust_price update...</li>
+                        </ul>
+                        <ul id="auction_completed-${auctionId}">
+                            <li>Waiting for auction_completed update...</li>
+                        </ul>
+                        <ul id="auction_live_group-${auctionId}">
+                            <li>Waiting for group update...</li>
+                        </ul>
+                        <ul id="auction_live_open_lot-${auctionId}">
+                            <li>Waiting for open_lot update...</li>
+                        </ul>
+                        <ul id="auction_live_modal_open-${auctionId}">
+                            <li>Waiting for modal_open update...</li>
+                        </ul>
+                        <ul id="auction_live_pass_lot-${auctionId}">
+                            <li>Waiting for pass_lot update...</li>
+                        </ul>
+                        <ul id="auction_live_unsell_lot-${auctionId}">
+                            <li>Waiting for unsell_lot update...</li>
+                        </ul>
+                        <ul id="auction_live_bid_lot-${auctionId}">
+                            <li>Waiting for bid_lot update...</li>
+                        </ul>
+                        <ul id="auction_live_sold_lot-${auctionId}">
+                            <li>Waiting for sold_lot update...</li>
+                        </ul>
+                        <ul id="auction_live_hold_lot-${auctionId}">
+                            <li>Waiting for hold_lot update...</li>
+                        </ul>
+                        <ul id="auction_live_reopen_lot-${auctionId}">
+                            <li>Waiting for reopen_lot update...</li>
+                        </ul>
+                        <ul id="auction_live_bid_group-${auctionId}">
+                            <li>Waiting for bid_group update...</li>
+                        </ul>
+                        <ul id="auction_live_bid_process_all-${auctionId}">
+                            <li>Waiting for bid_process_all update...</li>
+                        </ul>
+                        <ul id="auction_live_bid_processed-${auctionId}">
+                            <li>Waiting for bid_processed update...</li>
+                        </ul>
+                        <ul id="auction_live_session_expire-${auctionId}">
+                            <li>Waiting for session_expire update...</li>
+                        </ul>
+                        <ul id="auction_live_pending_sale_status-${auctionId}">
+                            <li>Waiting for pending_sale_status update...</li>
+                        </ul>
+                    </li>
+                </ul>`;
+            document.getElementById('updates').appendChild(div);
+        }
+
+        // Subscribe to item channel for each item and create all event bindings
         itemIds.forEach(itemId => {
             createItemDiv(itemId);
-            const channel = pusher.subscribe(`www.bidrl.com-item-${itemId}`);
+            const channel = pusher.subscribe(`${pusher_domain}-item-${itemId}`);
 
             channel.bind('bid', function(data) {
                 const bidData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`item_bid-${itemId}`).innerHTML = `<li>Bid Data: <pre>${JSON.stringify(data, null, 2)}</pre></li>`;
+            });
 
-                const bidInfo = `
-                    <strong>Current Bid:</strong> $${bidData.item.current_bid}<br>
-                    <strong>High Bidder:</strong> ${bidData.item.highbidder_username}<br>
-                    <strong>Bid Count:</strong> ${bidData.item.bid_count}<br>
-                    <strong>Minimum Bid:</strong> $${bidData.item.minimum_bid}<br>
-                    <strong>End Time:</strong> ${new Date(bidData.item.end_time * 1000).toLocaleString()}
-                `;
+            channel.bind('minimum_bid', function(data) {
+                const bidData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`item_minimum_bid-${itemId}`).innerHTML = `<li>Minimum Bid Data: <pre>${JSON.stringify(data, null, 2)}</pre></li>`;
+            });
 
-                document.getElementById(`item-${itemId}`).innerHTML = `<h3>Item ${itemId}</h3>${bidInfo}`;
+            channel.bind('state_change', function(states) {
+                document.getElementById(`item_state_change-${itemId}`).innerHTML = `<li>State changed: ${states.previous} -> ${states.current}</li>`;
+            });
+        });
+
+        // Subscribe to auction channel for each auction and create all event bindings
+        auctionIds.forEach(auctionId => {
+            createAuctionDiv(auctionId);
+
+            const new_high_bid_channel = pusher.subscribe(`${pusher_domain}-new_high_bid-${auctionId}`);
+            new_high_bid_channel.bind('new_high_bid', function(data) {
+                const bidData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_new_high_bid-${auctionId}`).innerHTML = `<li>new_high_bid data: <pre>${JSON.stringify(data, null, 2)}</pre></li>`;
+            });
+
+            const broadcast_message_channel = pusher.subscribe(`${pusher_domain}-broadcast_clerk_message-${auctionId}`);
+            broadcast_message_channel.bind('broadcast_clerk_message', function(data) {
+                const bidData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_broadcast_clerk_message-${auctionId}`).innerHTML = `<li>broadcast_clerk_message data: <pre>${JSON.stringify(data, null, 2)}</pre></li>`;
+            });
+
+            const bid_increment_channel = pusher.subscribe(`${pusher_domain}-bid_increment-${auctionId}`);
+            bid_increment_channel.bind('bid_increment', function(data) {
+                const bidData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_bid_increment-${auctionId}`).innerHTML = `<li>bid_increment data: <pre>${JSON.stringify(data, null, 2)}</pre></li>`;
+            });
+
+            const adjust_price_channel = pusher.subscribe(`${pusher_domain}-adjust_price-${auctionId}`);
+            adjust_price_channel.bind('adjust_price', function(data) {
+                const bidData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_adjust_price-${auctionId}`).innerHTML = `<li>adjust_price data: <pre>${JSON.stringify(data, null, 2)}</pre></li>`;
+            });
+
+            const auction_completed_channel = pusher.subscribe(`${pusher_domain}-auction_completed-${auctionId}`);
+            auction_completed_channel.bind('auction_completed', function(data) {
+                const bidData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_completed-${auctionId}`).innerHTML = `<li>auction_completed data: <pre>${JSON.stringify(data, null, 2)}</pre></li>`;
+            });
+
+            const live_channel = pusher.subscribe(`${pusher_domain}-liveonline-${auctionId}`);
+            live_channel.bind('group', function(data) {
+                const groupData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_live_group-${auctionId}`).innerHTML = `<li>group data: <pre>${JSON.stringify(groupData, null, 2)}</pre></li>`;
+            });
+            live_channel.bind('open_lot', function(data) {
+                const openLotData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_live_open_lot-${auctionId}`).innerHTML = `<li>open_lot data: <pre>${JSON.stringify(openLotData, null, 2)}</pre></li>`;
+            });
+            live_channel.bind('modal_open', function(data) {
+                const modalOpenData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_live_modal_open-${auctionId}`).innerHTML = `<li>modal_open data: <pre>${JSON.stringify(modalOpenData, null, 2)}</pre></li>`;
+            });
+            live_channel.bind('pass_lot', function(data) {
+                const passLotData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_live_pass_lot-${auctionId}`).innerHTML = `<li>pass_lot data: <pre>${JSON.stringify(passLotData, null, 2)}</pre></li>`;
+            });
+            live_channel.bind('unsell_lot', function(data) {
+                const unsellLotData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_live_unsell_lot-${auctionId}`).innerHTML = `<li>unsell_lot data: <pre>${JSON.stringify(unsellLotData, null, 2)}</pre></li>`;
+            });
+            live_channel.bind('bid_lot', function(data) {
+                const bidLotData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_live_bid_lot-${auctionId}`).innerHTML = `<li>bid_lot data: <pre>${JSON.stringify(bidLotData, null, 2)}</pre></li>`;
+            });
+            live_channel.bind('sold_lot', function(data) {
+                const soldLotData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_live_sold_lot-${auctionId}`).innerHTML = `<li>sold_lot data: <pre>${JSON.stringify(soldLotData, null, 2)}</pre></li>`;
+            });
+            live_channel.bind('hold_lot', function(data) {
+                const holdLotData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_live_hold_lot-${auctionId}`).innerHTML = `<li>hold_lot data: <pre>${JSON.stringify(holdLotData, null, 2)}</pre></li>`;
+            });
+            live_channel.bind('reopen_lot', function(data) {
+                const reopenLotData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_live_reopen_lot-${auctionId}`).innerHTML = `<li>reopen_lot data: <pre>${JSON.stringify(reopenLotData, null, 2)}</pre></li>`;
+            });
+            live_channel.bind('bid_group', function(data) {
+                const bidGroupData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_live_bid_group-${auctionId}`).innerHTML = `<li>bid_group data: <pre>${JSON.stringify(bidGroupData, null, 2)}</pre></li>`;
+            });
+            live_channel.bind('bid_process_all', function(data) {
+                const bidProcessAllData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_live_bid_process_all-${auctionId}`).innerHTML = `<li>bid_process_all data: <pre>${JSON.stringify(bidProcessAllData, null, 2)}</pre></li>`;
+            });
+            live_channel.bind('bid_processed', function(data) {
+                const bidProcessedData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_live_bid_processed-${auctionId}`).innerHTML = `<li>bid_processed data: <pre>${JSON.stringify(bidProcessedData, null, 2)}</pre></li>`;
+            });
+            live_channel.bind('session_expire', function(data) {
+                const sessionExpireData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_live_session_expire-${auctionId}`).innerHTML = `<li>session_expire data: <pre>${JSON.stringify(sessionExpireData, null, 2)}</pre></li>`;
+            });
+            live_channel.bind('pending_sale_status', function(data) {
+                const pendingSaleStatusData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_live_pending_sale_status-${auctionId}`).innerHTML = `<li>pending_sale_status data: <pre>${JSON.stringify(pendingSaleStatusData, null, 2)}</pre></li>`;
             });
         });
     </script>
@@ -68,6 +254,7 @@
 
 
 <!-- 
+DO NOT REMOVE THIS COMMENT
 
 variables used here
 - config.pusher_domain = "www.bidrl.com"
@@ -77,43 +264,51 @@ variables used here
 
 
 channel
-- e.pusher.subscribe(config.pusher_domain + "-item-" + i.id)
+- const channel = pusher.subscribe(`${pusher_domain}-item-${itemId}`);
 - bindings:
     - "minimum_bid"
     - "bid"
     - "pusher:subscription_succeeded"
     - "state_change"
 
-broadcast_message_channel
-- t.pusher.subscribe(config.pusher_domain + "-broadcast_clerk_message-" + t.auction.id)
-- bindings: "broadcast_clerk_message"
-
 user_message_channel
-- t.pusher.subscribe(config.pusher_domain + "-clerk_message-" + t.auction.id + "-" + t.current_user)
+- const user_message_channel = pusher.subscribe(`${pusher_domain}-clerk_message-${auctionID}-${current_user}`);
 - bindings: "clerk_message"
 
-bid_increment_channel
-- t.pusher.subscribe(config.pusher_domain + "-bid_increment-" + t.auction.id)
-- bindings: "bid_increment"
-
 bid_removed_channel
-- t.pusher.subscribe(config.pusher_domain + "-bid_removed-" + t.auction.id + "-" + t.current_user)
+- const bid_removed_channel = pusher.subscribe(`${pusher_domain}-bid_removed-${auctionID}-${current_user}`);
 - bindings: "bid_removed"
 
+quality_selection_channel
+- const quality_selection_channel = pusher.subscribe(`${pusher_domain}-live_quantity_selection-${auctionID}-${current_user}`);
+- bindings: "live_quantity_selection"
+
+choice_lot_selection_channel
+- const choice_lot_selection_channel = pusher.subscribe(`${pusher_domain}-bidder_choice_lot_selection-${auctionID}-${current_user}`);
+- bindings: "bidder_choice_lot_selection"
+
+broadcast_message_channel
+- const broadcast_message_channel = pusher.subscribe(`${pusher_domain}-broadcast_clerk_message-${auctionID}`);
+- bindings: "broadcast_clerk_message"
+
+bid_increment_channel
+- const bid_increment_channel = pusher.subscribe(`${pusher_domain}-bid_increment-${auctionID}`);
+- bindings: "bid_increment"
+
 adjust_price_channel
-- t.pusher.subscribe(config.pusher_domain + "-adjust_price-" + t.auction.id)
+- const adjust_price_channel = pusher.subscribe(`${pusher_domain}-adjust_price-${auctionID}`);
 - bindings: "adjust_price"
 
 new_high_bid_channel
-- t.pusher.subscribe(config.pusher_domain + "-new_high_bid-" + t.auction.id)
+- const new_high_bid_channel = pusher.subscribe(`${pusher_domain}-new_high_bid-${auctionID}`);
 - bindings: "new_high_bid"
 
 auction_completed_channel
-- t.pusher.subscribe(config.pusher_domain + "-auction_completed-" + t.auction.id)
+- const auction_completed_channel = pusher.subscribe(`${pusher_domain}-auction_completed-${auctionID}`);
 - bindings: "auction_completed"
 
 live_channel
-- t.pusher.subscribe(config.pusher_domain + "-liveonline-" + t.auction.id)
+- const live_channel = pusher.subscribe(`${pusher_domain}-liveonline-${auctionID}`);
 - bindings:
     - "group"
     - "open_lot"
@@ -130,20 +325,12 @@ live_channel
     - "session_expire"
     - "pending_sale_status"
 
-quality_selection_channel
-- t.pusher.subscribe(config.pusher_domain + "-live_quantity_selection-" + t.auction.id + "-" + t.current_user)
-- bindings: "live_quantity_selection"
-
-choice_lot_selection_channel
-- t.pusher.subscribe(config.pusher_domain + "-bidder_choice_lot_selection-" + t.auction.id + "-" + t.current_user)
-- bindings: "bidder_choice_lot_selection"
-
 stream_change_channel
-- t.pusher.subscribe(config.pusher_domain + "-stream-" + t.auction.id)
+- const channel = pusher.subscribe(`${pusher_domain}-stream-${auctionID}`);
 - bindings: "namechange"
 
 auction.channel
-- e.pusher.subscribe(config.pusher_domain + "-auction-" + t.auction.id)
+- const channel = pusher.subscribe(`${pusher_domain}-auction-${auctionID}`);
 - bindings: "new_item"
 
 
