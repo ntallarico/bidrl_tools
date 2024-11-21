@@ -143,16 +143,16 @@
 
             channel.bind('bid', function(data) {
                 const bidData = typeof data === 'string' ? JSON.parse(data) : data;
-                document.getElementById(`item_bid-${itemId}`).innerHTML = `<li>Bid Data: <pre>${JSON.stringify(data, null, 2)}</pre></li>`;
+                document.getElementById(`item_bid-${itemId}`).innerHTML = `<li>bid data: <pre>${JSON.stringify(data, null, 2)}</pre></li>`;
             });
 
             channel.bind('minimum_bid', function(data) {
                 const bidData = typeof data === 'string' ? JSON.parse(data) : data;
-                document.getElementById(`item_minimum_bid-${itemId}`).innerHTML = `<li>Minimum Bid Data: <pre>${JSON.stringify(data, null, 2)}</pre></li>`;
+                document.getElementById(`item_minimum_bid-${itemId}`).innerHTML = `<li>minimum_bid data: <pre>${JSON.stringify(data, null, 2)}</pre></li>`;
             });
 
             channel.bind('state_change', function(states) {
-                document.getElementById(`item_state_change-${itemId}`).innerHTML = `<li>State changed: ${states.previous} -> ${states.current}</li>`;
+                document.getElementById(`item_state_change-${itemId}`).innerHTML = `<li>state_change data: ${states.previous} -> ${states.current}</li>`;
             });
         });
 
