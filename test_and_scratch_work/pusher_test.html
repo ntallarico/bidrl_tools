@@ -131,6 +131,12 @@
                         <ul id="auction_live_pending_sale_status-${auctionId}">
                             <li>Waiting for pending_sale_status update...</li>
                         </ul>
+                        <ul id="auction_stream_namechange-${auctionId}">
+                            <li>Waiting for stream namechange update...</li>
+                        </ul>
+                        <ul id="auction_new_item-${auctionId}">
+                            <li>Waiting for new_item update...</li>
+                        </ul>
                     </li>
                 </ul>`;
             document.getElementById('updates').appendChild(div);
@@ -247,6 +253,18 @@
                 const pendingSaleStatusData = typeof data === 'string' ? JSON.parse(data) : data;
                 document.getElementById(`auction_live_pending_sale_status-${auctionId}`).innerHTML = `<li>pending_sale_status data: <pre>${JSON.stringify(pendingSaleStatusData, null, 2)}</pre></li>`;
             });
+
+            const stream_change_channel = pusher.subscribe(`${pusher_domain}-stream-${auctionId}`);
+            stream_change_channel.bind('namechange', function(data) {
+                const nameChangeData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_stream_namechange-${auctionId}`).innerHTML = `<li>stream namechange data: <pre>${JSON.stringify(nameChangeData, null, 2)}</pre></li>`;
+            });
+
+            const auction_channel = pusher.subscribe(`${pusher_domain}-auction-${auctionId}`);
+            auction_channel.bind('new_item', function(data) {
+                const newItemData = typeof data === 'string' ? JSON.parse(data) : data;
+                document.getElementById(`auction_new_item-${auctionId}`).innerHTML = `<li>new item data: <pre>${JSON.stringify(newItemData, null, 2)}</pre></li>`;
+            });
         });
     </script>
 </body>
@@ -329,7 +347,7 @@ stream_change_channel
 - const channel = pusher.subscribe(`${pusher_domain}-stream-${auctionID}`);
 - bindings: "namechange"
 
-auction.channel
+auction_channel
 - const channel = pusher.subscribe(`${pusher_domain}-auction-${auctionID}`);
 - bindings: "new_item"
 
