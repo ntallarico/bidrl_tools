@@ -5,6 +5,8 @@ from pathlib import Path
 import sys
 from django.urls import URLPattern, URLResolver, get_resolver
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 # add parent directory (repository directory) to the path so that config file can be read
 bidrl_tools_directory = Path(__file__).resolve().parent.parent.parent
@@ -47,10 +49,6 @@ def get_all_url_patterns(urlpatterns, prefix=''):
 
 ### functions for javascript? not views directly or helper functions. update this title when this section expands ###
 
-from django.http import JsonResponse
-from .models import ItemUserInput
-import time
-
 def fetch_data(request):
     current_unix_time = int(time.time())
     all_open_items = ItemUserInput.objects.filter(end_time_unix__gte=current_unix_time, max_desired_bid__gt=0).order_by('end_time_unix')
@@ -58,6 +56,7 @@ def fetch_data(request):
     data = []
     for item in all_open_items:
         data.append({
+            'item_id': item.item_id,
             'description': item.description,
             'remaining_time_string': convert_seconds_to_time_string(item.end_time_unix - current_unix_time),
             'max_desired_bid': item.max_desired_bid,
@@ -69,6 +68,25 @@ def fetch_data(request):
         })
     
     return JsonResponse({'all_open_items': data})
+
+@csrf_exempt
+def update_bids(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            for bid in data['bids']:
+                try:
+                    item = ItemUserInput.objects.get(item_id=bid['item_id'])
+                    item.max_desired_bid = float(bid['max_desired_bid'])
+                    item.save()
+                except ItemUserInput.DoesNotExist:
+                    return JsonResponse({'success': False, 'error': f"Item with ID {bid['item_id']} does not exist"}, status=404)
+            return JsonResponse({'success': True})
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 
 ### views ###

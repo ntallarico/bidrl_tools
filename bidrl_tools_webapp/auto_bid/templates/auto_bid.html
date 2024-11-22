@@ -27,37 +27,85 @@
             fetch('/fetch-data/')
                 .then(response => response.json())
                 .then(data => {
+                    console.log('Fetched data:', data); // Log the fetched data
+                    
                     const tbody = document.querySelector('#open-items-table tbody');
-                    tbody.innerHTML = ''; // Clear existing rows
 
                     data.all_open_items.forEach(item => {
-                        const row = document.createElement('tr');
-                        if (item.is_lost) {
-                            row.style.color = '#565858';
+                        // Find the existing row for the item
+                        let row = tbody.querySelector(`tr[data-item-id="${item.item_id}"]`);
+
+                        if (!row) {
+                            // If the row doesn't exist, create a new one
+                            row = document.createElement('tr');
+                            row.setAttribute('data-item-id', item.item_id);
+                            tbody.appendChild(row);
                         }
 
+                        // Update the row's content
                         row.innerHTML = `
+                            <td>${item.item_id}</td>
                             <td>${item.description}</td>
                             <td>${item.remaining_time_string}</td>
-                            <td>${item.max_desired_bid}</td>
+                            <td><input type="number" value="${item.max_desired_bid}" data-item-id="${item.item_id}" class="desired-bid-input"></td>
                             <td>${item.item_bid_group_id}</td>
                             <td>${item.ibg_items_to_win}</td>
                             <td>${item.current_bid}</td>
                             <td>${item.highbidder_username}</td>
                         `;
-                        tbody.appendChild(row);
+
+                        // Optionally, update the row's style if the item is lost
+                        if (item.is_lost) {
+                            row.style.color = '#565858';
+                        } else {
+                            row.style.color = ''; // Reset to default if not lost
+                        }
                     });
                 });
         }
 
-        setInterval(fetchData, 1000); // Poll every 1 second(s)
+        setInterval(fetchData, 10000); // Poll every 10 seconds
+
+        document.addEventListener('DOMContentLoaded', function() {
+        const submitButton = document.getElementById('submit-max-desired-bids');
+        if (submitButton) {
+            submitButton.addEventListener('click', function() {
+                const inputs = document.querySelectorAll('.desired-bid-input');
+                const data = Array.from(inputs).map(input => ({
+                    item_id: input.getAttribute('data-item-id'),
+                    max_desired_bid: input.value
+                }));
+
+                console.log('Data being sent by submit-max-desired-bids:', data); // Log the data
+
+                fetch('/update-bids/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ bids: data })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Bids updated successfully!');
+                    } else {
+                        alert('Failed to update bids.');
+                    }
+                });
+            });
+        }
+    });
     </script>
 </head>
 <body>
     <h3>Open items:</h3>
+    <button id="submit-max-desired-bids">Submit Desired Bids</button>
     <table id="open-items-table">
         <thead>
             <tr>
+                <th>Item ID</th>
                 <th>Description</th>
                 <th>Remaining Time</th>
                 <th>Desired Bid</th>
@@ -70,9 +118,10 @@
         <tbody>
             {% for item in all_open_items %}
             <tr {% if item.is_lost %}style="color: #565858;"{% endif %}>
+                <td>{{ item.item_id }}</td>
                 <td>{{ item.description }}</td>
                 <td>{{ item.remaining_time_string }}</td>
-                <td>{{ item.max_desired_bid }}</td>
+                <td><input type="number" value="{{ item.max_desired_bid }}" data-item-id="{{ item.item_id }}" class="desired-bid-input"></td>
                 <td>{{ item.item_bid_group_id }}</td>
                 <td>{{ item.ibg_items_to_win }}</td>
                 <td>{{ item.current_bid }}</td>
@@ -86,6 +135,7 @@
     <table>
         <thead>
             <tr>
+                <th>Item ID</th>
                 <th>Description</th>
                 <th>Sold</th>
                 <th>Desired Bid</th>
@@ -98,6 +148,7 @@
         <tbody>
             {% for item in all_closed_items %}
             <tr {% if item.is_lost %}style="color: #565858;"{% endif %}>
+                <td>{{ item.item_id }}</td>
                 <td>{{ item.description }}</td>
                 <td>{{ item.sold_date }}</td>
                 <td>{{ item.max_desired_bid }}</td>
