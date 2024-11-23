@@ -22,7 +22,9 @@
             background-color: #42454a; /* Slightly darker background for headers */
         }
     </style>
+    
     <script>
+    //script to continually refresh data in open items table
         function fetchData() {
             // start fetching data from the server. the Fetch API calls our to our '/fetch-data/' url
             // it returns a promise of a reponse that is passed into the arrow function in the next .then()
@@ -30,14 +32,17 @@
             // and then the function body 'response.json()' which it returns
             // An arrow function is just a shorthand for defining a function. parameter to take in => body of function
             // .then() takes two parameters, both functions. then(function if promise resolves successfully, function if promise fails)
+            // However, it is usually better to handle failure or errors with a .catch() at the end of the .then()s
+            // because it will catch any error in any of the preceding .then()s, making it a more centralized way to handle errors
             fetch('/fetch-data/')
                 .then(response => response.json()) // parse the promised response as JSON
-                .then(data => {
-                    console.log('Fetched data:', data);
+                .then(data => { // 'data' = the result of 'response.json()'
+                    console.log('fetchData() fetched items:', data);
+                    const items = data.fav_open_items_list // extract fav_open_items_list from 'data'. this is our list of items
 
-                    const tbody = document.querySelector('#open-items-table tbody');
+                    const tbody = document.querySelector('#open-items-table tbody'); // 'document' refers to the whole html doc
 
-                    data.all_open_items.forEach(item => {
+                    items.forEach(item => {
                         // Find the existing row for the item
                         let row = tbody.querySelector(`tr[data-item-id="${item.item_id}"]`);
 
@@ -71,12 +76,15 @@
                 .catch(error => console.error('fetchData() error:', error));
         }
 
-        setInterval(fetchData, 10000); // Poll every 10 seconds
+        setInterval(fetchData, 10000); // call fetchData every 10 seconds. built in function in javascript to repeatedly call a function
+    </script>
 
-        document.addEventListener('DOMContentLoaded', function() {
-        const submitButton = document.getElementById('submit-max-desired-bids');
-        if (submitButton) {
-            submitButton.addEventListener('click', function() {
+    <script>
+    //script for 'submit desired bids' button
+        document.addEventListener('DOMContentLoaded', function() { // once document is fully loaded, proceed with this function
+        const submitButton = document.getElementById('submit-max-desired-bids'); // find the button by name
+        if (submitButton) { // if button is found, proceed
+            submitButton.addEventListener('click', function() { // add a listener for button click, and define function to call when it happens
                 const inputs = document.querySelectorAll('.desired-bid-input');
                 const data = Array.from(inputs).map(input => ({
                     item_id: input.getAttribute('data-item-id'),
@@ -105,6 +113,7 @@
         }
     });
     </script>
+    
 </head>
 <body>
     <h3>Open items:</h3>
@@ -123,7 +132,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for item in all_open_items %}
+            {% for item in fav_open_items %}
             <tr {% if item.is_lost %}style="color: #565858;"{% endif %}>
                 <td>{{ item.item_id }}</td>
                 <td>{{ item.description }}</td>

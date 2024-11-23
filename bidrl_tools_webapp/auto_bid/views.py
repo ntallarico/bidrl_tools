@@ -1,12 +1,13 @@
-from django.shortcuts import render
-from .models import ItemUserInput
-import time
-from pathlib import Path
 import sys
+import time
+import json
+from django.shortcuts import render
+from pathlib import Path
 from django.urls import URLPattern, URLResolver, get_resolver
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import json
+from django.forms.models import model_to_dict
+from .models import ItemUserInput
 
 # add parent directory (repository directory) to the path so that config file can be read
 bidrl_tools_directory = Path(__file__).resolve().parent.parent.parent
@@ -46,28 +47,31 @@ def get_all_url_patterns(urlpatterns, prefix=''):
                 urls.extend(get_all_url_patterns(pattern.url_patterns, nested_prefix))
         return urls
 
+# returns a list of open favorited items from the database, with some additional calculated fields
+# note: return a list, not a QuerySet. 
+def get_fav_open_items_list():
+    current_unix_time = int(time.time())
+    fav_open_items = ItemUserInput.objects.filter(end_time_unix__gte=current_unix_time, max_desired_bid__gt=0).order_by('end_time_unix') # end_time_unix >= current time and max_desired_bid > 0
+    
+    fav_open_items_list = []
+    for item in fav_open_items:
+        item_dict = model_to_dict(item)  # Convert model instance to dictionary
+        # Add additional computed fields
+        item_dict.update({
+            'remaining_time_string': convert_seconds_to_time_string(item.end_time_unix - current_unix_time)
+            , 'is_lost': item.current_bid >= item.max_desired_bid
+            # Add any other computed fields here
+        })
+        fav_open_items_list.append(item_dict)
+    
+    return fav_open_items_list
 
 ### functions for javascript? not views directly or helper functions. update this title when this section expands ###
 
 def fetch_data(request):
     current_unix_time = int(time.time())
-    all_open_items = ItemUserInput.objects.filter(end_time_unix__gte=current_unix_time, max_desired_bid__gt=0).order_by('end_time_unix')
-    
-    data = []
-    for item in all_open_items:
-        data.append({
-            'item_id': item.item_id,
-            'description': item.description,
-            'remaining_time_string': convert_seconds_to_time_string(item.end_time_unix - current_unix_time),
-            'max_desired_bid': item.max_desired_bid,
-            'item_bid_group_id': item.item_bid_group_id,
-            'ibg_items_to_win': item.ibg_items_to_win,
-            'current_bid': item.current_bid,
-            'highbidder_username': item.highbidder_username,
-            'is_lost': item.current_bid >= item.max_desired_bid,
-        })
-    
-    return JsonResponse({'all_open_items': data})
+    fav_open_items_list = get_fav_open_items_list()
+    return JsonResponse({'fav_open_items_list': fav_open_items_list})
 
 @csrf_exempt
 def update_bids(request):
@@ -109,13 +113,8 @@ def auto_bid_view(request):
         item.is_lost = item.highbidder_username != user_name
         item.sold_date = time.strftime('%m/%d/%y', time.localtime(item.end_time_unix))
 
-    all_open_items = ItemUserInput.objects.filter(end_time_unix__gte=current_unix_time, max_desired_bid__gt=0).order_by('end_time_unix') # end_time_unix >= current time and max_desired_bid > 0
-    # run calculations and field editions for all_open_items
-    for item in all_open_items:
-        item.remaining_time = item.end_time_unix - current_unix_time
-        item.remaining_time_string = convert_seconds_to_time_string(item.end_time_unix - current_unix_time)
-        item.is_lost = item.current_bid >= item.max_desired_bid
+    fav_open_items_list = get_fav_open_items_list()
 
     return render(request, 'auto_bid.html', {'all_items': all_items
-                                             , 'all_open_items': all_open_items
+                                             , 'fav_open_items': fav_open_items_list
                                              , 'all_closed_items': all_closed_items})
