@@ -24,11 +24,17 @@
     </style>
     <script>
         function fetchData() {
+            // start fetching data from the server. the Fetch API calls our to our '/fetch-data/' url
+            // it returns a promise of a reponse that is passed into the arrow function in the next .then()
+            // the arrow funciton "response => response.json()" has a parameter 'response',
+            // and then the function body 'response.json()' which it returns
+            // An arrow function is just a shorthand for defining a function. parameter to take in => body of function
+            // .then() takes two parameters, both functions. then(function if promise resolves successfully, function if promise fails)
             fetch('/fetch-data/')
-                .then(response => response.json())
+                .then(response => response.json()) // parse the promised response as JSON
                 .then(data => {
-                    console.log('Fetched data:', data); // Log the fetched data
-                    
+                    console.log('Fetched data:', data);
+
                     const tbody = document.querySelector('#open-items-table tbody');
 
                     data.all_open_items.forEach(item => {
@@ -61,7 +67,8 @@
                             row.style.color = ''; // Reset to default if not lost
                         }
                     });
-                });
+                })
+                .catch(error => console.error('fetchData() error:', error));
         }
 
         setInterval(fetchData, 10000); // Poll every 10 seconds
