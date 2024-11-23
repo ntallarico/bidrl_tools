@@ -6,8 +6,8 @@
     <style>
         body {
             background-color: #313338;
-            color: white; /* Set text to be white by default */
-            font-family: Arial, sans-serif; /* Change font to Arial */
+            color: #c3c6c8; /* Set text color */
+            font-family: Arial, sans-serif; /* Change font */
         }
         table {
             width: 100%;
@@ -20,6 +20,14 @@
         }
         th {
             background-color: #42454a; /* Slightly darker background for headers */
+        }
+        a {
+            color: #1595e1; /* Change hyperlink color */
+        }
+        input.desired-bid-input {
+            background-color: #1e1f22; /* Change Desired Bid input box color */
+            color: #c3c4b9; /* Set text color */
+            width: 75px;
         }
     </style>
     
@@ -45,25 +53,37 @@
                     items.forEach(item => {
                         // Find the existing row for the item
                         let row = tbody.querySelector(`tr[data-item-id="${item.item_id}"]`);
-
-                        if (!row) {
-                            // If the row doesn't exist, create a new one
+                        
+                        if (!row) { //if row does not exist, add it
                             row = document.createElement('tr');
                             row.setAttribute('data-item-id', item.item_id);
                             tbody.appendChild(row);
-                        }
 
-                        // Update the row's content
-                        row.innerHTML = `
-                            <td>${item.item_id}</td>
-                            <td>${item.description}</td>
-                            <td>${item.remaining_time_string}</td>
-                            <td><input type="number" value="${item.max_desired_bid}" data-item-id="${item.item_id}" class="desired-bid-input"></td>
-                            <td>${item.item_bid_group_id}</td>
-                            <td>${item.ibg_items_to_win}</td>
-                            <td>${item.current_bid}</td>
-                            <td>${item.highbidder_username}</td>
-                        `;
+                            // Initialize the row with all columns
+                            row.innerHTML = `
+                                <td>${item.item_id}</td>
+                                <td> <a href="{{ item.url }}" {% if item.is_lost %} style="color: #565858;" {% endif %}> {{ item.description }} </a> </td>
+                                <td>${item.remaining_time_string}</td>
+                                <td><input type="number" value="${item.max_desired_bid}" data-item-id="${item.item_id}" class="desired-bid-input"></td>
+                                <td>${item.item_bid_group_id}</td>
+                                <td>${item.ibg_items_to_win}</td>
+                                <td>${item.current_bid}</td>
+                                <td>${item.highbidder_username || ''}</td>
+                            `;
+                        } else { // if row does already exist, choose which columns to update
+                            // choose which columns to actually update. comment out any that we don't want to update with this function
+                            row.cells[0].textContent = item.item_id;
+                            row.cells[1].innerHTML = `<a href="${item.url}" ${item.is_lost ? 'style="color: #565858;"' : ''}>${item.description}</a>`;                            
+                            row.cells[2].textContent = item.remaining_time_string;
+
+                            //const desiredBidInput = row.querySelector('.desired-bid-input');
+                            //if (desiredBidInput) {desiredBidInput.value = item.max_desired_bid;}
+
+                            row.cells[4].textContent = item.item_bid_group_id;
+                            row.cells[5].textContent = item.ibg_items_to_win;
+                            row.cells[6].textContent = item.current_bid;
+                            row.cells[7].textContent = item.highbidder_username || '';
+                        }
 
                         // Optionally, update the row's style if the item is lost
                         if (item.is_lost) {
@@ -133,15 +153,16 @@
         </thead>
         <tbody>
             {% for item in fav_open_items %}
-            <tr {% if item.is_lost %}style="color: #565858;"{% endif %}>
+            <!-- set each row in the table to have a item ID attribute so we can reference the rows by item ID -->
+            <tr data-item-id="{{ item.item_id }}" {% if item.is_lost %} style="color: #565858;" {% endif %}>
                 <td>{{ item.item_id }}</td>
-                <td>{{ item.description }}</td>
+                <td> <a href="{{ item.url }}" {% if item.is_lost %} style="color: #565858;" {% endif %}> {{ item.description }} </a> </td>
                 <td>{{ item.remaining_time_string }}</td>
                 <td><input type="number" value="{{ item.max_desired_bid }}" data-item-id="{{ item.item_id }}" class="desired-bid-input"></td>
                 <td>{{ item.item_bid_group_id }}</td>
                 <td>{{ item.ibg_items_to_win }}</td>
                 <td>{{ item.current_bid }}</td>
-                <td>{{ item.highbidder_username }}</td>
+                <td>{{ item.highbidder_username|default:'' }}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -165,13 +186,13 @@
             {% for item in all_closed_items %}
             <tr {% if item.is_lost %}style="color: #565858;"{% endif %}>
                 <td>{{ item.item_id }}</td>
-                <td>{{ item.description }}</td>
+                <td> <a href="{{ item.url }}" {% if item.is_lost %} style="color: #565858;" {% endif %}> {{ item.description }} </a> </td>
                 <td>{{ item.sold_date }}</td>
                 <td>{{ item.max_desired_bid }}</td>
                 <td>{{ item.item_bid_group_id }}</td>
                 <td>{{ item.ibg_items_to_win }}</td>
                 <td>{{ item.current_bid }}</td>
-                <td>{{ item.highbidder_username }}</td>
+                <td>{{ item.highbidder_username|default:'' }}</td>
             </tr>
             {% endfor %}
         </tbody>
