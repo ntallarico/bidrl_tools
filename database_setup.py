@@ -65,6 +65,30 @@ def create_v_reporting_user(conn):
         ;
     ''')
 
+# create bid info view. drop it if it already exists first
+def create_v_bid_info(conn):
+    bf.drop_and_create_view(conn, 'v_bid_info', '''
+        CREATE VIEW v_bid_info AS
+
+        WITH bid_flags AS (
+            SELECT *
+                , CASE WHEN description like (username || ' placed the starting bid.') THEN 1 ELSE 0 END AS flg_starting_bid
+                , CASE WHEN description like (username || ' outbid %') THEN 1 ELSE 0 END AS flg_manual_successful_outbid
+                , CASE WHEN description like (username || '_s bid was accepted but outbid by %') THEN 1 ELSE 0 END AS flg_manual_lost_to_proxy
+                , CASE WHEN description like ('Proxy bid was placed for ' || username || ' in response to a bid by %') THEN 1 ELSE 0 END AS flg_automatic_proxy
+            FROM bids b
+        )
+        SELECT
+            bf.*
+            , CASE
+                WHEN flg_starting_bid = 1 OR flg_manual_successful_outbid = 1 OR flg_manual_lost_to_proxy = 1 THEN 'Manual'
+                WHEN flg_automatic_proxy = 1 THEN 'Auto'
+                ELSE 'Unmapped'
+                END AS bid_type
+        FROM bid_flags bf
+        ;
+    ''')
+
 
 def sql_database_setup():
     conn = bf.init_sqlite_connection()
@@ -199,6 +223,9 @@ def sql_database_setup():
     # create view v_reporting_user
     create_v_reporting_user(conn)
 
+    # create view v_bid_info
+    create_v_bid_info(conn)
+    
 
     ##### indexes #####
 
