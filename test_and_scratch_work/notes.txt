@@ -3,11 +3,9 @@ questions I'd like to answer in reporting once I have full database:
 - what bidding strategy / timing works best? bidding one single time at 2mins out? 10 seconds out? is there a difference on average at all?
     - need to analyze full population's bid history
 - lets get a report on 2 minute nightmare. does he live up to the name?
-- who has spent the most money?
 - can we identify people as "quick bid button pushers".
     - how often do they do it? when?
     - I'd like to see a breakdown of quick bid spam bids by dimensions
-- ratio of bids to wins for people
 - can I analyze the bid history to determine certain scenarios?
     - someone gave their max amount, was outbid, then later upped it to try to win
         - then, how far above their original max amount did they end up paying?
@@ -17,11 +15,35 @@ questions I'd like to answer in reporting once I have full database:
 	- what items do not sell but are not re-listed?
 
 stuff to do with reporting stuff:
-- item reporting table
-    - show actual paid price for item (including premium and tax)
 - users reporting table
-    - total bids, total wins, total losses, ratio
+    - how many times did user extend bidding? - would be useful for 2min nightmare look
+- add to view
+    - total bid (different than "total spent - bid". this is total $ amount of all bids placed)
 
+new tabs
+- SC affiliate summary
+    - stats
+        --- total sales
+        --- total users (people that placed a bid)
+        - best selling auction
+        --- most expensive item
+        --- total items sold
+        --- total bids recieved
+        --- total images uploaded
+        - profit per item sold
+        - profit per item uploaded (to give a payoff / effort ratio over time)
+        - most frequent category
+        - total made in auction fees
+        - total taxes collected
+        --- items sold
+        - auctions posted
+    - over-time views
+        - many / all of the stats but over time (like in the user lookup dash)
+        - # of times category was posted each month (with a line color for each category type)
+        - NEW users (how many new users gained each month?)
+    - item view
+        - want to see most expensive item (be able to sort by price)
+    - category view
 '''
 
 
