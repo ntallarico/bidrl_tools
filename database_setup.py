@@ -71,7 +71,8 @@ def create_v_bid_info(conn):
         CREATE VIEW v_bid_info AS
 
         WITH bid_flags AS (
-            SELECT *
+            SELECT
+                bid_id
                 , CASE WHEN description like (username || ' placed the starting bid.') THEN 1 ELSE 0 END AS flg_starting_bid
                 , CASE WHEN description like (username || ' outbid %') THEN 1 ELSE 0 END AS flg_manual_successful_outbid
                 , CASE WHEN description like (username || '_s bid was accepted but outbid by %') THEN 1 ELSE 0 END AS flg_manual_lost_to_proxy
@@ -225,7 +226,7 @@ def sql_database_setup():
 
     # create view v_bid_info
     create_v_bid_info(conn)
-    
+
 
     ##### indexes #####
 
