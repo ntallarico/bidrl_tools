@@ -32,11 +32,12 @@ new tabs
         --- total images uploaded
         - profit per item sold
         - profit per item uploaded (to give a payoff / effort ratio over time)
-        - most frequent category
+        --- most frequent category
         - total made in auction fees
         - total taxes collected
         --- items sold
-        - auctions posted
+        --- auctions posted
+        - avg revenue per item sold
     - over-time views
         - many / all of the stats but over time (like in the user lookup dash)
         - # of times category was posted each month (with a line color for each category type)
@@ -44,6 +45,14 @@ new tabs
     - item view
         - want to see most expensive item (be able to sort by price)
     - category view
+- affiliate analysis
+    - where are we wasting effort?
+        - revenue per image uploaded analysis
+        - revenue per item listed, by category, sorted from worst to best
+        - analysis of unsold items (by cat? by some other dimension?)
+    - where are we getting the most value?
+        - revenue per item listed, by category, sorted from best to worst
+    
 '''
 
 
